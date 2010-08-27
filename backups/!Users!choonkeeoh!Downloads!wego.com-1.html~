@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+<div>
+<form name="devSendXML" method="post" action="http://api.newshan.com/XML_Query" target="_blank" onsubmit="return window.confirm(&quot;You are submitting information to an external page.\nAre you sure?&quot;);">
+
+Place the XML request in the text and click <b>Submit</b> button<br><br>
+
+<b>ClientID</b> <input type="text" name="ClientID" value="WEGO">
+
+     
+
+<b>PassCode</b> <input type="text" name="PassCode" value="W40T29">
+
+<br><br>
+
+<b>XML Request</b><br>
+<textarea cols="60" rows="20" name="data" value="">
+
+    WEGO
+    
+    
+    
+    
+        
+        Taipei
+        Kaohsiung
+    
+    
+    
+    
+    
+    ALL
+    
+
+</textarea>
+
+<br>
+
+<input type="submit" name="Submit" value="Submit">
+<input type="reset" name="Reset" value="Reset">
+
+
+</form>
+</div>
+</body></html>

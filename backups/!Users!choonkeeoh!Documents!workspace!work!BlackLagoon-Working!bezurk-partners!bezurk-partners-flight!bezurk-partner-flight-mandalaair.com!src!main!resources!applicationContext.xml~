@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jndi="http://www.springframework.org/schema/jndi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jndi http://www.springframework.org/schema/jndi/spring-jndi.xsd">
+
+	<!-- Common flight provider config import -->
+	<import resource="classpath:com/bezurk/config/flight/provider.xml" />
+	<!-- Only front controller is embedded -->
+	<import resource="classpath:com/bezurk/config/flight/jms-frontcontroller.xml" />
+
+	<!-- Scope = prototype means no singleton -->
+	<bean id="service"
+		class="com.bezurk.provider.flight.lionair.LionAirSearchProvider"
+		autowire="byName" scope="prototype">
+		<property name="providerId" value="${partner.module.name}" />
+		<property name="ruleParsers">
+			<list>
+				<ref bean="maxNumAdultsChildrenRule" />
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="maxNumAdultsChildrenRule" class="com.bezurk.provider.rule.MaxNumAdultsChildrenRule">
+		<property name="maxNumAdults" value="7" />
+		<property name="maxNumChildren" value="2" />
+	</bean>
+
+</beans>
+

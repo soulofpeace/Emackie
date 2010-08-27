@@ -1,0 +1,57 @@
+import os
+import sys
+import csv
+import gdata.docs
+import gdata.docs.service
+import getpass
+import gdata.spreadsheet.service
+
+serverIpMapping={'rocku':'192.168.1.70', 'stormwind':'192.168.1.62', 'stewie':'202.157.130.232'}
+
+def getDictionary():
+    activePartnersCsv = csv.reader(open('flightsPartner.csv'), delimiter=',')
+    activePartnersIndexByPartners={}
+    activePartnersIndexByServers={}
+
+    count =0
+    for row in activePartnersCsv:
+        print 'processing '+str(row)
+        if(count!=0):
+            if len(row)>=5:
+                active = row[4]
+                integrationType = row[3]
+                if active.lower() == 'Active'.lower() and integrationType.lower() != 'Amadeus'.lower():
+                    providerId = row[0]
+                    if(row[1].lower() in serverIpMapping):
+                        server = serverIpMapping[row[1].lower()]
+                        activePartnersIndexByPartners[providerId]=server
+                        if server in activePartnersIndexByServers:
+                            activePartnersIndexByServers[server].append(providerId)
+                        else:
+                            activePartnersIndexByServers[server]=[providerId]
+        #                        print "%s \t %s" %(providerId, server)                                                                                                                                                                     
+        count= count+1
+
+    print 'partners: %s' %(str(activePartnersIndexByPartners))
+    print 'servers: %s' %(str(activePartnersIndexByServers))
+    return (activePartnersIndexByPartners, activePartnersIndexByServers)
+
+def getFromGoogleDoc():
+    user = raw_input("User Name:")
+    password = getpass.getpass()
+    gd_client = gdata.docs.service.DocsService()
+    gd_client.ClientLogin(user, password)
+    q = gdata.docs.service.DocumentQuery()
+    q['title']='FlightPartnerList'
+o    q['title-exact']='true'
+    feed = gd_client.Query(q.ToUri())
+    filepath='flightsPartner.csv'
+    spreadsheets_client = gdata.spreadsheet.service.SpreadsheetsService()
+    spreadsheets_client.ClientLogin(user, password)
+
+    docs_auth_token = gd_client.GetClientLoginToken()
+    gd_client.SetClientLoginToken(spreadsheets_client.GetClientLoginToken())
+
+    gd_client.Export(feed.entry[0], filepath)
+
+    gd_client.SetClientLoginToken(docs_auth_token) # reset the DocList auth token         

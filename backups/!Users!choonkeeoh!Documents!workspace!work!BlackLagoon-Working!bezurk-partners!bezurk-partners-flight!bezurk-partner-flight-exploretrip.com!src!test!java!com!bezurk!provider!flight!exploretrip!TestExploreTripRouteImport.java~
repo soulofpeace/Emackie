@@ -1,0 +1,49 @@
+package com.bezurk.provider.flight.chinatraveldepot;
+
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.mysql.jdbc.Connection;
+
+
+import junit.framework.TestCase;
+
+public class TestChinaTravelDepotRouteImport extends TestCase{
+	
+	public void testImportRoutes() throws Exception{
+		Class.forName("com.mysql.jdbc.Driver");
+		System.out.println("Driver loaded");
+
+		// establish a connection
+		Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://sephiroth.wego.com:40019/aviatrix_edge?user=bezurk&password=B3zurk0");
+		List<String> airportCodes = new ArrayList<String>();
+		
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select distinct locations.code from locations, countries where countries.id = locations.country_id and countries.code='CN' and locations.type='Airport'");
+		while(resultSet.next()){
+			airportCodes.add(resultSet.getString(1));
+		}
+		statement.close();
+		connection.close();
+		StringBuffer sb = new StringBuffer("# Last updated on " + new Date()).append(System
+				.getProperty("line.separator"));
+		
+		for(String origin:airportCodes){
+			sb.append(origin+"=");
+			for(String destination:airportCodes){
+				if(!destination.equals(origin)){
+					sb.append(destination+",");
+				}
+			}
+			sb.deleteCharAt(sb.length()-1);
+			sb.append(System.getProperty("line.separator"));
+		}
+		System.out.println(sb.toString());
+	}
+	
+
+}

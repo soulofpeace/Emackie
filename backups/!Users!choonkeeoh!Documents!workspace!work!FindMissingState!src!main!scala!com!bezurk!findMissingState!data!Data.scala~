@@ -1,0 +1,3 @@
+package com.bezurk.dbUpdater.data
+
+abstract class Data

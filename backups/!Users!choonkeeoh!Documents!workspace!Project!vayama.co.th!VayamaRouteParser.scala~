@@ -1,0 +1,22 @@
+import scala.io.Source
+
+def getMap(input:List[String])(origins:List[String])(destinations:List[String]):(List[String], List[String]){
+  input match{
+    case head::tail=>{
+      val tokens = line.split(",")
+      val origin = tokens[0]
+      val destination = tokens[2]
+      return getMap(tail)(if origin.length()>0 origin::origins else origins)(if destination.length>0 destination::destinations else destinations)
+    }
+    case Nil=>{
+      return (origins, destinations)
+    }
+  }
+   
+}
+
+
+def main(){
+  val input = Source.fromFile(args(0)).getLines.toList
+  
+}

@@ -1,0 +1,851 @@
+package com.bezurk.provider.flight.garudaindonesia;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.bezurk.provider.flight.FlightSearchProviderException;
+import com.bezurk.provider.flight.HttpFlightSearchProvider;
+import com.bezurk.search.flight.FlightSearchReport;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.flight.model.FlightClass;
+import com.bezurk.search.flight.model.FlightItinerary;
+import com.bezurk.search.flight.model.FlightLeg;
+import com.bezurk.search.flight.model.FlightPrice;
+import com.bezurk.search.flight.model.FlightSegment;
+import com.bezurk.search.flight.model.FullFlightNumber;
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.log4j.Logger;
+import org.apache.commons.httpclient.methods.PostMethod;
+import java.io.IOException;
+
+
+/**
+ * @author ryantan
+ * @since 26 October 2009
+ */
+public class GarudaIndonesiaSearchProvider extends HttpFlightSearchProvider {
+
+	
+    private static Logger log = Logger.getLogger(GarudaIndonesiaSearchProvider.class);
+
+    private static final String GARUDA_HOME="http://www.garuda-indonesia.com/";
+
+    private static final String DOMESTIC_URL_SEARCH2 = "http://www.garuda-indonesia.com/pages/internet-booking-engine/check-fares";
+    private static final String DOMESTIC_URL_SEARCH = "https://ibb.garuda-indonesia.com/ibp/";
+
+	
+
+    private static final String INTERNATIONAL_URL_SEARCH="http://wftc3.e-travel.com/plnext/garuda-indonesia/Override.action";
+    private static final String INTERNATIONAL_ROOT="http://wftc3.e-travel.com";
+
+
+    private static final int MAX_RESULTS = 100;
+
+    @Override
+    protected FlightSearchReport performSearch(FlightSearchRequest request)
+	throws FlightSearchProviderException {
+        log.debug("Performing Search");
+        if(this.isDomesticSearch(request)){
+            this.performDomesticSearch(request);
+        }
+        else{
+            this.performInternationalSearch(request);
+        }
+        return null;
+    }
+
+    private void performInternationalSearch(FlightSearchRequest request) throws FlightSearchProviderException{
+        HttpClient client = createHttpClient();
+
+        String page = getInternationalResultPage(request, client);  
+        this.parseAndPostInternationalItinerary(request, page, client);
+    }
+
+    private String getInternationalResultPage(FlightSearchRequest request, HttpClient client) throws FlightSearchProviderException{
+        String homePage = fetchGETResponseBody(client, GARUDA_HOME, null);
+        log.debug("HOme page: "+homePage);
+        Pattern internationalTabPattern = Pattern.compile("<div[^>]*?id\\s*=\\s*\"tabs-int\"[^>]*?>(.*?)<div[^>]*?id\\s*=\\s*\"tabs-fs\"[^>]*?>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+        Matcher internationalTabMatcher = internationalTabPattern.matcher(homePage);
+        if(internationalTabMatcher.find()){
+            String internationalTabString = internationalTabMatcher.group(1);
+            log.debug("International Tab String: "+internationalTabString);
+            List<NameValuePair> param = this.getInternationalSessionSpecificParam(internationalTabString, request);
+            String response = this.fetchPOSTResponseBody(client, INTERNATIONAL_URL_SEARCH, this.getInternationalSearchParams(request, param));
+            log.debug("Response: "+response);
+            return response;
+        }
+        else{
+            log.error("Cannot get international Search Result Page");
+            throw new FlightSearchProviderException("Cannot get International Search result page");
+        }
+
+    }
+
+    private List<NameValuePair> getInternationalSessionSpecificParam(String internationalTabString, FlightSearchRequest request){
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        Pattern hiddenFieldPattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](.*?)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        log.debug("Hidden Field Pattern :"+hiddenFieldPattern);
+        Matcher hiddenFieldMatcher = hiddenFieldPattern.matcher(internationalTabString);
+        while(hiddenFieldMatcher.find()){
+            String name = hiddenFieldMatcher.group(1);
+            log.debug("Name: "+name);
+            String value = hiddenFieldMatcher.group(2);
+            log.debug("Value: "+hiddenFieldMatcher.group(2));
+            if(name.equalsIgnoreCase("intDeparturetime") ||name.equalsIgnoreCase("intDepartureYear")||name.equalsIgnoreCase("intDeparturereturntime")||name.equalsIgnoreCase("intDeparturereturntime")){
+                continue;
+            }
+            else if(name.equalsIgnoreCase("TRAVELLER_TYPE_1")){
+                params.add(nvp(name, "ADT"));
+            }
+            else if(name.equalsIgnoreCase("TRAVELLER_TYPE_2") && request.getNumChildren()>0){
+                params.add(nvp(name, "CHD"));
+            }
+            else{
+                params.add(nvp(name, value));
+            }
+        }
+        return params;
+    }
+
+    /**
+       TRIP_TYPE:R
+       B_LOCATION_1:CGK
+       intDepartureDay:26
+       intDepartureMonthYear:08/2010
+       intDeparturetime:2010-8-26
+       intDepartureMonth:8
+       intDepartureYear:2010
+       B_DATE_1:201008260000
+       E_LOCATION_1:SIN
+       IntDeparturereturnDay:26
+       intDeparturereturnMonthYear:09/2010
+       intDeparturereturntime:2010-9-26
+       intDeparturereturnMonth:9
+       intDeparturereturnYear:2010
+       B_DATE_2:201009260000
+       CABIN:E
+       int_passanger_adult:1
+       int_passanger_child:0
+       x:35
+       y:11
+    **/
+    private NameValuePair[] getInternationalSearchParams(FlightSearchRequest request, List<NameValuePair> params){
+        SimpleDateFormat monthYearFormat = new SimpleDateFormat("MM/yyyy");
+        SimpleDateFormat monthFormat = new SimpleDateFormat("M");
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("d");
+        SimpleDateFormat fullDateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat fullDateFormat2 = new SimpleDateFormat("yyyyMMddhhmm");
+
+        params.add(nvp("B_LOCATION_1", request.getFromLocation().getCode()));
+        params.add(nvp("E_LOCATION_1", request.getToLocation().getCode()));
+        params.add(nvp("int_passanger_adult", String.valueOf(request.getNumAdults())));
+        params.add(nvp("int_passanger_child",String.valueOf(request.getNumChildren())));
+        params.add(nvp("intDepartureDay", dayFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDepartureMonthYear", monthYearFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDeparturetime", fullDateFormat1.format(request.getOutboundDate())));
+        params.add(nvp("intDepartureMonth", monthFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDepartureYear", yearFormat.format(request.getOutboundDate())));
+        params.add(nvp("B_DATE_1", fullDateFormat2.format(request.getOutboundDate())));
+        params.add(nvp("CABIN", request.getCabinClass().equals(CABIN_CLASS.Economy)?"E":"B"));
+        params.add(nvp("TRIP_TYPE", request.isRoundTrip()?"R":"O"));
+        params.add(nvp("IntDeparturereturnDay", request.isRoundTrip()?dayFormat.format(request.getInboundDate()):dayFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDeparturereturnMonthYear", request.isRoundTrip()?monthYearFormat.format(request.getInboundDate()):monthYearFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDeparturereturntime", request.isRoundTrip()?fullDateFormat1.format(request.getInboundDate()):fullDateFormat1.format(request.getOutboundDate())));
+        params.add(nvp("intDeparturereturnMonth", request.isRoundTrip()?monthFormat.format(request.getInboundDate()):monthFormat.format(request.getOutboundDate())));
+        params.add(nvp("intDepartureYear", request.isRoundTrip()?yearFormat.format(request.getInboundDate()):yearFormat.format(request.getOutboundDate())));
+        params.add(nvp("B_DATE_2", request.isRoundTrip()?fullDateFormat2.format(request.getInboundDate()):fullDateFormat2.format(request.getOutboundDate())));
+
+
+        return params.toArray(new NameValuePair[0]);
+    }
+
+
+
+      private void parseAndPostInternationalItinerary(FlightSearchRequest request, String response, HttpClient client) throws FlightSearchProviderException{
+	
+        List<InternationalWorkerThread> threads = new ArrayList<InternationalWorkerThread>();
+        Pattern formPattern = Pattern.compile("<form[^>]*?name=\"SDAIForm\"[^>]*?action=\"(.*?)\"[^>]*?>(.*?)</form>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+        Matcher formMatcher = formPattern.matcher(response);
+
+        if(formMatcher.find()){
+
+
+            log.debug("formUrl: "+formMatcher.group(1).replace("&amp;", "&"));
+
+            String formUrl = formMatcher.group(1).replace("&amp;", "&");
+            log.debug("formContent: "+formMatcher.group(2));
+            String farePage = formMatcher.group(2);
+            List<NameValuePair> farePageSpecificParam = this.getInternationalFarePageSpecificParam(farePage);
+            farePageSpecificParam.add(nvp("CABIN", request.getCabinClass().equals(CABIN_CLASS.Economy)?"E":"B"));
+            int maxOutIndex = getInternationalMaxOutBoundIndex(farePage);
+            log.debug("max out index "+ maxOutIndex);
+            int threadCount = 0;
+            if(request.isRoundTrip()){
+                int maxInIndex = getInternationalMaxInBoundIndex(farePage);
+                log.debug("max in index "+maxInIndex);
+                if(request.isRoundTrip()){
+                    for(int i =0 ;i<maxOutIndex;i++){
+                        for(int j=0; j<maxInIndex; j++){
+                            InternationalWorkerThread worker = new InternationalWorkerThread();
+                            log.debug("OutBound Row: "+i);
+                            log.debug("Inbound Row: "+j );
+                            log.debug("Thread Count: "+threadCount);
+                            worker.setFormUrl(INTERNATIONAL_ROOT+formUrl);
+                            worker.setOutboundRow(String.valueOf(i));
+                            worker.setInboundRow(String.valueOf(j));
+                            worker.setSessionSpecificNameValuePair(new ArrayList<NameValuePair>(farePageSpecificParam));
+                            worker.setFareRestricted(true);
+                            worker.setThreadNumber(threadCount);
+                            worker.setRequest(request);
+                            HttpClient workerClient = createHttpClient();
+                            workerClient.setState(client.getState());
+                            worker.setClient(workerClient);
+                            threadCount++;
+
+                            InternationalWorkerThread notRestrictedFareWorker = new InternationalWorkerThread();
+                            notRestrictedFareWorker.setFormUrl(INTERNATIONAL_ROOT+formUrl);
+                            notRestrictedFareWorker.setOutboundRow(String.valueOf(i));
+                            notRestrictedFareWorker.setInboundRow(String.valueOf(j));
+                            notRestrictedFareWorker.setSessionSpecificNameValuePair(new ArrayList<NameValuePair>(farePageSpecificParam));
+                            notRestrictedFareWorker.setFareRestricted(false);
+                            notRestrictedFareWorker.setThreadNumber(threadCount);
+                            notRestrictedFareWorker.setRequest(request);
+                            HttpClient notRestrictedFareWorkerClient = createHttpClient();
+                            notRestrictedFareWorkerClient.setState(client.getState());
+                            notRestrictedFareWorker.setClient(notRestrictedFareWorkerClient);
+							
+                            threadCount++;
+
+                            threads.add(worker);
+                            threads.add(notRestrictedFareWorker);
+
+                            worker.start();
+                            notRestrictedFareWorker.start();
+                        }
+                    }
+                }
+
+
+
+            }
+            else{
+                for(int i =0 ;i<maxOutIndex;i++){
+                    InternationalWorkerThread worker = new InternationalWorkerThread();
+                    worker.setFormUrl(INTERNATIONAL_ROOT+formUrl);
+                    worker.setOutboundRow(String.valueOf(i));
+
+                    worker.setSessionSpecificNameValuePair(new ArrayList<NameValuePair>(farePageSpecificParam));
+                    worker.setFareRestricted(true);
+                    worker.setThreadNumber(threadCount);
+                    worker.setRequest(request);
+                    HttpClient workerClient = createHttpClient();
+                    workerClient.setState(client.getState());
+                    worker.setClient(workerClient);
+                    threadCount++;
+
+                    InternationalWorkerThread notRestrictedFareWorker = new InternationalWorkerThread();
+                    notRestrictedFareWorker.setFormUrl(INTERNATIONAL_ROOT+formUrl);
+                    notRestrictedFareWorker.setOutboundRow(String.valueOf(i));
+
+                    notRestrictedFareWorker.setSessionSpecificNameValuePair(new ArrayList<NameValuePair>(farePageSpecificParam));
+                    notRestrictedFareWorker.setFareRestricted(false);
+                    notRestrictedFareWorker.setThreadNumber(threadCount);
+                    notRestrictedFareWorker.setRequest(request);
+                    HttpClient notRestrictedFareWorkerClient = createHttpClient();
+                    notRestrictedFareWorkerClient.setState(client.getState());
+                    notRestrictedFareWorker.setClient(notRestrictedFareWorkerClient);
+                    threadCount++;
+
+                    threads.add(worker);
+                    threads.add(notRestrictedFareWorker);
+
+                    worker.start();
+                    notRestrictedFareWorker.start();
+                }
+            }
+        }
+        for(InternationalWorkerThread thread: threads){
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                log.error(thread.getName()+" was interruted due to "+e.getMessage());
+                throw new FlightSearchProviderException("Thread was Interrupted "+e.getMessage());
+            }
+        }
+
+
+    }
+
+        private List<NameValuePair> getInternationalFarePageSpecificParam(String page){
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        Pattern hiddenFieldPattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](.*?)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>");
+        log.debug("Hidden Field Pattern :"+hiddenFieldPattern);
+        Matcher hiddenFieldMatcher = hiddenFieldPattern.matcher(page);
+        while(hiddenFieldMatcher.find()){
+            String name = hiddenFieldMatcher.group(1);
+            log.debug("Name: "+name);
+            String value = hiddenFieldMatcher.group(2);
+            log.debug("Value: "+hiddenFieldMatcher.group(2));
+            params.add(nvp(name, value));
+        }
+
+        return params;
+    }
+
+    private int getInternationalMaxOutBoundIndex(String response){
+        Pattern outBoundIndexPattern = Pattern.compile("<td[^>]*?id=\"tdFlightIndex_0_([\\d]+)\"[^>]*?>");
+        Matcher outBoundIndexMatcher = outBoundIndexPattern.matcher(response);
+        int max= -1;
+
+        while(outBoundIndexMatcher.find()){
+            log.debug("out Index "+outBoundIndexMatcher.group(1));
+            int index = Integer.parseInt(outBoundIndexMatcher.group(1).trim());
+            if(index>-1){
+                max = index;
+            }
+        }
+        return max;
+    }
+
+    private int getInternationalMaxInBoundIndex(String response){
+        Pattern inBoundIndexPattern = Pattern.compile("<td[^>]*?id=\"tdFlightIndex_1_([\\d]+)\"[^>]*?>");
+        Matcher inBoundIndexMatcher = inBoundIndexPattern.matcher(response);
+        int max= -1;
+
+        while(inBoundIndexMatcher.find()){
+            log.debug("In Index "+inBoundIndexMatcher.group(1));
+            int index = Integer.parseInt(inBoundIndexMatcher.group(1).trim());
+            if(index>-1){
+                max = index;
+            }
+        }
+        return max;
+    }
+
+
+  private boolean isDomesticSearch(FlightSearchRequest request){
+        if(request.getFromLocation().getCountry().getCode().equalsIgnoreCase("ID") && request.getToLocation().getCountry().getCode().equalsIgnoreCase("ID")){
+            log.debug("DOMESTIC SEARCH");
+            return true;
+        }
+        else{
+            log.debug("INTERNATIONAL SEARCH");
+            return false;
+        }
+    }
+
+    private void performDomesticSearch(FlightSearchRequest request) throws FlightSearchProviderException{
+        log.debug("Performing Domestic Search ");
+        HttpClient client = createHttpClient();
+
+        String home_page = get_domestic_result_page(request, client);
+        log.debug("Home Page: "+home_page);
+		
+               
+                
+
+    }
+	
+    private List<NameValuePair> get_domestic_session_specific_param(String domestic_tab_string, FlightSearchRequest request){
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+	
+        Pattern urlibb_pattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](urlibb)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+	log.debug("urlibb pattern: "+urlibb_pattern);
+        Matcher urlibb_matcher = urlibb_pattern.matcher(domestic_tab_string);
+        if(urlibb_matcher.find()){
+            log.debug("name: "+urlibb_matcher.group(1));
+            log.debug("value: " + urlibb_matcher.group(2));
+	    params.add(nvp(urlibb_matcher.group(1).trim(), urlibb_matcher.group(2).trim()));
+        }	
+		
+        Pattern urlschedule_pattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](urlschedule)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        Matcher urlschedule_matcher = urlschedule_pattern.matcher(domestic_tab_string);
+        if(urlschedule_matcher.find()){
+            log.debug("name: "+urlschedule_matcher.group(1));
+            log.debug("value: " +urlschedule_matcher.group(2));
+	    params.add(nvp(urlschedule_matcher.group(1).trim(), urlschedule_matcher.group(2).trim()));
+        }
+                       
+        Pattern urlfare_pattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](urlfare)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        Matcher urlfare_matcher = urlfare_pattern.matcher(domestic_tab_string);
+        if(urlfare_matcher.find()){
+            log.debug("name: "+ urlfare_matcher.group(1));
+            log.debug("value: "+urlfare_matcher.group(2));
+	    params.add(nvp(urlfare_matcher.group(1).trim(), urlfare_matcher.group(2).trim()));
+        }
+        
+	    
+        Pattern form_id_pattern =  Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](form_id)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        Matcher form_id_matcher = form_id_pattern.matcher(domestic_tab_string);
+
+        if(form_id_matcher.find()){
+            log.debug("name: "+ form_id_matcher.group(1));
+            log.debug("value: "+ form_id_matcher.group(2));
+	    params.add(nvp(form_id_matcher.group(1).trim(), form_id_matcher.group(2).trim()));
+        }
+		
+        Pattern form_word_pattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](form_word.*?)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        Matcher form_word_matcher = form_word_pattern.matcher(domestic_tab_string);
+
+        if(form_word_matcher.find()){
+            log.debug("name: "+form_word_matcher.group(1));
+            log.debug("value: "+form_word_matcher.group(2));
+	    params.add(nvp(form_word_matcher.group(1).trim(), form_word_matcher.group(2).trim()));
+            
+        }
+		
+        Pattern kirim_pattern = Pattern.compile("<input[^>]*?type=[\"|']hidden[\"|'][^>]*?name=[\"|'](kirim)[\"|'][^>]*?value=[\"|'](.*?)[\"|'][^>]*?/>", Pattern.MULTILINE|Pattern.DOTALL|Pattern.CASE_INSENSITIVE);
+        Matcher kirim_matcher = kirim_pattern.matcher(domestic_tab_string);
+        if(kirim_matcher.find()){
+            log.debug("name: "+kirim_matcher.group(1));
+            log.debug("value: "+kirim_matcher.group(2));
+	    params.add(nvp(kirim_matcher.group(1).trim(), kirim_matcher.group(2).trim()));
+        }
+		
+	
+        return params;
+    }
+
+
+    private String get_domestic_result_page(FlightSearchRequest request, HttpClient client)
+	throws FlightSearchProviderException {
+
+        String home_page = fetchGETResponseBody(client, GARUDA_HOME, null);
+        log.debug("Page: "+home_page);
+        Pattern domestic_tab_pattern = Pattern.compile("<div[^>]*?id\\s*=\\s*\"tabs-db\"[^>]*?>(.*?)<div[^>]*?id\\s*=\\s*\"tabs-int\"[^>]*?>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+        Matcher domestic_tab_matcher = domestic_tab_pattern.matcher(home_page);
+        if(domestic_tab_matcher.find()){
+            String domestic_tab_string = domestic_tab_matcher.group(1);
+            log.debug("domestic tab string: "+domestic_tab_string);
+            List<NameValuePair> params = this.get_domestic_session_specific_param(domestic_tab_string, request);
+	    Cookie[] cookies = client.getState().getCookies();
+	    for (Cookie cookie:cookies){
+		log.debug(cookie.getName()+"\t"+cookie.getValue());
+	    }
+	    try {
+		int tries = 10;
+		int status_code =-1;
+		PostMethod post = new PostMethod(DOMESTIC_URL_SEARCH);
+		post.setRequestBody(this.get_domestic_search_params(new ArrayList<NameValuePair>(), request));
+		do{
+		    client.executeMethod(post);
+		    log.debug("StatusCode:"+post.getStatusCode());
+		    status_code = post.getStatusCode();
+		    tries --;
+		}while(status_code!=302 && tries >=0);
+		String flight_result_url = post.getResponseHeader("Location").getValue();
+		log.debug("Flight_result_url: "+flight_result_url);
+		String result_page = fetchGETResponseBody(client, flight_result_url, null);
+		
+		
+		//String result_page=this.fetchPOSTResponseBody(client, DOMESTIC_URL_SEARCH, this.get_domestic_search_params(new ArrayList<NameValuePair>(), request));
+		writeToFile("target/resultPage.html", result_page);
+		//	    log.debug("result_page: "+result_page);
+		
+	    } catch (IOException  e) {
+		e.printStackTrace();
+	    }
+			
+        }
+        else{
+            log.error("Cannot get international Search Result Page");
+            throw new FlightSearchProviderException("Cannot get International Search result page");
+        }
+
+        return null;
+
+    }
+
+    private NameValuePair[] get_domestic_search_params(List<NameValuePair> params, FlightSearchRequest request){
+	SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
+	params.add(nvp("Params[adults]", String.valueOf(request.getNumAdults())));
+	params.add(nvp("Params[childs]", String.valueOf(request.getNumChildren())));
+	params.add(nvp("Params[dest]", request.getFromLocation().getCode()));
+	params.add(nvp("Params[origin]", request.getToLocation().getCode()));
+	params.add(nvp("Params[outDate]", date_format.format(request.getOutboundDate())));
+	params.add(nvp("Params[retDate]", request.isRoundTrip()?date_format.format(request.getInboundDate()):date_format.format(request.getOutboundDate())));
+	params.add(nvp("Params[searchBy]", "date"));
+	params.add(nvp("Params[serviceClass]", request.getCabinClass().equals(CABIN_CLASS.Economy)?"eco":"exe"));
+	params.add(nvp("Params[tripType]", request.isRoundTrip()?"r":"o"));
+	return params.toArray(new NameValuePair[0]);
+    }
+
+    private NameValuePair[] get_domestic_search_params_2(List<NameValuePair> params, FlightSearchRequest request)
+	throws FlightSearchProviderException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d");
+	SimpleDateFormat monthyear_format = new SimpleDateFormat("MM/yyyy");
+	SimpleDateFormat month_format = new SimpleDateFormat("M");
+	SimpleDateFormat year_format = new SimpleDateFormat("yyyy");
+	SimpleDateFormat day_format = new SimpleDateFormat("d");
+	
+	    
+	if(request.isRoundTrip()){
+	    params.add(nvp("timeoftrip", "r"));
+	    params.add(nvp("departurereturnDay", day_format.format(request.getInboundDate())));
+	    params.add(nvp("departurereturnMonthYear", monthyear_format.format(request.getInboundDate())));
+	    params.add(nvp("departurereturntime", dateFormat.format(request.getInboundDate())));
+	    params.add(nvp("departurereturnMonth", month_format.format(request.getInboundDate())));
+	    params.add(nvp("departurereturnYear", year_format.format(request.getInboundDate())));
+  	}
+	else{
+	    params.add(nvp("timeoftrip", "o"));
+	    params.add(nvp("departurereturnDay", day_format.format(request.getOutboundDate())));
+	    params.add(nvp("departurereturnMonthYear", monthyear_format.format(request.getOutboundDate())));
+	    params.add(nvp("departurereturntime", dateFormat.format(request.getOutboundDate())));
+	    params.add(nvp("departurereturnMonth", month_format.format(request.getOutboundDate())));
+	    params.add(nvp("departurereturnYear", year_format.format(request.getOutboundDate())));
+	}
+	
+        params.add(nvp("passanger_adult", String.valueOf(request.getNumAdults())));
+        params.add(nvp("passanger_child", String.valueOf(request.getNumChildren())));
+        params.add(nvp("departurecity", request.getFromLocation().getCode()));
+        params.add(nvp("arrivalcity", request.getToLocation().getCode()));
+	params.add(nvp("departureDay", day_format.format(request.getOutboundDate())));
+	params.add(nvp("departureMonthYear", monthyear_format.format(request.getOutboundDate())));
+	params.add(nvp("departuretime", dateFormat.format(request.getOutboundDate())));
+	params.add(nvp("departureMonth", month_format.format(request.getOutboundDate())));
+	params.add(nvp("departureYear", year_format.format(request.getOutboundDate())));
+	params.add(nvp("classofservice", request.getCabinClass().equals(CABIN_CLASS.Economy)?"ECO":"EXE"));
+	
+        return params.toArray(new NameValuePair[0]);
+
+    }
+
+
+    private HttpClient createHttpClient() {
+        HttpClient client = new HttpClient();
+        client.getParams().setParameter("http.socket.timeout", 0);
+        client.getParams().setParameter("http.protocol.single-cookie-header", true);
+        client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        return client;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.bezurk.provider.flight.FlightSearchProvider#isSearchRelevant(com.
+     * bezurk.search.flight.FlightSearchRequest)
+     */
+    @Override
+    protected boolean isSearchRelevant(FlightSearchRequest request)
+	throws FlightSearchProviderException {
+        return false;
+    }
+
+    @Override
+    protected boolean servicesRoute(String from, String to) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    class InternationalWorkerThread extends Thread{
+        private String formUrl;
+        private String outboundRow;
+        private String inboundRow;
+        private boolean fareRestricted;
+        private FlightSearchRequest request;
+        private HttpClient client;
+
+        private List<NameValuePair> sessionSpecificNameValuePair;
+        private int threadNumber;
+
+        public String getFormUrl() {
+            return formUrl;
+        }
+        public void setFormUrl(String formUrl) {
+            this.formUrl = formUrl;
+        }
+        public String getOutboundRow() {
+            return outboundRow;
+        }
+        public void setOutboundRow(String outboundRow) {
+            log.debug("Set outbound row "+ outboundRow);
+            this.outboundRow = outboundRow;
+        }
+        public String getInboundRow() {
+            return inboundRow;
+        }
+        public void setInboundRow(String inboundRow) {
+            this.inboundRow = inboundRow;
+        }
+
+        public int getThreadNumber() {
+            return threadNumber;
+        }
+        public void setThreadNumber(int threadNumber) {
+            this.threadNumber = threadNumber;
+        }
+
+        public boolean isFareRestricted() {
+            return fareRestricted;
+        }
+        public void setFareRestricted(boolean fareRestricted) {
+            this.fareRestricted = fareRestricted;
+        }
+        public List<NameValuePair> getSessionSpecificNameValuePair() {
+            return sessionSpecificNameValuePair;
+        }
+        public void setSessionSpecificNameValuePair(
+                                                    List<NameValuePair> sessionSpecificNameValuePair) {
+            this.sessionSpecificNameValuePair = sessionSpecificNameValuePair;
+        }
+        public void setRequest(FlightSearchRequest request) {
+            this.request = request;
+        }
+        public FlightSearchRequest getRequest() {
+            return request;
+        }
+        public void setClient(HttpClient client) {
+            this.client = client;
+        }
+        public HttpClient getClient() {
+            return client;
+        }
+        public void run(){
+            try{
+                this.setName("Thread "+threadNumber);
+                String page = fetchPOSTResponseBody(client, formUrl, getSearchParams(sessionSpecificNameValuePair));
+                log.debug("farePage: "+page);
+                if(isOk(page)){
+                    this.parseAndPostItinerary(page);
+                }
+            }
+            catch(FlightSearchProviderException ex){
+                log.error("Error while parsing fare page "+ex.getMessage());
+            }
+
+        }
+		
+        private boolean isOk(String response){
+            Pattern errorPattern = Pattern.compile("WDSError\\.add\\(\"(.*?)\"\\)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+            log.debug("ErrorPattern: "+errorPattern);
+            Matcher errorMatcher = errorPattern.matcher(response);
+            if(errorMatcher.find()){
+                log.warn("Following Error was returned by page: "+errorMatcher.group(1));
+                return false;
+            }
+            return true;
+        }
+		
+        private void parseAndPostItinerary(String response) throws FlightSearchProviderException{
+            FlightLeg outLeg = this.parseFlightLeg(response, false);
+            FlightItinerary itinerary = new FlightItinerary();
+            itinerary.addOutboundLeg(outLeg);
+            if(inboundRow!=null){
+                FlightLeg inLeg = this.parseFlightLeg(response, true);
+                itinerary.addInboundLeg(inLeg);
+            }
+            FlightPrice price = this.parseFlightPrice(response);
+            itinerary.addPrice(price);
+            postItinerary(request, itinerary);
+			
+        }
+		
+        private void postItinerary(FlightSearchRequest request, FlightItinerary itinerary)
+            throws FlightSearchProviderException {
+            log.debug(itinerary); 
+            //			checkItinerary(itinerary, request);
+            List<FlightItinerary> itineraries = new ArrayList<FlightItinerary>();
+            itineraries.add(itinerary);
+			
+            postItineries(itineraries, request);
+        }
+		
+        private FlightLeg parseFlightLeg(String response, boolean inbound) throws FlightSearchProviderException{
+            FlightLeg leg  = new FlightLeg();
+            Pattern flightSegmentPattern = Pattern.compile("<td[^>]*?id=\"segAirline_"+(inbound?"1":"0")+"_[\\d]+\"[^>]*?>.*?([\\w]{2})([\\d]+).*?</td>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+            log.debug("FlightSegmentPattern: "+flightSegmentPattern);
+            Matcher flightSegmentMatcher = flightSegmentPattern.matcher(response);
+            while(flightSegmentMatcher.find()){
+                log.debug("FlightDesignator: "+flightSegmentMatcher.group(1));
+                log.debug("FlightNumber: "+flightSegmentMatcher.group(2));
+				
+                FlightSegment flightSegment = new FlightSegment();
+                FullFlightNumber fullFlightNumber = new FullFlightNumber(flightSegmentMatcher.group(1), flightSegmentMatcher.group(2));
+                flightSegment.setFlightNumber(fullFlightNumber);
+                flightSegment.setFlightClass(determineFlightClass(request));
+                leg.addSegment(flightSegment);
+				
+            }
+            if(leg.getSegments().size()==0){
+                log.error("Cannot get Flight Segment using this pattern "+flightSegmentPattern);
+                throw new FlightSearchProviderException("Cannot get flight segment");
+            }
+            return leg;
+        }
+		
+		
+        private FlightPrice parseFlightPrice(String response) throws FlightSearchProviderException{
+            FlightPrice price = new FlightPrice();
+            Pattern fareNamePattern = Pattern.compile("<td[^>]*?id=\"segFareType[^\"]*\"[^>]*?>(.*?)</td>", Pattern.MULTILINE|Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
+            Matcher fareNameMatcher = fareNamePattern.matcher(response);
+            String fareName="";
+            while(fareNameMatcher.find()){
+                log.debug("FareName: "+fareNameMatcher.group(1).trim()+" | ");
+                fareName=fareName+fareNameMatcher.group(1).trim()+" | ";
+            }
+            if(fareName.length()>0){
+                fareName = fareName.substring(0, fareName.length()-2);
+                price.setName(fareName);
+            }
+            else{
+                log.warn("Unable to get fare name usign this pattern "+fareNamePattern);
+            }
+            log.debug("final fare name: "+fareName);
+            Pattern adultFlightPricePattern = Pattern.compile("<td[^>]*?>\\s*[\\d]+\\s*adult\\(s\\)\\s*</td>\\s*<td[^>]*?>\\s*x\\s*</td>\\s*<td[^>]*?>\\(\\s*([\\d\\.,]+)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+            log.debug("adultFlightPrice: "+adultFlightPricePattern);
+            Matcher adultFlightPriceMatcher = adultFlightPricePattern.matcher(response);
+            Pattern adultTaxPattern = Pattern.compile("<span[^>]*?id=\"taxes_ADT\"[^>]*?>([\\d,.]+)\\s*\\)</span>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+            log.debug("adultTaxPattern: "+adultTaxPattern);
+            Matcher adultTaxMatcher = adultTaxPattern.matcher(response);
+            Pattern adultTotalPricePattern= Pattern.compile("<span[^>]*?id=\"totalForATravellerType_ADT\"[^>]*?>([\\d,.]+)\\s*\\)</span>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+            log.debug("adultTotalPricePattern: "+adultTotalPricePattern);
+            Matcher adultTotalPriceMatcher = adultTotalPricePattern.matcher(response);
+            if(adultFlightPriceMatcher.find()){
+                log.debug("Adult base Price: "+adultFlightPriceMatcher.group(1));
+                price.setPricePerAdult(adultFlightPriceMatcher.group(1).trim().replaceAll(",", ""));
+            }
+            else{
+                log.error("Cannot get adult base price using this pattern"+adultFlightPricePattern);
+                throw new FlightSearchProviderException("Cannot get adult base price");
+            }
+            if(adultTaxMatcher.find()){
+                log.debug("Adult tax: "+adultTaxMatcher.group(1));
+                Double tax = Double.parseDouble(adultTaxMatcher.group(1).trim().replaceAll(",", ""));
+                Double totalPricePerAdult = Double.parseDouble(price.getPricePerAdult())+tax;
+                price.setTotalPricePerAdult(totalPricePerAdult.toString());
+            }
+            else{
+                log.error("Cannot get adult tax using this pattern"+adultTaxPattern);
+                throw new FlightSearchProviderException("Cannot get adult tax");
+            }
+            if(adultTotalPriceMatcher.find()){
+                log.debug("Adult Total Price: "+adultTotalPriceMatcher.group(1));
+            }
+            if(request.getNumChildren()>0){
+                Pattern childFlightPricePattern = Pattern.compile("<td[^>]*?>\\s*[\\d]+\\s*child\\(ren\\)\\s*</td>\\s*<td[^>]*?>\\s*x\\s*</td>\\s*<td[^>]*?>\\(\\s*([\\d\\.,]+)", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+                log.debug("childBasePrice: "+childFlightPricePattern);
+                Matcher childFlightPriceMatcher = childFlightPricePattern.matcher(response);
+                Pattern childTaxPattern = Pattern.compile("<span[^>]*?id=\"taxes_CHD\"[^>]*?>([\\d,.]+)\\s*\\)</span>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+                log.debug("childTaxPattern: "+childTaxPattern);
+                Matcher childTaxMatcher = childTaxPattern.matcher(response);
+                Pattern childTotalPricePattern= Pattern.compile("<span[^>]*?id=\"totalForATravellerType_CHD\"[^>]*?>([\\d,.]+)\\s*\\)</span>", Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+                log.debug("childTotalPricePattern: "+childTotalPricePattern);
+                Matcher childTotalPriceMatcher = childTotalPricePattern.matcher(response);
+                if(childFlightPriceMatcher.find()){
+                    log.debug("Child Base price: "+childFlightPriceMatcher.group(1));
+                    price.setPricePerChild(childFlightPriceMatcher.group(1).trim().replace(",", ""));
+                }
+                else{
+                    log.error("Cannot get child base price using this pattern"+childFlightPricePattern);
+                    throw new FlightSearchProviderException("Cannot get child base price");
+                }
+                if(childTaxMatcher.find()){
+                    log.debug("Child Tax: "+childTaxMatcher.group(1));
+                    Double tax = Double.parseDouble(childTaxMatcher.group(1).trim().replaceAll(",", ""));
+                    Double totalPricePerChild = Double.parseDouble(price.getPricePerChild())+tax;
+                    price.setTotalPricePerChild(totalPricePerChild.toString());
+                }
+                else{
+                    log.error("Cannot get child tax using this pattern"+childTaxPattern);
+                    throw new FlightSearchProviderException("Cannot get child tax");
+                }
+                if(childTotalPriceMatcher.find()){
+                    log.debug("Child Total Price: "+childTotalPriceMatcher.group(1));
+                }
+            }
+            Pattern currencyCodePattern = Pattern.compile("<span[^>]*?id=\"spanTotalPriceOfAllPax\"[^>]*?>\\s*[\\d,.]+\\s*([\\w]{3})\\s*</span>");
+            log.debug("CurrencyCodePattern: "+currencyCodePattern);
+
+            Matcher currencyCodeMatcher = currencyCodePattern.matcher(response);
+            if(currencyCodeMatcher.find()){
+                log.debug("CurrencyCode: "+currencyCodeMatcher.group(1));
+                String currencyCode = currencyCodeMatcher.group(1).trim();
+                price.setCurrencyCode(currencyCode);
+                Double totalPriceAdultWithTax = Double.parseDouble(price.getTotalPricePerAdult())*request.getNumAdults();
+                Double totalPriceChildrenWithTax = request.getNumChildren()>0?(Double.parseDouble(price.getTotalPricePerChild())*request.getNumChildren()):0.0;
+                price.setTotalAmount(String.valueOf((totalPriceAdultWithTax+totalPriceChildrenWithTax)));
+				
+                price.setIncludesTax(true);
+                Double totalPriceAdult = Double.parseDouble(price.getPricePerAdult())*request.getNumAdults();
+                Double totalPriceChild = request.getNumChildren()>0?(Double.parseDouble(price.getPricePerChild())*request.getNumChildren()):0.0;
+                Double totalAmount = totalPriceAdult +totalPriceChild;
+                price.setAmount(totalAmount.toString());
+                Double pricePerPassenger = (totalPriceAdult+totalPriceChild)/(request.getNumAdults()+request.getNumChildren());
+                price.setPricePerPassenger(pricePerPassenger.toString());
+                Double totalPricePerPassenger =Double.parseDouble(price.getTotalAmount())/(request.getNumAdults()+request.getNumChildren());
+                price.setTotalPricePerPassenger(totalPricePerPassenger.toString());
+            }
+            else{
+                log.error("cannot get flight currencyCode using this pattern "+currencyCodePattern);
+                throw new FlightSearchProviderException("Cannot get currencyCode");
+            }
+            return price;
+			
+        }
+
+        /**
+         * 
+         * PLTG_SEARCH_RECAP_UPDATED:true
+         PAGE_TICKET:0
+         TRIP_TYPE:R
+         ROW_1:0
+         ROW_2:0
+         CABIN:E
+         RESTRICTION:true
+        */
+        private NameValuePair[] getSearchParams(List<NameValuePair> params){
+            log.debug("Params: " +params);
+            log.debug("outbound row: "+outboundRow);
+            params.add(nvp("ROW_1", outboundRow));
+            if(inboundRow!=null){
+                params.add(nvp("ROW_2", inboundRow));
+            }
+
+            params.add(nvp("RESTRICTION", String.valueOf(fareRestricted)));
+
+            return params.toArray(new NameValuePair[0]);
+        }
+		
+        private FlightClass determineFlightClass(FlightSearchRequest request){
+            FlightClass flightClass = new FlightClass();
+            if(request.getCabinClass().equals(CABIN_CLASS.Economy)){
+                flightClass.setEconomyClass();
+            }
+            else if(request.getCabinClass().equals(CABIN_CLASS.Business)){
+                flightClass.setBusinessClass();
+            }
+            else{
+                flightClass.setFirstClass();
+            }
+            return flightClass;
+        }
+		
+		
+
+    }
+
+    // private String loadFromFile(String fileName) {
+    // StringBuffer buf = new StringBuffer();
+    // try {
+    // BufferedReader reader = new BufferedReader(new FileReader(fileName));
+    //
+    // String line = null;
+    // while ((line = reader.readLine()) != null) {
+    // buf.append(line).append(System.getProperty("line.separator"));
+    // }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // return buf.toString();
+    // }
+}

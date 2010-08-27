@@ -1,0 +1,20 @@
+package com.bezurk.notificator
+
+import com.bezurk.notificator.m1._
+import com.bezurk.notificator.singtel._
+import com.bezurk.notificator.starhub._
+
+class NotificatorFactory{
+  @throws(classOf[NotificationError])
+  def getNotificator(providerType:String):Notificator={
+    providerType match{
+      case "Singtel"=> new SingtelSMSNotificator()
+      case "M1"=> new M1SMSNotificator()
+      case "Starhub" => new StarhubSMSNotificator()
+      case _ => throw new NotificationError("Unsupported Provider Type")
+    }
+  }
+    
+}
+
+

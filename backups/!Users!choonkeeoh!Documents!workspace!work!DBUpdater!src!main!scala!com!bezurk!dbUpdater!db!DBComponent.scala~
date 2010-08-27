@@ -1,0 +1,54 @@
+package com.bezurk.dbUpdater.db
+
+import com.bezurk.db.common._
+import java.sql.{Connection, Statement, ResultSet, ResultSetMetaData, SQLException}
+
+
+trait DBComponent{
+  val db:DB
+  
+  class DB(val connectionFactory: ConnectionFactory){
+    def execute(queryString:String):Seq[Map[String, String]]={
+      
+      val queryFactory:SqlQueryFactory = new SqlQueryFactory()
+      val retryingQueryFactory:RetryingQueryFactory = new RetryingQueryFactory(queryFactory, 5)
+      val query:RetryingQuery = retryingQueryFactory(connectionFactory, queryString)
+      val response:Seq[Map[String, String]] = query.select(getResults) 
+      
+      return response
+    }
+
+    def executeUpdate(queryString:String):boolean={
+      val queryFactory:SqlQueryFactory = new SqlQueryFactory()
+      val retryingQueryFactory:RetryingQueryFactory = new RetryingQueryFactory(queryFactory, 5)
+      val query:RetryingQuery = retryingQueryFactory(connectionFactory, queryString)
+      try{
+        query.execute()
+        true
+      }
+      catch{
+        case e:SQLException=>{
+          false
+        }
+      }
+     
+    }
+
+    
+    private def getResults(result:ResultSet):Map[String, String]={
+      getColumnValues(result, result.getMetaData().getColumnCount(), 1)
+    }
+    
+
+    private def getColumnValues(result:ResultSet, columnCount:Int, current:Int):Map[String, String]={
+      if(current>columnCount){
+        return Map()
+      }
+      else{
+        return Map(result.getMetaData().getColumnName(current)->
+                   (if(result.getString(current)==null) "null" 
+                    else result.getString(current)))++getColumnValues(result, columnCount, current+1)
+      }
+    }
+  }
+}

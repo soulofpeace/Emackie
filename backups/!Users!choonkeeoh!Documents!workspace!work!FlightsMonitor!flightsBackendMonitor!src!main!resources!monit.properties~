@@ -1,0 +1,4 @@
+searchUrl=http://202.157.132.5:8080/api/ajax/flight/start.html
+pullUrl=http://202.157.132.5:8080/api/ajax/flight/pull.html
+contactList=97700630, 82883193
+contactType=Singtel, M1

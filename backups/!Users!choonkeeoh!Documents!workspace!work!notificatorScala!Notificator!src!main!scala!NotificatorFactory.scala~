@@ -1,0 +1,9 @@
+class NotificatorFactory{
+  
+    
+}
+
+object Provider extends Enumeration{
+  type Provider = Value
+  val Singtel, M1, Starhub = Value
+}

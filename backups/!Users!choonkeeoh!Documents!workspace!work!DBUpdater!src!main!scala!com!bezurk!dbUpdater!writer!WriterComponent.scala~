@@ -1,0 +1,8 @@
+package com.bezurk.dbUpdater.writer
+
+trait WriterComponent{
+  val writerFactory:WriterFactory
+  trait WriterFactory{
+    def getWriter():Writer
+  }
+}

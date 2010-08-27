@@ -1,0 +1,38 @@
+* Flights API Todo List
+** TODO Login API Call reset usageData 
+
+
+* Ideas
++ Configuration is duplicated. Have a means to propagate configuration
++ abstract out the main flight class API so that the flight API would
+  not have to reimplement the main flight class function.
++ if include flights api inside. all the flights partners would have
+  to reference it?
+
+* Codes Notes
+** FlightStartSearchController
+to start the search process
+[[file:~/Documents/workspace/work/flights_api/src/main/java/com/bezurk/webapp/action/FlightStartSearchController.java::just%20in%20case%20should%20never%20happen%20as%20the%20original][Source]]
+1. Log APIUsage
+2. find all providers that has already started search on the search
+   request
+3. find all providers that support the search request but have not
+   started search yet
+4. get locations
+5. publish jsm request
+
+** MySQLResultsPullingController 
+pull request[[file:~/Documents/workspace/work/flights_api/src/main/java/com/bezurk/webapp/action/MySQLResultsPullingController.java][
+Source]]
+Internal Cache that is cleared every 180seconds to keep track of the
+number of results returned for each request. bind to the rand and the
+api key
+
+
+**  MySQLBookingController
+for booking
+[[file:~/Documents/workspace/work/flights_api/src/main/java/com/bezurk/webapp/action/MySQLBookingController.java][source]]
+1. logged to farmer
+2. check for bookingid
+3. check for instanceid
+

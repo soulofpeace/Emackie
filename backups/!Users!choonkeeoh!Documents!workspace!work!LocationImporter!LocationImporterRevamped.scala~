@@ -1,0 +1,385 @@
+import scala.io.Source
+import scala.collection.mutable.Set
+
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.io._;
+
+import com.mysql.jdbc.Connection;
+
+
+class LocationRecord(val locationCode:String, val multicityCode:String, val locationType:String , val name:String, val countryCode:String, val countryName:String, val stateCode:String, val latitude:String, val longitude:String, val active:String){
+  
+  override def equals(other:Any):Boolean=
+    other match{
+      case that: LocationRecord =>
+        (that canEqual this) &&
+      locationCode == that.locationCode &&
+      multicityCode == that.multicityCode &&
+      locationType == that.locationType &&
+      name == that.name &&
+      countryCode == that.countryCode &&
+      //countryName == that.countryName &&
+      stateCode == that.stateCode &&
+      latitude == that.latitude &&
+      longitude == that.longitude &&
+      active == that.active
+      
+      case _=> false
+    }
+
+  def canEqual(other: Any):Boolean =
+    other.isInstanceOf[LocationRecord]
+  
+  override def hashCode: Int =
+    41*(41*(41*(41*(41*(41*(41*(41*(41*(41+locationCode.hashCode)+multicityCode.hashCode)+locationType.hashCode)+name.hashCode)+countryCode.hashCode)+countryName.hashCode)+ stateCode.hashCode)+latitude.hashCode)+longitude.hashCode)+active.hashCode
+
+  override def toString =
+    locationCode+"\t"+multicityCode+"\t"+locationType+"\t"+name+"\t"+countryCode+"\t"+countryName+"\t"+stateCode+"\t"+latitude+"\t"+longitude+"\t"+active
+  
+  def printChangedField(other: LocationRecord){
+    println("**"+locationCode+"\t"
+            +(if(multicityCode!=other.multicityCode) "*"+multicityCode else multicityCode)+"\t"
+            +locationType+"\t"
+            +(if(name!=other.name)"*"+ name else name) +"\t"
+            +(if(countryCode!=other.countryCode) "*"+countryCode else countryCode)+"\t"
+	    +(if(countryName!=other.countryName) "*"+ countryName else countryName)+"\t" 
+	    +(if(stateCode!=other.stateCode) "*"+ stateCode else stateCode)+"\t"
+	    +(if(latitude!=other.latitude) "*"+ latitude else latitude)+"\t"
+	    +(if(longitude!=other.longitude) "*"+longitude else longitude)+"\t"
+	    +(if(active!=other.active) "*"+active else active)+">"+
+            other
+	   )
+  }
+    
+}
+
+object LocationImporter{
+  Class.forName("com.mysql.jdbc.Driver")
+  private val connection = DriverManager.getConnection("jdbc:mysql://sephiroth.wego.com:40019/aviatrix_edge?user=bezurk&password=B3zurk0").asInstanceOf[Connection]
+
+ 
+  def importFromFile(inputFileName: String){
+    val inputFile = Source.fromFile(inputFileName)
+    val lines = inputFile.getLines.toList.tail
+    // val tokens = lines.map(arg=>arg.trim.split(",").map(arg2=>arg2.substring(1, arg2.length-1)).toList)
+    val tokens = lines.map(arg=>strippedIntoToken(arg))
+    //tokens.foreach(println)
+    val records = tokens.map(arg=>getLocationRecord(arg)).foldLeft(List[LocationRecord]())(_:::_)
+    println(records.length)
+    //records.foreach(println)
+    val unmatchedOagLocation = records.filter(arg=>(!generateSQLStatement(arg)))
+    unmatchedOagLocation.foreach(arg=>println("?"+arg))
+    
+        
+  }
+
+
+  private def strippedIntoToken(line:String):List[String]={
+     val regex="\"(.*?)\"".r
+    val tokens = regex.findAllIn(line).matchData.toList.map(arg=>arg.group(1))
+    return tokens
+  }
+
+					  
+  
+
+  private def getLocationRecord(row:List[String]):List[LocationRecord]={
+    val locationCode = row(0)
+    val multicityCode = if(row(1).length==0) null else row(1)
+    val name = if(row(4).length==0) null else row(4).replace("'", "\\'")
+    val countryCode = if(row(5).length==0) null else row(5)
+    val countryName = if(row(7).length==0) null else row(7).replace("'", "\\'")
+    val latitude = if(row(11).length==0) null else row(11)
+    val longitude = if(row(12).length==0) null else row(12)
+    val stateCodeReg = "([^\\d]+)".r;
+    val stateCode = row(8) match{
+      case stateCodeReg(value)=>{
+        if(countryCode=="AU"){
+          value match{
+            case "VI" => "VIC"
+            case "NS" => "NSW"
+            case "QL" => "QLD"
+            case "TS" => "TAS"
+            case "AC" => "ACT"
+            case  _ => value
+          }
+          
+        }
+        else{
+          value
+        }
+      }
+      case _=>{
+	null
+      }
+    }
+    val active = if(row(13)=="I") "0" else "1"
+    if(row(3)=="A" || row(3)=="")
+      if(row(2)=="L")
+	new LocationRecord(locationCode, locationCode, "Airport", name, countryCode, countryName, stateCode, latitude, longitude, active)::
+	new LocationRecord(locationCode, multicityCode, "City", name, countryCode, countryName, stateCode, latitude, longitude, active)::
+	Nil
+      else if(row(2)=="M")
+	new LocationRecord(locationCode, multicityCode, "City", name, countryCode, countryName, stateCode, latitude, longitude, active)::Nil
+	
+      else
+	new LocationRecord(locationCode, multicityCode, "Airport", name, countryCode, countryName, stateCode, latitude, longitude, active)::Nil
+    else
+      Nil
+  }
+	
+
+  private def getAllDBRecords():List[LocationRecord]={
+    val statement:Statement = connection.createStatement()
+    val queryStatement:String ="select locations.code, locations.city_id, locations.type, locations.name, countries.code, countries.name, locations.state_id, locations.latitude, locations.longitude, locations.active, locations.id, countries.id  from locations, countries where locations.country_id=countries.id"
+    val result:ResultSet = statement.executeQuery(queryStatement)
+    
+    return getLocationRecordFromResult(result)
+  }
+
+  private def getLocationRecordFromResult(result:ResultSet):List[LocationRecord]={
+    if(!result.next()){
+      return Nil
+    }
+    else{
+      return convertDBToLocationRecord(result) :: getLocationRecordFromResult(result)
+    }
+      
+  }
+ 
+
+  private def convertDBToLocationRecord(result:ResultSet)={
+      val locationCode = result.getString(1)
+      val city_id = if (result.getString(2)==null) null else result.getString(2)
+      val typeCode = if (result.getString(3)==null) null else result.getString(3)
+      val name = if(result.getString(4)==null) null else (result.getString(4)).replace("'", "\\'")
+      val countryCode = if (result.getString(5)==null) null else result.getString(5)
+      val countryName= if (result.getString(6)==null) null else (result.getString(6)).replace("'", "\\'")
+      val stateId = if(result.getString(7)==null) null else result.getString(7)
+      val latitude = if (result.getString(8)==null) null else result.getString(8)
+      val longitude = if(result.getString(9)==null) null else result.getString(9)
+      val active = if(result.getString(10)==null) null else result.getString(10)
+      
+      
+      val multiCityCode = if(city_id != null){
+	val statement2:Statement = connection.createStatement()
+	val resultSet2: ResultSet = statement2.executeQuery("select code from locations where id='"+city_id+"'")
+	if(resultSet2.next()){
+	  resultSet2.getString(1).toUpperCase
+	}
+	else{
+	  null
+	}
+      }else{
+	  null
+      }
+
+      val stateCode=if(stateId != null){
+	val statement3:Statement = connection.createStatement()
+	val resultSet3: ResultSet = statement3.executeQuery("select code from states where id='"+stateId+"'")
+	if(resultSet3.next()){
+	  resultSet3.getString(1).toUpperCase
+	}
+	else{
+	  null
+	}
+
+      }
+      else{
+	  null
+      }
+   new LocationRecord (locationCode, multiCityCode, typeCode, name, countryCode, countryName, stateCode, latitude, longitude, active)
+    
+  }
+
+  private def generateSQLStatement(locationRecord: LocationRecord):Boolean={
+    val locationCode:String =locationRecord.locationCode
+    val locationType:String = locationRecord.locationType
+    val statement:Statement = connection.createStatement()
+    val queryStatement:String = "select locations.code, locations.city_id, locations.type, locations.name, countries.code, countries.name, locations.state_id, locations.latitude, locations.longitude, locations.active, locations.id from locations, countries where locations.code ='"+locationCode+"' and locations.country_id=countries.id  and locations.type='"+locationType+"'"
+   // println(queryStatement)
+    val result:ResultSet = statement.executeQuery(queryStatement)
+    
+    val found = generateSQLStatementForDBRecord(result, locationRecord)
+      
+    if(!found){
+      println("Cannot Find DB Record")
+      return  generateInsertStatementForNewRecord(locationRecord)
+    }
+    else{
+      return found
+    }
+    
+  }
+
+  private def generateSQLStatementForDBRecord(result: ResultSet, locationRecord: LocationRecord):Boolean={
+    if(!result.next()){
+      return false
+    }
+    else{
+      val dbRecord= convertDBToLocationRecord(result)
+      if (dbRecord != locationRecord){
+        println("Not Equal")
+        dbRecord.printChangedField(locationRecord)
+        val locationId = result.getString(11)
+        return generateUpdateStatementForChangedRecord(locationRecord, locationId) ||  generateSQLStatementForDBRecord(result, locationRecord)
+      }
+      else{
+        println("Equal")
+        val locationId = result.getString(11)
+        return generateSQLStatementForUnchangedRecord(locationRecord, locationId) || generateSQLStatementForDBRecord(result, locationRecord)
+      }  
+    }
+  }
+  
+
+  private def getLocationId(code: String, locationType:String):String={
+    val statement = connection.createStatement()
+    val result = statement.executeQuery("select id from locations where code='"+code+"' and type='"+locationType+"'")
+    if(result.next()){
+      return result.getString(1)
+    }
+    else{
+      return null
+    }
+  }
+
+  private def getStateId(code: String):String={
+    val statement = connection.createStatement()
+    val result = statement.executeQuery("select id from states where code ='"+code+"'")
+    if(result.next()){
+      return result.getString(1)
+    }
+    else{
+      return null
+    }
+  }
+
+  private def getCountryId(code: String):String={
+    val statement = connection.createStatement()
+    val result = statement.executeQuery("select id from countries where code ='"+code+"'")
+    if(result.next()){
+      return result.getString(1)
+    }
+    else{
+      return null
+    }
+  }
+
+  private def checkPrerequisite(locationRecord:LocationRecord)=
+    (if(locationRecord.multicityCode!=null){ 
+        if(getLocationId(locationRecord.multicityCode, "City")==null){
+          println("Cannot find mulitcity: "+locationRecord.multicityCode+">> "+locationRecord)
+          false 
+        }
+        else 
+          true
+    }
+    else{
+      true
+    }) &&(if(locationRecord.countryCode!=null){
+      if(getCountryId(locationRecord.countryCode)==null){
+        println("Cannot find Country: "+  locationRecord.countryCode+">> "+locationRecord)
+        false
+      }
+      else
+        true
+    }
+    else
+      true
+   )&&(if(locationRecord.stateCode!=null){
+      if(getStateId(locationRecord.stateCode)==null){
+        println("Cannot find state: "+ locationRecord.stateCode+">> "+locationRecord)
+        false
+      }
+      else
+        true
+    }
+    else
+      true
+   )
+  
+ 
+  private def generateSetCode(key:String, value:String)={
+    key+"="+generateValue(value)
+  }
+  
+  private def isNullOrMethod(value:String):Boolean={
+    val methodRegex = "(\\w+\\(.*?\\))".r
+    value match{
+      case null=> true
+      case methodRegex(matchValue)=> true
+      case _=> false
+    }
+  }
+  private def generateValue(value:String)=(if(!isNullOrMethod(value)) "'"+value+"'" else value)
+          
+      
+
+  private def generateUpdateStatementForChangedRecord(locationRecord:LocationRecord, locationId:String):Boolean={
+    if (checkPrerequisite(locationRecord)){
+      val cityId = getLocationId(locationRecord.multicityCode, "City")
+      val countryId = getCountryId(locationRecord.countryCode)
+      val stateId = getStateId(locationRecord.stateCode)
+      val sqlUpdateStatement = "update locations set "+
+      generateSetCode("locations.code", locationRecord.locationCode)  +", "+
+      generateSetCode("locations.city_id", cityId)                    +", "+
+      generateSetCode("locations.name", locationRecord.name)          +", "+
+      generateSetCode("locations.type", locationRecord.locationType) +", "+
+      generateSetCode("locations.latitude", locationRecord.latitude)  +", "+
+      generateSetCode("locations.longitude", locationRecord.longitude)+", "+
+      generateSetCode("locations.country_id", countryId)              +", "+
+      generateSetCode("locations.state_id", stateId)                  +", "+
+      generateSetCode("locations.active", locationRecord.active)      +", "+
+      generateSetCode("locations.updated_at", "now()")+
+      " where "+generateSetCode("locations.id", locationId)+" ;"
+      println(sqlUpdateStatement)
+      return true
+    }
+    else{
+      return false
+    } 
+  }
+  
+
+  private def generateSQLStatementForUnchangedRecord(locationRecord:LocationRecord, locationId:String):Boolean={
+    println("update locations set updated_at=now() where id="+locationId)
+    true
+  }
+
+ private def generateInsertStatementForNewRecord(locationRecord:LocationRecord):Boolean={
+   if(checkPrerequisite(locationRecord)){
+     val cityId = getLocationId(locationRecord.multicityCode, "City")
+     val countryId = getCountryId(locationRecord.countryCode)
+     val stateId = getStateId(locationRecord.stateCode)
+     val sqlInsertStatement ="insert into locations (code, city_id, type, name, country_id, state_id, latitude, longitude, active, created_at, updated_at) values("+
+     generateValue(locationRecord.locationCode)+", "+
+     generateValue(cityId)+", "+
+     generateValue(locationRecord.locationType)+", "+
+     generateValue(locationRecord.name)+", "+
+     generateValue(countryId)+", "+
+     generateValue(stateId)+", "+
+     generateValue(locationRecord.latitude)+","+
+     generateValue(locationRecord.longitude)+", "+
+     generateValue(locationRecord.active)+", "+
+     "now(), now() );"
+     println(sqlInsertStatement)
+     return true;
+   }
+   else{
+     return false;
+   }
+ }
+
+  def main(args: Array[String]){
+    //parseInputFile(args(0))
+    importFromFile(args(0))
+    
+    
+  }
+  
+
+}     
+

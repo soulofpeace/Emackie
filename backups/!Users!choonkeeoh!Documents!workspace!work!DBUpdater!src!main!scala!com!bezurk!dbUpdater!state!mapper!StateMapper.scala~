@@ -1,0 +1,49 @@
+package com.bezurk.dbUpdater.state.mapper
+
+import scala.actors.Futures._
+import scala.actors.Future
+
+import com.bezurk.log._
+
+import com.bezurk.dbUpdater.mapper._
+import com.bezurk.dbUpdater.output._
+import com.bezurk.dbUpdater.data._
+import com.bezurk.dbUpdater.input._
+import com.bezurk.dbUpdater.db._
+
+import com.bezurk.dbUpdater.state.data._
+
+trait StateMapperComponent extends MapperComponent {
+  this:InputFactoryComponent with DBcomponent =>
+    val mapper = new StateMapper()
+  class StateMapper extends Mapper with LogHelper{
+    
+    def map(source:String):Seq[Result]={
+      val input:Seq[Data]=inputFactory.getInputSeq(source)
+      return generateResult(input)
+    }
+    
+    def run(statements:Seq[String]):Seq[(String, Boolean)]={
+      val waiting:Seq[(String, Future[Boolean])]  = for(statement<-statements) yield (statement, future(db.executeUpdate(statement)))       
+      val result = for(wait <- waiting) yield (wait._1, wait._2())
+      result
+      
+    }
+
+     private def generateResult(input:Seq[Data]):Seq[Result]={
+      val results:Seq[Future[Seq[Result]]] = for(data<-input) yield future(generateResult(data))
+      val output = for(arg<-results; result<-arg()) yield result
+      output
+      /**
+       result.foldLeft(future(Seq[Result]()))(
+       (arg1, arg2)=>{ 
+       val seq1 = arg1()
+       val seq2 = arg2()
+       seq1++seq2
+       })
+       * */
+    }
+
+    private def generateResult(data:Data):Seq[Result]={
+    }
+}

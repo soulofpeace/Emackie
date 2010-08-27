@@ -1,0 +1,120 @@
+package com.bezurk.provider.flight.chinatraveldepot;
+
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.model.Country;
+import com.bezurk.search.model.OagLocation;
+import com.mysql.jdbc.Connection;
+
+public class TestChinaTravelDepotSearchProvider extends TestCase {
+	private static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("dd/MM/yyyy");
+	private List<String> airportCodes = new ArrayList<String>();
+	ChinaTravelDepotSearchProvider provider = new ChinaTravelDepotSearchProvider();
+
+	
+	public void setUp() throws ClassNotFoundException, SQLException{
+		Class.forName("com.mysql.jdbc.Driver");
+		System.out.println("Driver loaded");
+
+		// establish a connection
+		Connection connection = (Connection) DriverManager.getConnection("jdbc:mysql://sephiroth.wego.com:40019/aviatrix_edge?user=bezurk&password=B3zurk0");
+		
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select distinct locations.code from locations, countries where countries.id = locations.country_id and countries.code='CN' and locations.type='Airport'");
+		while(resultSet.next()){
+			airportCodes.add(resultSet.getString(1));
+		}
+		statement.close();
+		connection.close();
+
+	}
+	
+	public void tes2tSearch() throws Exception {
+		for(String origin: airportCodes){
+			for(String destination: airportCodes){
+				if(!destination.equals(origin)){
+					System.out.println("Testing from "+origin+" to "+destination);
+					OagLocation fromLocation = new OagLocation();
+					Country fromCountry = new Country();
+					fromCountry.setCode("CN");
+					fromLocation.setCountry(fromCountry);
+					fromLocation.setCode(origin);
+					
+					OagLocation toLocation = new OagLocation();
+					Country toCountry = new Country();
+					toCountry.setCode("CN");
+					toLocation.setCountry(toCountry);
+					toLocation.setCode(destination);
+					
+					FlightSearchRequest request = new FlightSearchRequest();
+
+					// From
+					request.setFromLocation(fromLocation);
+
+					// To
+					request.setToLocation(toLocation);
+
+					request.setOutboundDate(FORMAT_DATE.parse("01/04/2010"));
+					request.setInboundDate(FORMAT_DATE.parse("20/10/2010"));
+					request.setNumAdults(1);
+					request.setNumChildren(0);
+					for(int i=0; i<2;i++){
+						request.setRoundTrip(i==0?true:false);
+						for(CABIN_CLASS cabinClass :CABIN_CLASS.values()){
+							request.setCabinClass(cabinClass);
+							provider.performSearch(request);
+						}
+					}
+				}
+			}
+		}
+		
+		
+
+	}
+	
+	
+	public void testCustomSearch() throws Exception{
+		OagLocation fromLocation = new OagLocation();
+		Country fromCountry = new Country();
+		fromCountry.setCode("CN");
+		fromLocation.setCountry(fromCountry);
+		fromLocation.setCode("NAY");
+		
+		OagLocation toLocation = new OagLocation();
+		Country toCountry = new Country();
+		toCountry.setCode("CN");
+		toLocation.setCountry(toCountry);
+		toLocation.setCode("SHA");
+		
+		FlightSearchRequest request = new FlightSearchRequest();
+
+		// From
+		request.setFromLocation(fromLocation);
+
+		// To
+		request.setToLocation(toLocation);
+
+		request.setOutboundDate(FORMAT_DATE.parse("17/04/2010"));
+		request.setInboundDate(FORMAT_DATE.parse("23/04/2010"));
+		request.setNumAdults(1);
+		request.setNumChildren(0);
+		request.setRoundTrip(false);
+		request.setCabinClass(CABIN_CLASS.Economy);
+		provider.performSearch(request);
+
+	}
+
+
+}

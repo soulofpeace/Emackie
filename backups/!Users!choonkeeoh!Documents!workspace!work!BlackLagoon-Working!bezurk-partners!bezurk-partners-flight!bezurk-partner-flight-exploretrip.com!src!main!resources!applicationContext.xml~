@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jndi="http://www.springframework.org/schema/jndi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jndi http://www.springframework.org/schema/jndi/spring-jndi.xsd">
+
+	<!-- Common flight provider config import -->
+	<import resource="classpath:com/bezurk/config/flight/provider.xml" />
+
+	<!-- Only front controller is embedded -->
+	<import resource="classpath:com/bezurk/config/flight/jms-frontcontroller.xml" />
+
+	<bean id="service" class="com.bezurk.provider.flight.chinatraveldepot.ChinaTravelDepotSearchProvider"
+		autowire="byName" scope="prototype">
+		<property name="providerId" value="${partner.module.name}" />
+		<!--  
+		<property name="ruleParsers">
+         <list>
+              <ref bean="testCodeRule" />
+          </list>
+        </property>
+        -->
+        <property name ="ruleParsers">
+        	<list>
+        		<ref bean="daysInAdvanceRule"/>
+        	</list>
+        </property>
+	</bean>
+	
+	<bean id="daysInAdvanceRule" class="com.bezurk.provider.flight.chinatraveldepot.rule.DaysInAdvanceRule">
+		<property name="daysInAdvance" value="3" />
+	</bean >
+	
+	<!--  
+	<bean id="testCodeRule" class="com.bezurk.provider.rule.TestCodeRule">
+		<property name="testCode" value="chinatraveldepot" />
+	</bean>
+	-->
+</beans>

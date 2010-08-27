@@ -1,0 +1,138 @@
+import csv
+import redis
+import sys
+
+r_server=redis.Redis("localhost")
+
+def convertLatitudeToDecimal(latitudeRaw):
+    if latitudeRaw[len(latitudeRaw)-1]=="N":
+        return convertCoordinateToDecimal(latitudeRaw)
+    else:
+        return -1*convertCoordinateToDecimal(latitudeRaw)
+
+def convertLongitudeToDecimal(longitudeRaw):
+    if longitudeRaw[len(longitudeRaw)-1]=="E":
+        return convertCoordinateToDecimal(longitudeRaw)
+    else:
+        return -1*convertCoordinateToDecimal(longitudeRaw)
+
+
+def convertCoordinateToDecimal(coordinateRaw):
+    coordinateRaw=coordinateRaw[0:len(coordinateRaw)-1]
+    coordinateToken = coordinateRaw.split(".")
+    wholeDegree = int(coordinateToken[0].strip())
+    fractionalDegree = (int(coordinateToken[1].strip())*60+int(coordinateToken[2].strip()))/3600.0
+    decimalCoordinate = wholeDegree + fractionalDegree
+    return decimalCoordinate
+
+
+def locationToRedis(csvReader):
+    for row in csvReader:
+        locationId = row[0]
+        locationType = row[1]
+        locationName = row[2]
+        locationCode = row[3]
+        locationPermalink = row[4]
+        locationActive = row[5]
+        locationPriority = row[6]
+        locationLatitudeRaw = row[7]
+        if(locationLatitudeRaw!="NULL"):
+            locationLatitude = convertLatitudeToDecimal(locationLatitudeRaw)
+        else:
+            locationLatitude = None
+        locationLongitudeRaw = row[8]
+        if(locationLongitudeRaw!="NULL"):    
+            locationLongitude = convertLongitudeToDecimal(locationLongitudeRaw)
+        else:
+            locationLongitude = None
+        locationCityId=row[9]
+        locationStateId = row[10]
+        locationCountryId = row[11]
+        locationICAOCode = row[12]
+        locationCreatedAt = row[13]
+        locationUpdatedAt = row[14]
+        r_server.set("location:"+locationType.lower()+":"+locationCode+":id", locationId)
+        r_server.set("location:"+locationId+":type", locationType)
+        r_server.sadd("locationType:"+locationType, locationId)
+        r_server.set("location:"+locationId+":code", locationCode)
+        r_server.set("location:"+locationId+":name", locationName)
+        r_server.set("location:"+locationId+":permalink", locationPermalink)
+        r_server.set("location:"+locationId+":active", locationActive)
+        r_server.set("location:"+locationId+":priority", locationPriority)
+        if(locationLatitude):
+            r_server.set("location:"+locationId+":latitude", str(locationLatitude))
+        if(locationLongitude):
+            r_server.set("location:"+locationId+":longitude", str(locationLongitude))
+        r_server.set("location:"+locationId+":cityId", locationCityId)
+        r_server.set("location:"+locationId+":stateId", locationStateId)
+        r_server.sadd("state:"+locationStateId+":locations", locationId)
+        r_server.set("location:"+locationId+":countryId", locationCountryId)
+        r_server.sadd("country:"+locationCountryId+":locations", locationId)
+        r_server.set("location:"+locationId+":icaoCode", locationICAOCode)
+        r_server.set("location:"+locationId+":createdAt", locationCreatedAt)
+        r_server.set("location:"+locationId+":updatedAt", locationUpdatedAt)
+        r_server.sadd("location:members", locationId)
+    __populateLocationParent()
+
+def __populateLocationParent():
+    locationKeys = r_server.keys("location:*:cityId*")
+    for locationKey in locationKeys.split():
+        childLocationId =locationKey.split(":")[1]
+        parentLocationId = r_server.get(locationKey)
+        r_server.sadd("location:"+parentLocationId+":children", childLocationId)
+               
+    
+
+def countryToRedis(csvReader):
+    for row in csvReader:
+        countryId=row[0]
+        countryCode = row[2]
+        countryName = row[1]
+        currencyCode = row[3]
+        permalink = row[4]
+        createdAt=row[5]
+        updatedAt=row[6]
+        r_server.set("country:"+countryCode+":id", countryId)
+        r_server.set("country:"+countryId+":name", countryName)
+        r_server.set("country:"+countryId+":code", countryCode)
+        r_server.set("country:"+countryId+":currencyCode", currencyCode)
+        r_server.set("country:"+countryId+":permalink", permalink)
+        r_server.set("country:"+countryId+":createdAt", createdAt)
+        r_server.set("country:"+countryId+":updatedAt", updatedAt)
+        r_server.sadd("country:members", countryCode)
+
+def stateToRedis(csvReader): 
+    for row in csvReader:
+        name = row[0]
+        code= row[1]
+        permalink=row[2]
+        createdAt=row[3]
+        updatedAt=row[4]
+        countryId = row[5]
+        id = row[6]
+        countryCode = r_server.get("country:"+countryId+":code")
+        print countryCode
+        r_server.set("state:"+countryCode+"_"+code+":id", id)
+        r_server.set("state:"+id+":name", name)
+        r_server.set("state:"+id+":code", code)
+        r_server.set("state:"+id+":permalink", permalink)
+        r_server.set("state:"+id+":createdAt", createdAt)
+        r_server.set("state:"+id+":updatedAt", updatedAt)
+        r_server.set("state:"+id+":countryId", countryId)
+        r_server.sadd("country:"+countryId+":states", code)
+        r_server.sadd("state:members", countryCode+"_"+code)
+
+def csvReader(fileName, redisFun):
+    csvReader = csv.reader(open(fileName, 'rb'), delimiter=',')
+    csvReader.next()
+    redisFun(csvReader)
+    
+
+def main():
+    csvReader(sys.argv[1], redisFun=countryToRedis)
+    csvReader(sys.argv[2], redisFun=stateToRedis)
+    csvReader(sys.argv[3], redisFun=locationToRedis)
+    __populateLocationParent()
+
+if __name__=="__main__":
+    main()

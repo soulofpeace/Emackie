@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jndi="http://www.springframework.org/schema/jndi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jndi http://www.springframework.org/schema/jndi/spring-jndi.xsd">
+
+	<!-- Common flight provider config import -->
+	<import resource="classpath:com/bezurk/config/flight/provider.xml" />
+
+	<!-- Only front controller is embedded -->
+	<import resource="classpath:com/bezurk/config/flight/jms-frontcontroller.xml" />
+
+	<bean id="service" class="com.bezurk.provider.flight.ctrip.CTripSearchProvider"
+		autowire="byName" scope="prototype">
+		<property name="providerId" value="${partner.module.name}" />
+                <property name="cTripWSClient" ref="cTripWSClient"/> 
+	</bean>
+        
+	<bean id="cTripWSClient" class="com.bezurk.provider.flight.ctrip.cTripWSClient">
+		<property name="site" value="http://202.157.130.10/p/flights/ctrip/"/>
+		<property name="account" value="wego"/>
+		<property name="password" value="wego"/>
+	</bean>	
+        
+	
+</beans>

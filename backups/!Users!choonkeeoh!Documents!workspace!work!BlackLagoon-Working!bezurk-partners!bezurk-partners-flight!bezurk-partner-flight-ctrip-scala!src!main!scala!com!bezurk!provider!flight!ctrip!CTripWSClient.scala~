@@ -1,0 +1,109 @@
+package com.bezurk.provider.flight.ctrip
+
+import scala.xml._
+import scala.xml.parsing.ConstructingParser 
+import scala.io.Source
+
+import java.text.SimpleDateFormat;
+
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+
+import com.bezurk.provider.flight.ctrip.log.LogHelper;
+
+class CTripWSClient extends LogHelper{
+
+  @scala.reflect.BeanProperty
+  private var site:String =_;
+
+  @scala.reflect.BeanProperty
+  private var account:String=_;
+
+  @scala.reflect.BeanProperty
+  private var password:String=_;
+
+  private val ptr = new scala.xml.PrettyPrinter(scala.Math.MAX_INT, 2)
+
+
+
+  def search(client:HttpClient, request:FlightSearchRequest)={
+    val msg = new Document()
+    msg.docElem = <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">{createHeader()}{createBody(request)}</soapenv:Envelope>
+    sendXML(client, msg)
+  }
+
+  def createHeader():Elem={
+    return <soapenv:Header/>
+  }
+
+  def createBody(request:FlightSearchRequest):Elem={
+    return <soapenv:Body><tem:Search><tem:requestXml>{createRequestXml(request)}</tem:requestXml></tem:Search></soapenv:Body>
+  }
+
+  def createRequestXml(request:FlightSearchRequest)={
+    val dateFormat:SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd")
+    def constructRoundTrip()={
+      <Route>
+      <DepartCityCode>{request.getToLocation().getCode()}</DepartCityCode>
+      <ArriveCityCode>{request.getFromLocation().getCode()}</ArriveCityCode>
+      <DepartDate>{dateFormat.format(request.getInboundDate())}</DepartDate>
+      <ClassRange>{if(request.getCabinClass.equals(CABIN_CLASS.Economy)) "Y" else if(request.getCabinClass.equals(CABIN_CLASS.Business)) "C" else "F"}</ClassRange>
+      </Route>
+
+    }
+
+    
+    val xmlRequest = 
+      <FlightRequest requestType="flightNormal" UserAccount={account} UserPassword={password}>
+    <SendTicketCityID>2</SendTicketCityID>
+    <IsSingleFlightSearchRequest>false</IsSingleFlightSearchRequest>
+    <Routes>
+    <Route>
+    <DepartCityCode>{request.getFromLocation().getCode()}</DepartCityCode>
+    <ArriveCityCode>{request.getToLocation().getCode()}</ArriveCityCode>
+    <DepartDate>{dateFormat.format(request.getOutboundDate())}</DepartDate>
+    <ClassRange>{if(request.getCabinClass.equals(CABIN_CLASS.Economy)) "Y" else if(request.getCabinClass.equals(CABIN_CLASS.Business)) "C" else "F"}</ClassRange>
+    </Route>
+    {if (request.isRoundTrip()) constructRoundTrip() else ""}
+    </Routes>
+    <SingleFlightSearchParamter></SingleFlightSearchParamter>
+    </FlightRequest>
+    logger.debug("xml_request:" +xmlRequest)      
+    ptr.format(xmlRequest)
+    
+    
+  }
+  
+  def sendXML(client:HttpClient, msg:Document):Document={
+    return try{
+      val post:PostMethod = new PostMethod(site)
+      post.setRequestHeader("Content-type", "text/xml; charset=UTF-8");
+      logger.debug("xml request: "+ptr.format(msg.docElem))
+      post.setRequestEntity(new InputStreamRequestEntity(new java.io.ByteArrayInputStream(
+	ptr.format(msg.docElem).getBytes)));
+      client.executeMethod(post)
+      val in = post.getResponseBodyAsStream()
+      val cpa = ConstructingParser.fromSource(Source.fromInputStream(in), false).document()
+      if (null == cpa) { return null} else cpa
+      
+
+    }
+    catch{
+      case e:Exception => {
+        logger.error("HttpException occured while sending XML request: "+e.getMessage());
+        return null
+      }
+    }
+  }
+
+  
+  
+
+  
+
+}

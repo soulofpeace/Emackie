@@ -1,0 +1,28 @@
+defaults:
+  namespace: travel_deals
+  c_threshold: 10000
+  compression: true
+  debug: false
+  readonly: false
+  urlencode: false
+  sessions: false
+  fragments: false
+  benchmarking: true
+  raise_errors: true
+  fast_hash: false
+  fastest_hash: false
+  servers: localhost:11211
+
+development:
+  sessions: false
+  fragments: false
+  servers: localhost:11211
+
+# turn off caching
+test: 
+  disabled: true
+
+production:
+  memory: 64
+  benchmarking: false
+  servers: 202.157.130.37:11211

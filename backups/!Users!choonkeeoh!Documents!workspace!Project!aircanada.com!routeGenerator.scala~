@@ -1,0 +1,4 @@
+import scala.io.Source
+
+var input:List[String]=Source.fromFile(args(0)).getLines.toList
+input.foreach(printline)

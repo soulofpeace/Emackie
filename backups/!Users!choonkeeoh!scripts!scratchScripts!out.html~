@@ -1,0 +1,1292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML>
+	<HEAD>
+		<meta content="JavaScript" name="vs_defaultClientScript">
+		<link href="StyleSheets/en.Mna.StyleSheet.css"  rel="stylesheet" type="text/css">
+		<script language="javascript" src="Scripts/popup.js"></script>
+		<script language="javascript" src="Scripts/start.js"></script>
+		<link rel="stylesheet" href="html/includedefault/pop_style.css">
+		
+		<script language="javascript" src="HTML/Scripts/forCMS.js"></script>
+
+<!--BeginTitle--><title>Welcome to Merpati</title><!--EndTitle-->
+<!--BeginKeywords--><META NAME="KEYWORDS" CONTENT="test123"><!--EndKeywords-->
+<!--BeginDescription--><META NAME="DESCRIPTION" CONTENT="test456"><!--EndDescription-->
+		
+	</HEAD>
+	<body MS_POSITIONING="GridLayout">
+<form name="Form1" method="post" action="" id="Form1" onSubmit="return OnSubmit()" autocomplete="off">
+<input type="hidden" name="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATEKEY" value="5c219ec0-dbd4-4bbe-a4cc-41443f1f826a" />
+<input type="hidden" name="__VIEWSTATE" value="" />
+<script language="javascript" type="text/javascript">
+<!--
+	function __doPostBack(eventTarget, eventArgument) {
+		var theform;
+		if (window.navigator.appName.toLowerCase().indexOf("microsoft") > -1) {
+			theform = document.Form1;
+		}
+		else {
+			theform = document.forms["Form1"];
+		}
+		theform.__EVENTTARGET.value = eventTarget.split("$").join(":");
+		theform.__EVENTARGUMENT.value = eventArgument;
+		theform.submit();
+	}
+// -->
+</script>
+<script>   var DayCssClassCache
+   function SelectFlightCombo(d1,d2,f1,f2,o,oo,x,y){
+		var t = document.getElementById(oo+'_FareshopperCombo')
+       var d1v = document.getElementById(o + '_SelectedDateOutbound')
+       var d2v = document.getElementById(o + '_SelectedDateInbound')
+       var f1v = document.getElementById(o + '_FlightFareOutBound')
+       var f2v = document.getElementById(o + '_FlightFareInBound')
+       d1v.value = d1 
+       d2v.value = d2 
+       f1v.value = f1 
+       f2v.value = f2 
+       t.rows[x].cells[y].childNodes[0].className = 'SelectDayCssClass'
+       DayCssClassCache = 'SelectDayCssClass'
+       t.rows[XctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek].cells[YctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek].childNodes[0].className = YctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek
+       XctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek = x
+       YctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek = y
+       CctrHome_ctrFareShopperWeekBase_ctrFareShopperWeek_ctrTikAeroFareshopperWeek =  t.rows[x].cells[y].childNodes[0].className
+   }
+   function FlightCombo_over(x,y,o){
+		var t = document.getElementById(o+'_FareshopperCombo')
+       t.rows[0].cells[y].className = 'DaysOutboundCssClass_over'
+       t.rows[x].cells[0].className = 'DaysInboundCssClass_over'
+       if(t.rows[x].cells[y].childNodes[0].tagName == 'DIV'){ 
+           DayCssClassCache = t.rows[x].cells[y].childNodes[0].className
+           t.rows[x].cells[y].childNodes[0].className = 'DayCssClass_over'
+       }
+   }
+   function FlightCombo_out(x,y,o){
+		var t = document.getElementById(o+'_FareshopperCombo')
+       t.rows[0].cells[y].className = 'DaysOutboundCssClass'
+       t.rows[x].cells[0].className = 'DaysInboundCssClass'
+       if(t.rows[x].cells[y].childNodes[0].tagName == 'DIV'){ 
+       t.rows[x].cells[y].childNodes[0].className = DayCssClassCache
+       }
+   }</script>
+
+
+	<script language="javascript" type="text/javascript">
+Airports = new Array("KSX|ARD|Alor Island, Mali Airport|0|","KOE|ARD|Alor Island, Mali Airport|0|","TTE|AMQ|Ambon|0|","SXK|AMQ|Ambon|0|","NAM|AMQ|Ambon|0|","MDC|AMQ|Ambon|0|","KSX|AMQ|Ambon|0|","SOQ|AYW|Ayawasi|0|","KOE|BJW|Bajawa, Padhameleda Apt.|0|","UPG|BPN|Balikpapan|0|","TTE|BPN|Balikpapan|0|","TIM|BPN|Balikpapan|0|","JOG|BPN|Balikpapan|0|","DJJ|BPN|Balikpapan|0|","KDI|BPN|Balikpapan|0|","AHI|NDA|Banda, Bandanaera|0|","BMU|BDO|Bandung|0|","AMI|BDO|Bandung|0|","DPS|BDO|Bandung|0|","ENE|BDO|Bandung|0|","BTH|BDO|Bandung|0|","DIL|BDO|Bandung|0|","MOF|BDO|Bandung|0|","MES|BDO|Bandung|0|","KOE|BDO|Bandung|0|","LBJ|BDO|Bandung|0|","UPG|BDO|Bandung|0|","WGP|BDO|Bandung|0|","SUB|BDO|Bandung|0|","TMC|BDO|Bandung|0|","SOQ|BDJ|Banjarmasin|0|","TIM|BDJ|Banjarmasin|0|","SMQ|BDJ|Banjarmasin|0|","TKG|BDJ|Banjarmasin|0|","PLW|BDJ|Banjarmasin|0|","SUB|BDJ|Banjarmasin|0|","UPG|BDJ|Banjarmasin|0|","KOE|BDJ|Banjarmasin|0|","KDI|BDJ|Banjarmasin|0|","MDC|BDJ|Banjarmasin|0|","MKQ|BDJ|Banjarmasin|0|","DPS|BDJ|Banjarmasin|0|","DJJ|BDJ|Banjarmasin|0|","CGK|BDJ|Banjarmasin|0|","DPS|BTH|Batam|0|","BDO|BTH|Batam|0|","SUB|BTH|Batam|0|","UPG|BUW|Baubau, Betoambari Apt.|0|","SUB|BUW|Baubau, Betoambari Apt.|0|","CGK|BUW|Baubau, Betoambari Apt.|0|","JOG|BUW|Baubau, Betoambari Apt.|0|","KDI|BUW|Baubau, Betoambari Apt.|0|","TKG|BIK|Biak|0|","TIM|BIK|Biak|0|","SUB|BIK|Biak|0|","NBX|BIK|Biak|0|","KOE|BIK|Biak|0|","KDI|BIK|Biak|0|","MKW|BIK|Biak|0|","MKQ|BIK|Biak|0|","MDC|BIK|Biak|0|","JOG|BIK|Biak|1|","DPS|BIK|Biak|0|","DJJ|BIK|Biak|0|","BDJ|BIK|Biak|0|","CGK|BIK|Biak|2|","MOF|BMU|Bima|0|","CGK|BMU|Bima|0|","AMI|BMU|Bima|0|","BDO|BMU|Bima|0|","DPS|BMU|Bima|0|","ENE|BMU|Bima|0|","SUB|BMU|Bima|0|","TMC|BMU|Bima|0|","WGP|BMU|Bima|0|","MKW|NTI|Bintuni|0|","WMX|BUI|Bokondini, Bokondini Apt.|0|","MKQ|BXG|Bomikia|0|","PLW|UOL|Buol, Toli-toli Airport|0|","TLI|UOL|Buol, Toli-toli Airport|0|","GTO|UOL|Buol, Toli-toli Airport|0|","DJJ|DRH|Dabra|0|","WMX|DXI|Dekai|0|","MOF|DPS|Denpasar, Bali|0|","LBJ|DPS|Denpasar, Bali|0|","KUL|DPS|Denpasar, Bali|0|","HLP|DPS|Denpasar, Bali|0|","KOE|DPS|Denpasar, Bali|0|","AMI|DPS|Denpasar, Bali|0|","BDJ|DPS|Denpasar, Bali|0|","BIK|DPS|Denpasar, Bali|0|","BDO|DPS|Denpasar, Bali|0|","CGK|DPS|Denpasar, Bali|0|","BMU|DPS|Denpasar, Bali|0|","DIL|DPS|Denpasar, Bali|0|","ENE|DPS|Denpasar, Bali|0|","DJJ|DPS|Denpasar, Bali|0|","UPG|DPS|Denpasar, Bali|0|","WGP|DPS|Denpasar, Bali|0|","TIM|DPS|Denpasar, Bali|0|","TMC|DPS|Denpasar, Bali|0|","SMQ|DPS|Denpasar, Bali|0|","PDG|DPS|Denpasar, Bali|0|","SUB|DPS|Denpasar, Bali|0|","SUB|DIL|Dili, Timor Leste|0|","BDO|DIL|Dili, Timor Leste|0|","CGK|DIL|Dili, Timor Leste|0|","DPS|DIL|Dili, Timor Leste|0|","KOE|DIL|Dili, Timor Leste|0|","LUV|DOB|Dobo, Dobo Apt.|0|","UPG|ENE|Ende|0|","SUB|ENE|Ende|0|","RTG|ENE|Ende|0|","DPS|ENE|Ende|0|","BMU|ENE|Ende|0|","CGK|ENE|Ende|0|","BDO|ENE|Ende|0|","AMI|ENE|Ende|0|","KOE|ENE|Ende|0|","LBJ|ENE|Ende|0|","MKQ|EWE|Ewer|0|","TIM|EWE|Ewer|0|","SOQ|FKQ|Fak Fak, Torea Apt.|0|","KNG|FKQ|Fak Fak, Torea Apt.|0|","NBX|FAW|Fawi|0|","TTE|GLX|Galela, Gamarmalamo Apt.|0|","MDC|GLX|Galela, Gamarmalamo Apt.|0|","TTE|GEB|Gebe|0|","MDC|GTO|Gorontalo|0|","UOL|GTO|Gorontalo|0|","PSJ|GTO|Gorontalo|0|","NBX|ILA|Ilaga, Ilaga Apt|0|","NBX|IUL|Ilu|0|","SOQ|INX|Inanwatan, Inanwatan Apt.|0|","MKQ|CGK|Jakarta,Cengkareng|0|","MDC|CGK|Jakarta,Cengkareng|0|","MOF|CGK|Jakarta,Cengkareng|0|","MJU|CGK|Jakarta,Cengkareng|0|","MKW|CGK|Jakarta,Cengkareng|0|","KDI|CGK|Jakarta,Cengkareng|0|","KOE|CGK|Jakarta,Cengkareng|0|","LBJ|CGK|Jakarta,Cengkareng|0|","LUW|CGK|Jakarta,Cengkareng|0|","ENE|CGK|Jakarta,Cengkareng|0|","DIL|CGK|Jakarta,Cengkareng|0|","DPS|CGK|Jakarta,Cengkareng|0|","DJJ|CGK|Jakarta,Cengkareng|0|","BMU|CGK|Jakarta,Cengkareng|0|","BIK|CGK|Jakarta,Cengkareng|0|","AMI|CGK|Jakarta,Cengkareng|0|","BDJ|CGK|Jakarta,Cengkareng|0|","SUB|CGK|Jakarta,Cengkareng|0|","PDG|CGK|Jakarta,Cengkareng|0|","TIM|CGK|Jakarta,Cengkareng|0|","SOQ|CGK|Jakarta,Cengkareng|0|","TMC|CGK|Jakarta,Cengkareng|0|","TKG|CGK|Jakarta,Cengkareng|0|","SMQ|CGK|Jakarta,Cengkareng|0|","UPG|CGK|Jakarta,Cengkareng|0|","TTE|CGK|Jakarta,Cengkareng|0|","WGP|CGK|Jakarta,Cengkareng|0|","SUB|HLP|Jakarta,Halim|0|","DPS|HLP|Jakarta,Halim|0|","KOE|DJJ|Jayapura|0|","KDI|DJJ|Jayapura|0|","LII|DJJ|Jayapura|0|","MKW|DJJ|Jayapura|0|","MDC|DJJ|Jayapura|0|","MKQ|DJJ|Jayapura|0|","JOG|DJJ|Jayapura|0|","CGK|DJJ|Jayapura|0|","BIK|DJJ|Jayapura|0|","BDJ|DJJ|Jayapura|0|","AMI|DJJ|Jayapura|0|","SUB|DJJ|Jayapura|1|","PDG|DJJ|Jayapura|0|","OKL|DJJ|Jayapura|0|","TKG|DJJ|Jayapura|0|","TMH|DJJ|Jayapura|0|","SOQ|DJJ|Jayapura|0|","TIM|DJJ|Jayapura|0|","WMX|DJJ|Jayapura|0|","ZRM|DJJ|Jayapura|0|","UPG|DJJ|Jayapura|0|","SOQ|KBX|Kambuaya|0|","MKQ|KMR|Kamur,Papua ID|0|","WMX|KBF|Karubaga|0|","MDC|KAZ|Kau|0|","TTE|KAZ|Kau|0|","MKW|KEQ|Kebar, Kebar Apt.|0|","MKQ|KDI|Kendari|0|","MDC|KDI|Kendari|0|","MJU|KDI|Kendari|0|","BPN|KDI|Kendari|0|","CGK|KDI|Kendari|0|","BIK|KDI|Kendari|0|","DJJ|KDI|Kendari|0|","JOG|KDI|Kendari|0|","SOQ|KDI|Kendari|0|","TIM|KDI|Kendari|0|","SUB|KDI|Kendari|0|","PLW|KDI|Kendari|0|","TTE|KDI|Kendari|0|","UPG|KDI|Kendari|0|","MKQ|KEI|Kepi, Kepi Apt.|0|","MKQ|KMM|Kimam|0|","SXK|KSX|Kisar|0|","KOE|KSX|Kisar|0|","AMI|KUL|Kuala Lumpur, Malaysia|0|","DPS|KUL|Kuala Lumpur, Malaysia|0|","SUB|KUL|Kuala Lumpur, Malaysia|0|","MDC|KOE|Kupang|0|","MKW|KOE|Kupang|0|","MOF|KOE|Kupang|0|","KDI|KOE|Kupang|0|","KSX|KOE|Kupang|0|","ENE|KOE|Kupang|0|","DJJ|KOE|Kupang|0|","DPS|KOE|Kupang|0|","BDO|KOE|Kupang|0|","AMI|KOE|Kupang|0|","CGK|KOE|Kupang|0|","BPN|KOE|Kupang|0|","UPG|KOE|Kupang|0|","TTE|KOE|Kupang|0|","WGP|KOE|Kupang|0|","RTG|KOE|Kupang|0|","SAU|KOE|Kupang|0|","SUB|KOE|Kupang|0|","TIM|KOE|Kupang|0|","SOQ|KOE|Kupang|0|","TMC|KOE|Kupang|0|","SUB|LBJ|Labuan Bajo|0|","DPS|LBJ|Labuan Bajo|0|","ENE|LBJ|Labuan Bajo|0|","AMI|LBJ|Labuan Bajo|0|","BDO|LBJ|Labuan Bajo|0|","CGK|LBJ|Labuan Bajo|0|","SQN|LAH|Labuha, Usman Sadik Apt.|0|","TTE|LAH|Labuha, Usman Sadik Apt.|0|","PDG|TKG|Lampung|0|","SMQ|TKG|Lampung|0|","CGK|TKG|Lampung|0|","LKA|LUV|Langgur, Dumatubin Apt.|0|","SXK|LKA|Larantuka, Gewantayana Apt.|0|","KOE|LKA|Larantuka, Gewantayana Apt.|0|","LUV|LKA|Larantuka, Gewantayana Apt.|0|","KOE|LWE|Lewoleba|0|","GTO|LUW|Luwuk|0|","MDC|LUW|Luwuk|0|","JOG|LUW|Luwuk|0|","CGK|LUW|Luwuk|0|","PLW|LUW|Luwuk|0|","SUB|LUW|Luwuk|0|","UPG|LUW|Luwuk|0|","LUW|UPG|Makassar|0|","KDI|UPG|Makassar|0|","KOE|UPG|Makassar|0|","MKW|UPG|Makassar|0|","MOF|UPG|Makassar|0|","MJU|UPG|Makassar|0|","MDC|UPG|Makassar|0|","MKQ|UPG|Makassar|0|","CGK|UPG|Makassar|0|","BPN|UPG|Makassar|0|","BDO|UPG|Makassar|0|","BIK|UPG|Makassar|0|","AMI|UPG|Makassar|0|","BDJ|UPG|Makassar|0|","ENE|UPG|Makassar|0|","JOG|UPG|Makassar|0|","DJJ|UPG|Makassar|0|","DPS|UPG|Makassar|0|","TMC|UPG|Makassar|0|","SOQ|UPG|Makassar|0|","TIM|UPG|Makassar|0|","PLW|UPG|Makassar|0|","PDG|UPG|Makassar|0|","SUB|UPG|Makassar|0|","TTE|UPG|Makassar|0|","SUB|MJU|Mamuju|0|","UPG|MJU|Mamuju|0|","CGK|MJU|Mamuju|0|","JOG|MJU|Mamuju|0|","KDI|MJU|Mamuju|0|","TTE|MDC|Manado|0|","UPG|MDC|Manado|0|","SUB|MDC|Manado|0|","PLW|MDC|Manado|0|","SOQ|MDC|Manado|0|","TIM|MDC|Manado|0|","KOE|MDC|Manado|0|","KDI|MDC|Manado|0|","GTO|MDC|Manado|0|","MKQ|MDC|Manado|0|","MNA|MDC|Manado|0|","NAH|MDC|Manado|0|","CGK|MDC|Manado|0|","BIK|MDC|Manado|0|","BDJ|MDC|Manado|0|","JOG|MDC|Manado|0|","DJJ|MDC|Manado|0|","TTE|MAL|Mangole, Mangole Apt.|0|","SOQ|MKW|Manokwari|0|","TKG|MKW|Manokwari|0|","RDE|MKW|Manokwari|0|","PDG|MKW|Manokwari|0|","SUB|MKW|Manokwari|0|","UPG|MKW|Manokwari|0|","CGK|MKW|Manokwari|2|","BPN|MKW|Manokwari|0|","DJJ|MKW|Manokwari|0|","JOG|MKW|Manokwari|0|","MDC|MKW|Manokwari|0|","MKQ|MKW|Manokwari|0|","KNG|MKW|Manokwari|0|","KEQ|MKW|Manokwari|0|","KOE|MKW|Manokwari|0|","KDI|MKW|Manokwari|0|","BDO|AMI|Mataram, Lombok|0|","BMU|AMI|Mataram, Lombok|0|","CGK|AMI|Mataram, Lombok|0|","DPS|AMI|Mataram, Lombok|0|","ENE|AMI|Mataram, Lombok|0|","KOE|AMI|Mataram, Lombok|0|","KUL|AMI|Mataram, Lombok|0|","LBJ|AMI|Mataram, Lombok|0|","MOF|AMI|Mataram, Lombok|0|","SUB|AMI|Mataram, Lombok|0|","SMQ|AMI|Mataram, Lombok|0|","TMC|AMI|Mataram, Lombok|0|","UPG|AMI|Mataram, Lombok|0|","WGP|AMI|Mataram, Lombok|0|","KOE|MOF|Maumere|0|","DPS|MOF|Maumere|0|","BMU|MOF|Maumere|0|","CGK|MOF|Maumere|0|","AMI|MOF|Maumere|0|","BDO|MOF|Maumere|0|","UPG|MOF|Maumere|0|","WGP|MOF|Maumere|0|","SUB|MOF|Maumere|0|","TMC|MOF|Maumere|0|","MEQ|MES|Medan|0|","GNS|MES|Medan|0|","BDO|MES|Medan|0|","SNX|MES|Medan|0|","SBG|MES|Medan|0|","SBQ|MES|Medan|0|","SBX|MES|Medan|0|","MDC|MNA|Melangguane, Melangguane Apt.|0|","NAH|MNA|Melangguane, Melangguane Apt.|0|","KDI|MKQ|Merauke|0|","KOE|MKQ|Merauke|0|","KEI|MKQ|Merauke|0|","KMM|MKQ|Merauke|0|","MKW|MKQ|Merauke|0|","MDC|MKQ|Merauke|0|","JOG|MKQ|Merauke|1|","DJJ|MKQ|Merauke|0|","CGK|MKQ|Merauke|2|","BIK|MKQ|Merauke|0|","BDJ|MKQ|Merauke|0|","UPG|MKQ|Merauke|0|","ZEG|MKQ|Merauke|0|","SUB|MKQ|Merauke|1|","OKQ|MKQ|Merauke|0|","PDG|MKQ|Merauke|0|","TKG|MKQ|Merauke|0|","TMH|MKQ|Merauke|0|","TIM|MKQ|Merauke|0|","MKW|RDE|Merdei, Merdei Apt.|0|","MES|MEQ|Meulaboh|0|","TTE|OTI|Morotai Island, Pitu Apt.|0|","DJJ|LII|Mulia, Mulia Apt.|0|","NBX|LII|Mulia, Mulia Apt.|0|","WMX|LII|Mulia, Mulia Apt.|0|","NKD|NBX|Nabire|0|","LII|NBX|Nabire|0|","BIK|NBX|Nabire|0|","MNA|NAH|Naha, Naha Apt.|0|","MDC|NAH|Naha, Naha Apt.|0|","NRE|NAM|Namlea, Namlea Apt.|0|","NAM|NRE|Namrole|0|","MES|GNS|Nias, Gunung Sitoli|0|","MKQ|OKQ|Okaba, Okaba Apt.|0|","DJJ|OKL|Oksibil, Oksibil Apt.|0|","UPG|PDG|Padang|0|","SUB|PDG|Padang|0|","SMQ|PDG|Padang|0|","TKG|PDG|Padang|0|","SOQ|PDG|Padang|0|","TIM|PDG|Padang|0|","MKQ|PDG|Padang|0|","MKW|PDG|Padang|0|","KOE|PDG|Padang|0|","DJJ|PDG|Padang|0|","DPS|PDG|Padang|0|","CGK|PDG|Padang|0|","CGK|PLW|Palu|0|","BPN|PLW|Palu|0|","JOG|PLW|Palu|0|","KDI|PLW|Palu|0|","MDC|PLW|Palu|0|","TLI|PLW|Palu|0|","SUB|PLW|Palu|0|","PSJ|PLW|Palu|0|","UPG|PLW|Palu|0|","UOL|PLW|Palu|0|","PLW|PSJ|Poso, Kasiguncu Apt.|0|","GTO|PSJ|Poso, Kasiguncu Apt.|0|","KOE|RTG|Ruteng|0|","ENE|RTG|Ruteng|0|","MES|SBG|Sabang, Maimun Saleh Apt.|0|","DPS|SMQ|Sampit|0|","CGK|SMQ|Sampit|0|","PDG|SMQ|Sampit|0|","SUB|SMQ|Sampit|0|","TKG|SMQ|Sampit|0|","TTE|SQN|Sanana, Sanana Apt.|0|","LAH|SQN|Sanana, Sanana Apt.|0|","LKA|SXK|Saumlaki|0|","KSX|SXK|Saumlaki|0|","KOE|SAU|Sawu|0|","MES|SBQ|Sibolga|0|","MES|SNX|Sinabang|0|","NBX|NKD|Sinak|0|","MKW|SOQ|Sorong|0|","MDC|SOQ|Sorong|0|","KOE|SOQ|Sorong|0|","KDI|SOQ|Sorong|0|","KNG|SOQ|Sorong|0|","KBX|SOQ|Sorong|0|","CGK|SOQ|Sorong|0|","BPN|SOQ|Sorong|0|","BDJ|SOQ|Sorong|0|","DJJ|SOQ|Sorong|0|","JOG|SOQ|Sorong|0|","TKG|SOQ|Sorong|0|","TMX|SOQ|Sorong|0|","TIM|SOQ|Sorong|0|","SUB|SOQ|Sorong|0|","PDG|SOQ|Sorong|0|","NTI|SOQ|Sorong|0|","UPG|SOQ|Sorong|0|","KUL|SUB|Surabaya|0|","LBJ|SUB|Surabaya|0|","LUW|SUB|Surabaya|0|","KDI|SUB|Surabaya|0|","KOE|SUB|Surabaya|0|","MDC|SUB|Surabaya|0|","MKQ|SUB|Surabaya|0|","MKW|SUB|Surabaya|0|","MJU|SUB|Surabaya|0|","MOF|SUB|Surabaya|0|","JOG|SUB|Surabaya|0|","ENE|SUB|Surabaya|0|","BTH|SUB|Surabaya|0|","DIL|SUB|Surabaya|0|","DJJ|SUB|Surabaya|0|","DPS|SUB|Surabaya|0|","AMI|SUB|Surabaya|0|","BIK|SUB|Surabaya|0|","BDO|SUB|Surabaya|0|","BMU|SUB|Surabaya|0|","CGK|SUB|Surabaya|0|","TTE|SUB|Surabaya|0|","UPG|SUB|Surabaya|0|","WGP|SUB|Surabaya|0|","PDG|SUB|Surabaya|0|","PLW|SUB|Surabaya|0|","TIM|SUB|Surabaya|0|","SOQ|SUB|Surabaya|0|","TMC|SUB|Surabaya|0|","SMQ|SUB|Surabaya|0|","WGP|TMC|Tambolaka|0|","UPG|TMC|Tambolaka|0|","SUB|TMC|Tambolaka|0|","CGK|TMC|Tambolaka|0|","BMU|TMC|Tambolaka|0|","AMI|TMC|Tambolaka|0|","BDO|TMC|Tambolaka|0|","DPS|TMC|Tambolaka|0|","MOF|TMC|Tambolaka|0|","KOE|TMC|Tambolaka|0|","MKQ|TMH|Tanahmerah, Tanahmerah Apt.|0|","DJJ|TMH|Tanahmerah, Tanahmerah Apt.|0|","SOQ|TMX|Teminabuan,Teminabuan Apt|0|","ULI|TTE|Ternate|0|","UPG|TTE|Ternate|0|","SUB|TTE|Ternate|0|","OTI|TTE|Ternate|0|","JOG|TTE|Ternate|0|","AMQ|TTE|Ternate|0|","BPN|TTE|Ternate|0|","CGK|TTE|Ternate|0|","MDC|TTE|Ternate|0|","MAL|TTE|Ternate|0|","KDI|TTE|Ternate|0|","LAH|TTE|Ternate|0|","KDI|TIM|Timika|0|","MKQ|TIM|Timika|0|","MDC|TIM|Timika|0|","CGK|TIM|Timika|0|","BIK|TIM|Timika|0|","BDJ|TIM|Timika|0|","DJJ|TIM|Timika|0|","JOG|TIM|Timika|0|","PDG|TIM|Timika|0|","SUB|TIM|Timika|0|","UPG|TIM|Timika|0|","WMX|TMY|Tiom|0|","PLW|TLI|Tolitoli|0|","UOL|TLI|Tolitoli|0|","TRK|TLI|Tolitoli|0|","SUB|WGP|Waingapu|0|","TMC|WGP|Waingapu|0|","DPS|WGP|Waingapu|0|","AMI|WGP|Waingapu|0|","BDO|WGP|Waingapu|0|","BMU|WGP|Waingapu|0|","CGK|WGP|Waingapu|0|","MOF|WGP|Waingapu|0|","KOE|WGP|Waingapu|0|","LII|WMX|Wamena|0|","DJJ|WMX|Wamena|0|","KBF|WMX|Wamena|0|","TMY|WMX|Wamena|0|","MKW|WSR|Wasior, Wasior Apt.|0|","PLW|JOG|Yogyakarta|0|","SUB|JOG|Yogyakarta|0|","SOQ|JOG|Yogyakarta|0|","TIM|JOG|Yogyakarta|0|","TTE|JOG|Yogyakarta|0|","UPG|JOG|Yogyakarta|0|","DJJ|JOG|Yogyakarta|0|","BIK|JOG|Yogyakarta|0|","BPN|JOG|Yogyakarta|0|","MDC|JOG|Yogyakarta|0|","MKQ|JOG|Yogyakarta|0|","MKW|JOG|Yogyakarta|0|","MJU|JOG|Yogyakarta|0|","LUW|JOG|Yogyakarta|0|","KDI|JOG|Yogyakarta|0|","NBX|UGU|Zugapa|0|");
+</script>
+
+	<script type="text/javascript">
+var Anthem_DefaultURL = "?Anthem_CallBack=true";
+var Anthem_FormID = "Form1";
+</script>
+
+	<script type='text/javascript'>
+function Anthem_AddEvent(obj, evType, fn, useCapture) {
+	if (obj.addEventListener) {
+		obj.addEventListener(evType, fn, useCapture);
+		return true;
+	} else if (obj.attachEvent) {
+		var r = obj.attachEvent("on" + evType, fn);
+		return r;
+	} else {
+		alert("Anthem_AddEvent could not add event!");
+	}
+}
+
+function Anthem_GetXMLHttpRequest() {
+	if (window.XMLHttpRequest) {
+		return new XMLHttpRequest();
+	} else {
+		if (window.Anthem_XMLHttpRequestProgID) {
+			return new ActiveXObject(window.Anthem_XMLHttpRequestProgID);
+		} else {
+			var progIDs = ["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"];
+			for (var i = 0; i < progIDs.length; ++i) {
+				var progID = progIDs[i];
+				try {
+					var x = new ActiveXObject(progID);
+					window.Anthem_XMLHttpRequestProgID = progID;
+					return x;
+				} catch (e) {
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function Anthem_CallBack(url, target, id, method, args, clientCallBack, clientCallBackArg, includeControlValuesWithCallBack, updatePageAfterCallBack) {
+	if (window.Anthem_PreCallBack) {
+		var preCallBackResult = Anthem_PreCallBack();
+		if (!(typeof preCallBackResult == "undefined" || preCallBackResult)) {
+			if (window.Anthem_CallBackCancelled) {
+				Anthem_CallBackCancelled();
+			}
+			return null;
+		}
+	}
+	var x = Anthem_GetXMLHttpRequest();
+	var result = null;
+	if (!x) {
+		result = { "value": null, "error": "NOXMLHTTP" };
+		Anthem_DebugError(result.error);
+		if (window.Anthem_Error) {
+			Anthem_Error(result);
+		}
+		if (clientCallBack) {
+			clientCallBack(result, clientCallBackArg);
+		}
+		return result;
+	}
+	x.open("POST", url ? url : Anthem_DefaultURL, clientCallBack ? true : false);
+	x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+	x.setRequestHeader("Accept-Encoding", "gzip, deflate");
+	if (clientCallBack) {
+		x.onreadystatechange = function() {
+			if (x.readyState != 4) {
+				return;
+			}
+			Anthem_DebugResponseText(x.responseText);
+			result = Anthem_GetResult(x);
+			if (result.error) {
+				Anthem_DebugError(result.error);
+				if (window.Anthem_Error) {
+					Anthem_Error(result);
+				}
+			}
+			if (updatePageAfterCallBack) {
+				Anthem_UpdatePage(result);
+			}
+			Anthem_EvalClientSideScript(result);
+			clientCallBack(result, clientCallBackArg);
+			x = null;
+			if (window.Anthem_PostCallBack) {
+				Anthem_PostCallBack();
+			}
+		}
+	}
+    var encodedData = "";
+    if (target == "Page") {
+        encodedData += "&Anthem_PageMethod=" + method;
+    } else if (target == "MasterPage") {
+        encodedData += "&Anthem_MasterPageMethod=" + method;
+    } else if (target == "Control") {
+        encodedData += "&Anthem_ControlID=" + id.split(":").join("_");
+        encodedData += "&Anthem_ControlMethod=" + method;
+    }
+	if (args) {
+		for (var argsIndex = 0; argsIndex < args.length; ++argsIndex) {
+			if (args[argsIndex] instanceof Array) {
+				for (var i = 0; i < args[argsIndex].length; ++i) {
+					encodedData += "&Anthem_CallBackArgument" + argsIndex + "=" + encodeURIComponent(args[argsIndex][i]);
+				}
+			} else {
+				encodedData += "&Anthem_CallBackArgument" + argsIndex + "=" + encodeURIComponent(args[argsIndex]);
+			}
+		}
+	}
+	if (updatePageAfterCallBack) {
+		encodedData += "&Anthem_UpdatePage=true";
+	}
+	if (includeControlValuesWithCallBack) {
+		var form = document.getElementById(Anthem_FormID);
+		if (form != null) {
+			for (var elementIndex = 0; elementIndex < form.length; ++elementIndex) {
+				var element = form.elements[elementIndex];
+				if (element.name) {
+					var elementValue = null;
+					if (element.nodeName == "INPUT") {
+						var inputType = element.getAttribute("TYPE").toUpperCase();
+						if (inputType == "TEXT" || inputType == "PASSWORD" || inputType == "HIDDEN") {
+							elementValue = element.value;
+						} else if (inputType == "CHECKBOX" || inputType == "RADIO") {
+							if (element.checked) {
+								elementValue = element.value;
+							}
+						}
+					} else if (element.nodeName == "SELECT") {
+						if (element.multiple) {
+							elementValue = [];
+							for (var i = 0; i < element.length; ++i) {
+								if (element.options[i].selected) {
+									elementValue.push(element.options[i].value);
+								}
+							}
+						} else {
+							elementValue = element.value;
+						}
+					} else if (element.nodeName == "TEXTAREA") {
+						elementValue = element.value;
+					}
+					if (elementValue instanceof Array) {
+						for (var i = 0; i < elementValue.length; ++i) {
+							encodedData += "&" + element.name + "=" + encodeURIComponent(elementValue[i]);
+						}
+					} else if (elementValue != null) {
+						encodedData += "&" + element.name + "=" + encodeURIComponent(elementValue);
+					}
+				}
+			}
+			// ASP.NET 1.1 won't fire any events if neither of the following
+			// two parameters are not in the request so make sure they're
+			// always in the request.
+			if (typeof form.__VIEWSTATE == "undefined") {
+				encodedData += "&__VIEWSTATE=";
+			}
+			if (typeof form.__EVENTTARGET == "undefined") {
+				encodedData += "&__EVENTTARGET=";
+			}
+		}
+	}
+	Anthem_DebugRequestText(encodedData.split("&").join("\n&"));
+	x.send(encodedData);
+	if (!clientCallBack) {
+		Anthem_DebugResponseText(x.responseText);
+		result = Anthem_GetResult(x);
+		if (result.error) {
+			Anthem_DebugError(result.error);
+			if (window.Anthem_Error) {
+				Anthem_Error(result);
+			}
+		}
+		if (updatePageAfterCallBack) {
+			Anthem_UpdatePage(result);
+		}
+		Anthem_EvalClientSideScript(result);
+	}
+	return result;
+}
+
+function Anthem_GetResult(x) {
+	var result = { "value": null, "error": null };
+	var responseText = x.responseText;
+	try {
+		result = eval("(" + responseText + ")");
+	} catch (e) {
+		if (responseText.length == 0) {
+			result.error = "NORESPONSE";
+		} else {
+			result.error = "BADRESPONSE";
+			result.responseText = responseText;
+		}
+	}
+	return result;
+}
+
+function Anthem_SetHiddenInputValue(form, name, value) {
+    if (form[name]) {
+        form[name].value = value;
+    } else {
+        var input = document.createElement("input");
+        input.setAttribute("name", name);
+        input.setAttribute("type", "hidden");
+        input.setAttribute("value", value);
+        form.appendChild(input);
+        form[name] = input;
+    }
+}
+
+function Anthem_FireEvent(eventTarget, eventArgument, clientCallBack, clientCallBackArg, includeControlValuesWithCallBack, updatePageAfterCallBack) {
+	var form = document.getElementById(Anthem_FormID);
+	Anthem_SetHiddenInputValue(form, "__EVENTTARGET", eventTarget);
+	Anthem_SetHiddenInputValue(form, "__EVENTARGUMENT", eventArgument);
+	Anthem_CallBack(null, null, null, null, null, clientCallBack, clientCallBackArg, includeControlValuesWithCallBack, updatePageAfterCallBack);
+	form.__EVENTTARGET.value = "";
+	form.__EVENTARGUMENT.value = "";
+}
+
+function Anthem_UpdatePage(result) {
+	var form = document.getElementById(Anthem_FormID);
+	if (result.viewState) {
+		Anthem_SetHiddenInputValue(form, "__VIEWSTATE", result.viewState);
+	}
+	if (result.viewStateEncrypted) {
+		Anthem_SetHiddenInputValue(form, "__VIEWSTATEENCRYPTED", result.viewStateEncrypted);
+	}
+	if (result.eventValidation) {
+		Anthem_SetHiddenInputValue(form, "__EVENTVALIDATION", result.eventValidation);
+	}
+	if (result.controls) {
+		for (var controlID in result.controls) {
+			var containerID = "Anthem_" + controlID.split("$").join("_") + "__";
+			var control = document.getElementById(containerID);
+			if (control) {
+				control.innerHTML = result.controls[controlID];
+				if (result.controls[controlID] == "") {
+					control.style.display = "none";
+				} else {
+					control.style.display = "";
+				}
+			}
+		}
+	}
+}
+
+function Anthem_EvalClientSideScript(result) {
+	if (result.script) {
+		for (var i = 0; i < result.script.length; ++i) {
+			try {
+				eval(result.script[i]);
+			} catch (e) {
+				alert("Error evaluating client-side script!\n\nScript: " + result.script[i] + "\n\nException: " + e);
+			}
+		}
+	}
+}
+
+function Anthem_DebugRequestText(text) {
+}
+
+function Anthem_DebugResponseText(text) {
+}
+
+function Anthem_DebugError(text) {
+}
+
+//Fix for bug #1429412, "Reponse callback returns previous response after file push".
+//see http://sourceforge.net/tracker/index.php?func=detail&aid=1429412&group_id=151897&atid=782464
+function Anthem_Clear__EVENTTARGET()
+{
+	var form = document.getElementById(Anthem_FormID);
+	Anthem_SetHiddenInputValue(form, "__EVENTTARGET", "");
+}
+
+function Anthem_InvokePageMethod(methodName, args, callBack, context) {
+	Anthem_Clear__EVENTTARGET(); // fix for bug #1429412
+    return Anthem_CallBack(null, "Page", null, methodName, args, callBack, context, true, true);
+}
+
+function Anthem_InvokeMasterPageMethod(methodName, args, callBack, context) {
+	Anthem_Clear__EVENTTARGET(); // fix for bug #1429412
+    return Anthem_CallBack(null, "MasterPage", null, methodName, args, callBack, context, true, true);
+}
+
+function Anthem_InvokeControlMethod(id, methodName, args, callBack, context) {
+	Anthem_Clear__EVENTTARGET(); // fix for bug #1429412
+    return Anthem_CallBack(null, "Control", id, methodName, args, callBack, context, true, true);
+}
+
+function AnthemButton_Click(
+	button,
+	id,
+	causesValidation,
+	validationGroup,
+	textDuringCallBack,
+	enabledDuringCallBack,
+	preCallBackFunction,
+	postCallBackFunction,
+	callBackCancelledFunction,
+	includeControlValuesWithCallBack,
+	updatePageAfterCallBack
+) {
+	var preCallBackResult = true;
+	if (preCallBackFunction) {
+		preCallBackResult = preCallBackFunction(button);
+	}
+	if (typeof preCallBackResult == "undefined" || preCallBackResult) {
+		var valid = true;
+		if (causesValidation && typeof Page_ClientValidate == "function") {
+			valid = Page_ClientValidate(validationGroup);
+		}
+		if (valid) {
+			var text = button.value;
+			if (textDuringCallBack) {
+				button.value = textDuringCallBack;
+			}
+			var enabled = !button.disabled;
+			button.disabled = !enabledDuringCallBack;
+			Anthem_FireEvent(
+				id,
+				"",
+				function(result) {
+					if (postCallBackFunction) {
+						postCallBackFunction(button);
+					}
+					button.disabled = !enabled;
+					button.value = text;
+				},
+				null,
+				includeControlValuesWithCallBack,
+				updatePageAfterCallBack
+			);
+		}
+	} else if (callBackCancelledFunction) {
+		callBackCancelledFunction(button);
+	}
+}
+
+function AnthemDropDownList_Change(
+	dropdown,
+	id,
+	causesValidation,
+	validationGroup,
+	preCallBackFunction,
+	postCallBackFunction,
+    callBackCancelledFunction,
+	includeControlValuesWithCallBack,
+	updatePageAfterCallBack
+) {
+	var preCallBackResult = true;
+	if (preCallBackFunction) {
+		preCallBackResult = preCallBackFunction(dropdown);
+	}
+	if (typeof preCallBackResult == "undefined" || preCallBackResult) {
+		var valid = true;
+		if (causesValidation && typeof Page_ClientValidate == "function") {
+			valid = Page_ClientValidate(validationGroup);
+		}
+		if (valid) {
+			Anthem_FireEvent(
+				id,
+				"",
+				function(result) {
+					if (postCallBackFunction) {
+						postCallBackFunction(dropdown);
+					}
+				},
+				null,
+				includeControlValuesWithCallBack,
+				updatePageAfterCallBack
+			);
+		}
+	} else if (callBackCancelledFunction) {
+		callBackCancelledFunction(dropdown);
+	}
+}
+
+function AnthemLinkButton_Click(
+	button,
+	id,
+	causesValidation,
+	validationGroup,
+	textDuringCallBack,
+	enabledDuringCallBack,
+	preCallBackFunction,
+	postCallBackFunction,
+	callBackCancelledFunction,
+	includeControlValuesWithCallBack,
+	updatePageAfterCallBack
+) {
+	var preCallBackResult = true;
+	if (preCallBackFunction) {
+		preCallBackResult = preCallBackFunction(button);
+	}
+	if (typeof preCallBackResult == "undefined" || preCallBackResult) {
+		var valid = true;
+		if (causesValidation && typeof Page_ClientValidate == "function") {
+			valid = Page_ClientValidate(validationGroup);
+		}
+		if (valid) {
+			var text = button.innerHTML;
+			if (textDuringCallBack) {
+				button.innerHTML = textDuringCallBack;
+			}
+			var enabled = !button.disabled;
+			button.disabled = !enabledDuringCallBack;
+			Anthem_FireEvent(
+				id,
+				"",
+				function(result) {
+					if (postCallBackFunction) {
+						postCallBackFunction(button);
+					}
+					button.disabled = !enabled;
+					button.innerHTML = text;
+				},
+				null,
+				includeControlValuesWithCallBack,
+				updatePageAfterCallBack
+			);
+		}
+	} else if (callBackCancelledFunction) {
+		callBackCancelledFunction(button);
+	}
+}
+
+function AnthemImageButton_Click(
+	button,
+	event,
+	id,
+	causesValidation,
+	validationGroup,
+	imageUrlDuringCallBack,
+	enabledDuringCallBack,
+	preCallBackFunction,
+	postCallBackFunction,
+	callBackCancelledFunction,
+	includeControlValuesWithCallBack,
+	updatePageAfterCallBack
+) {
+	var preCallBackResult = true;
+	if (preCallBackFunction) {
+		preCallBackResult = preCallBackFunction(button);
+	}
+	if (typeof preCallBackResult == "undefined" || preCallBackResult) {
+		var valid = true;
+		if (causesValidation && typeof Page_ClientValidate == "function") {
+			valid = Page_ClientValidate(validationGroup);
+		}
+		if (valid) {
+			var imageUrl = button.src;
+			if (imageUrlDuringCallBack) {
+				button.src = imageUrlDuringCallBack;
+			}
+			var enabled = !button.disabled;
+			button.disabled = !enabledDuringCallBack;
+	        var form = document.getElementById(Anthem_FormID);
+	        if (event.offsetX)
+	        {
+	            Anthem_SetHiddenInputValue(form, id + ".x", event.offsetX);
+	            Anthem_SetHiddenInputValue(form, id + ".y", event.offsetY);
+	        }
+	        else
+	        {
+	            Anthem_SetHiddenInputValue(form, id + ".x", event.clientX - button.offsetLeft + 1);
+	            Anthem_SetHiddenInputValue(form, id + ".y", event.clientY - button.offsetTop + 1);
+	        }
+			Anthem_FireEvent(
+				id,
+				"",
+				function(result) {
+					if (postCallBackFunction) {
+						postCallBackFunction(button);
+					}
+					button.disabled = !enabled;
+					button.src = imageUrl;
+				},
+				null,
+				includeControlValuesWithCallBack,
+				updatePageAfterCallBack
+			);
+	        Anthem_SetHiddenInputValue(form, id + ".x", "");
+	        Anthem_SetHiddenInputValue(form, id + ".y", "");
+		}
+	} else if (callBackCancelledFunction) {
+		callBackCancelledFunction(button);
+	}
+}
+
+function AnthemTextBox_TextChanged(textBox, id, includeControlValuesWithCallBack, updatePageAfterCallBack) {
+	Anthem_FireEvent(id, "", function(result) {}, null, includeControlValuesWithCallBack, updatePageAfterCallBack);
+}
+
+function AnthemRadioButtonList_OnClick(e) {
+	var target = e.target || e.srcElement;
+	var eventTarget = target.id.split("_").join("$");
+	Anthem_FireEvent(eventTarget, "", function() {}, null, true, true);
+}
+</script>
+
+	<script type="text/javascript">
+	var cc = new Array()
+	var dn = new Date()
+	var dm = new Date()
+	var ds = new Date()
+
+	
+	function ChangeCalender(o,r,ix){
+		var od = document.getElementById(o+'_cmbDay')
+		var ot = document.getElementById(o+'_cmbMonthYear')
+		if (ix != undefined){
+		    ix = ot.selectedIndex + ix
+		    if (ix >= 0 && ix < ot.length){
+		        ot.selectedIndex = ix
+		    }
+		}
+		var y = ot.options[ot.selectedIndex].value.slice(0,4)
+		var m = ot.options[ot.selectedIndex].value.slice(4,6)
+		var d = od.options[od.selectedIndex].value 
+		var l = document.getElementById(o+'_label')
+		if (l != null) {
+		    l.innerText = ot.options[ot.selectedIndex].text;l.textContent = ot.options[ot.selectedIndex].text
+		}
+		if (new Date(y,m-1,d).getMonth()-(m-1) != 0){d=DaysDiff(new Date(y,new Date(y,m-1,d).getMonth(),1),new Date(y,m-1,1)); od.selectedIndex = d-1}
+		SelectedDate[o] = new Date(y,m-1,d)
+		DateArray(y,m,d,o)
+        
+		RenderCalender(o)
+		if (r.length > 0){
+			var oo = r + '_ctlReturnDate'
+			var ReturnDate = SelectedDate[oo]
+			if (0 < DaysDiff(SelectedDate[o],ReturnDate)){
+				var ood = document.getElementById(oo+'_cmbDay')
+				var oot = document.getElementById(oo+'_cmbMonthYear')
+				ood.selectedIndex = od.selectedIndex
+				oot.selectedIndex = ot.selectedIndex
+				ChangeCalender(oo,'')
+			}
+		}
+	}
+	function SelectDate(d,o){
+		var dm = SelectedDate[o + 'Start']
+		var ds = new Date(dm.getFullYear(),dm.getMonth(),dm.getDate() + parseInt(d))
+		var s
+		ChangeDateStyle(ds,dm,0,o)	
+		document.getElementById(o+'_cmbDay').selectedIndex = ds.getDate() - 1
+		if(new Date(SelectedDate[o].getYear(),SelectedDate[o].getMonth(),SelectedDate[o].getDate()) - new Date(dn.getYear(),dn.getMonth(),dn.getDate())==0){
+			s = 1	
+			//alert('b')
+		}
+		else if(SelectedDate[o].getMonth() < ds.getMonth()){
+			s = 2
+			//alert(dd.getMonth() + '<' + ds.getMonth())	
+		}
+		else if(SelectedDate[o].getMonth() > ds.getMonth()){
+			s = 3
+			//alert(dd.getMonth() + '>' + ds.getMonth())	
+		}
+		else{
+			s = 4
+			//alert('rest')		
+		}		
+		ChangeDateStyle(SelectedDate[o],dm,s,o)
+		SelectedDate[o] = ds
+        
+	}
+	
+	function ChangeDateStyle(d1,d2,s,o){
+		var i  = DaysDiff(d1,d2)
+		var r  =  parseInt(i / 7); 
+		var c  = i-(7*r)
+		var t = document.getElementById(o+'_calender')
+		if (s != 0){
+           t.rows[r+1].cells[c].innerHTML = '<a href="javascript:SelectDate(\'' + i + '\',\'' + o +'\')">' + d1.getDate() + '</a>'
+       }
+       else{
+           t.rows[r+1].cells[c].innerHTML = d1.getDate()
+       }
+		t.rows[r+1].cells[c].className = CssClass[o][s]
+	}
+	
+	function ChangeDate(o){
+		var od = document.getElementById(o+'_cmbDay')
+		var d  = od.options[od.selectedIndex].value 
+		var ds = new Date(SelectedDate[o].getFullYear(),SelectedDate[o].getMonth(),d)
+		var i  = DaysDiff(ds,SelectedDate[o + 'Start'])
+		var r  =  parseInt(i / 7); 
+		var c  = i-(7*r)
+		var t = document.getElementById(o+'_calender')
+	}
+	
+	function DaysDiff(d1,d2) {
+		var z = Date.UTC(y2k(d1.getYear()),d1.getMonth(),d1.getDate(),0,0,0) - Date.UTC(y2k(d2.getYear()),d2.getMonth(),d2.getDate(),0,0,0);
+		return z/1000/60/60/24;
+	}
+	
+	function y2k(number) { return (number < 1000) ? number + 1900 : number; }
+
+	function DateArray(y,m,d,o){
+		ds = new Date(y,m-1,1)
+		SelectedDate[o + 'Start']  = new Date(ds.getFullYear(),ds.getMonth(),ds.getDate() - ds.getDay())
+		d = SelectedDate[o + 'Start']
+		for (var i=0;i<=42;i++){
+			var dd = new Date(d.getFullYear(),d.getMonth(),d.getDate() + i)
+			cc[i] = new Date(dd)
+		}
+	}
+		
+	function RenderCalender(o){
+		var t = document.getElementById(o+'_calender')
+		var c = 0
+		var now = new Date()
+		for(var i=0;i<t.rows.length-1;i++){
+			r = t.rows[i+1]
+			for(var j=0;j<r.cells.length;j++){
+				var dd = new Date(cc[(i * 7) + (j + 1)-1])
+				r.cells[j].innerHTML = dd.getDate() 
+				if(new Date(dd.getYear(),dd.getMonth(),dd.getDate()) - new Date(SelectedDate[o].getYear(),SelectedDate[o].getMonth(),SelectedDate[o].getDate())==0){
+					r.cells[j].className = CssClass[o][0]	
+					//r.cells[j].innerHTML = '<a href="javascript:SelectDate(\'' + c + '\',\'' + o +'\')">' + dd.getDate() + '</a>'
+				}				
+				else if(new Date(dd.getYear(),dd.getMonth(),dd.getDate()) - new Date(dn.getYear(),dn.getMonth(),dn.getDate())==0){
+					if(dd.getMonth() == ds.getMonth()){	
+					    r.cells[j].className = CssClass[o][1]	
+					    r.cells[j].innerHTML = '<a href="javascript:SelectDate(\'' + c + '\',\'' + o +'\')">' + dd.getDate() + '</a>'
+				    	}
+				}
+				else if(dd.getMonth() < ds.getMonth()){
+					r.cells[j].className = CssClass[o][2]
+					//alert(dd.getMonth() + '<' + ds.getMonth())	
+				}
+				else if(dd.getMonth() > ds.getMonth()){
+					r.cells[j].className = CssClass[o][3]
+					//alert(dd.getMonth() + '>' + ds.getMonth())	
+				}
+				else if(new Date(dd.getYear(),dd.getMonth(),dd.getDate()) <  new Date(now.getYear(),now.getMonth(),now.getDate())){
+					r.cells[j].className = CssClass[o][5]
+					//alert('a')	
+				}
+				else{
+					r.cells[j].className = CssClass[o][4]	
+					r.cells[j].innerHTML = '<a href="javascript:SelectDate(\'' + c + '\',\'' + o +'\')">' + dd.getDate() + '</a>'
+					//alert('rest')		
+				}
+				c++
+			}
+		}
+	}	
+</script>
+
+
+	<script type="text/javascript">
+CssClass.ctrHome_ctrFlightSearchBase_ctlDepatureDate = new Array('SelectDay','Today','LastMonth','NextMonth','ThisMonth','DayDisabled'); 
+SelectedDate.ctrHome_ctrFlightSearchBase_ctlDepatureDate = new Date('2010','5','3'); 
+SelectedDate.ctrHome_ctrFlightSearchBase_ctlDepatureDateStart = new Date('2010','4','30'); 
+</script>
+
+	<script type="text/javascript">
+CssClass.ctrHome_ctrFlightSearchBase_ctlReturnDate = new Array('SelectDay','Today','LastMonth','NextMonth','ThisMonth','DayDisabled'); 
+SelectedDate.ctrHome_ctrFlightSearchBase_ctlReturnDate = new Date('2010','5','3'); 
+SelectedDate.ctrHome_ctrFlightSearchBase_ctlReturnDateStart = new Date('2010','4','30'); 
+</script>
+
+
+			<!-- <template.en.Home.Header.html> -->
+<script type="text/javascript" language="JavaScript1.2" src="html/includedefault/pop_core.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="html/includedefault/pop_merpati.js"></script>
+<script type="text/javascript" language="JavaScript1.2" src="html/includedefault/pop_events.js"></script>
+<center>
+<div class="Wrapper">
+	<!-- Start WrapperHeader -->
+	<div class="WrapperHeader11">
+		<div class="Logo"><a href="default.aspx"><img src="html/images/pic_logo.gif" border="0" width="238" height="94" /></a></div>
+        <div class="Search"> 
+            <table border="0" width="100%" height="32" cellspacing="0" cellpadding="0" ID="Table1">
+                <tr>
+                    <td width="376" valign="top"></td>
+                    <td width="54" valign="top"><img src="html/images/search.gif" border="0" WIDTH="54" HEIGHT="32" /></td>
+                    <td width="134" valign="middle"><input type="text" value name="keyword" style="border-style:solid; background-color:#B7E2E7; height:19px; border-color:#03737F; border-width:1px; padding-left:3px; padding-top:3px; width:134px; font-family: Arial; font-size: 10pt; color:#079BAC;" ID="Text1" /></td>
+                    <td width="35" valign="middle"><input type="image" src="html/images/bt_go.gif" border="0" WIDTH="35" HEIGHT="25" ID="Image1" NAME="Image1" /></td>
+                    <td width="22" valign="top"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- End WrapperHeader -->
+    <a name="test1"></a>
+    <table width="0" cellspacing="0" cellpadding="0" id="wrapperHeader03">
+	    <tr>
+		    <td class="left">Welcome ..... <span id="ctrPageHeader_labLogonName"></span></td>
+		    <td class="right"><input type="image" name="ctrPageHeader:btmLogOnOff" id="ctrPageHeader_btmLogOnOff" src="Images/0/M/mli.gif" alt="" border="0" /></td>
+	    </tr>
+    </table>
+    <script language="javascript" type="text/javascript">
+        function trims(str){
+	        var trimmed = str.replace(/^\s+|\s+$/g, '');
+	        return trimmed;
+        }
+        function ToggleDisplayLogonName(){
+	        var ctrLabelLogonName = document.getElementById("ctrPageHeader_labLogonName");
+	        if(ctrLabelLogonName != null){
+		        if(trims(ctrLabelLogonName.innerHTML) == ""){
+			        var divWrapperHeader03 = document.getElementById("wrapperHeader03");
+			        if(divWrapperHeader03 != null){
+				        divWrapperHeader03.style.display = "none";
+			        }
+		        }
+	        }	
+        }
+        ToggleDisplayLogonName();
+    </script>
+    
+<!-- </template.en.Home.Header.html> -->
+			
+			<!-- <template.en.Home.html> -->
+<!-- <template.en.Home.FlightSearch.html> -->
+<div id="wrapperHeader02">
+    <div class="LeftPanel">
+        <div id="changeLanguage"><a href="../"><img src="Images/0/H/flag_id.gif" border="0" /></a></div>
+        <table id="TBLMybookingTop">
+            <tr>
+                <td class="body"><a href="/mnab2b/en/Agent.aspx">Travel Agent</a></td>
+                <td class="body"><a href="../B2E/user.aspx ">Corporate</a></td>
+            </tr>
+            <tr>
+                <td class="body"><a href="Default.aspx?l=l">My Booking</a></td>
+                <td class="body"><a href="../WebCheckin/Default.aspx">Web Checkin</a></td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" id="TBLMybooking">
+            <tr>
+                <td colspan="2" class="Online"></td>
+            </tr>
+            <tr>
+                <td rowspan="3" valign="top" class="body">
+                    <table width="220" border="0" cellpadding="0" cellspacing="2" onkeydown="if (event.keyCode == 13){var button=document.getElementById('ctrHome_ctrFlightSearchBase_btmSubmitFlightSearch');button.click();return false;}else{return true;}">
+                        <tr>
+                            <td width="78"><input id="ctrHome_ctrFlightSearchBase_rdoReturn" type="radio" name="ctrHome:ctrFlightSearchBase:FlightType" value="rdoReturn" checked="checked" onclick="HideGroup('FlightSearch','block')" tabindex="1" />&nbsp;Return</td>
+                            <td width="79"><span id="OnewayPart"><input id="ctrHome_ctrFlightSearchBase_rdoOneway" type="radio" name="ctrHome:ctrFlightSearchBase:FlightType" value="rdoOneway" onclick="HideGroup('FlightSearch','none')" tabindex="1" />&nbsp;One Way</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">From:</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><span id="Anthem_ctrHome_ctrFlightSearchBase_cmbOrigin__"><select name="ctrHome:ctrFlightSearchBase:cmbOrigin" id="ctrHome_ctrFlightSearchBase_cmbOrigin" tabindex="2" Class="InputAirport" onchange="fillDestination('ctrHome_ctrFlightSearchBase_cmbOrigin','ctrHome_ctrFlightSearchBase_cmbDestination')">
+	<option selected="selected" value="AHI">Amahai, Amahai Apt.</option>
+	<option value="AMQ">Ambon</option>
+	<option value="BPN">Balikpapan</option>
+	<option value="BDO">Bandung</option>
+	<option value="BDJ">Banjarmasin</option>
+	<option value="BTH">Batam</option>
+	<option value="BIK">Biak</option>
+	<option value="BMU">Bima</option>
+	<option value="NTI">Bintuni</option>
+	<option value="ULI">Buli</option>
+	<option value="UOL">Buol, Toli-toli Airport</option>
+	<option value="DPS">Denpasar, Bali</option>
+	<option value="DIL">Dili, Timor Leste</option>
+	<option value="ENE">Ende</option>
+	<option value="GTO">Gorontalo</option>
+	<option value="CGK">Jakarta,Cengkareng</option>
+	<option value="HLP">Jakarta,Halim</option>
+	<option value="DJJ">Jayapura</option>
+	<option value="KNG">Kaimana, Kaimana Apt.</option>
+	<option value="KBX">Kambuaya</option>
+	<option value="KBF">Karubaga</option>
+	<option value="KEQ">Kebar, Kebar Apt.</option>
+	<option value="KDI">Kendari</option>
+	<option value="KEI">Kepi, Kepi Apt.</option>
+	<option value="KMM">Kimam</option>
+	<option value="KSX">Kisar</option>
+	<option value="KUL">Kuala Lumpur, Malaysia</option>
+	<option value="KOE">Kupang</option>
+	<option value="LBJ">Labuan Bajo</option>
+	<option value="LAH">Labuha, Usman Sadik Apt.</option>
+	<option value="TKG">Lampung</option>
+	<option value="LUV">Langgur, Dumatubin Apt.</option>
+	<option value="LKA">Larantuka, Gewantayana Apt.</option>
+	<option value="LUW">Luwuk</option>
+	<option value="UPG">Makassar</option>
+	<option value="MJU">Mamuju</option>
+	<option value="MDC">Manado</option>
+	<option value="MAL">Mangole, Mangole Apt.</option>
+	<option value="MKW">Manokwari</option>
+	<option value="AMI">Mataram, Lombok</option>
+	<option value="MOF">Maumere</option>
+	<option value="MES">Medan</option>
+	<option value="MNA">Melangguane, Melangguane Apt.</option>
+	<option value="MKQ">Merauke</option>
+	<option value="RDE">Merdei, Merdei Apt.</option>
+	<option value="MEQ">Meulaboh</option>
+	<option value="OTI">Morotai Island, Pitu Apt.</option>
+	<option value="LII">Mulia, Mulia Apt.</option>
+	<option value="NBX">Nabire</option>
+	<option value="NAH">Naha, Naha Apt.</option>
+	<option value="NAM">Namlea, Namlea Apt.</option>
+	<option value="NRE">Namrole</option>
+	<option value="GNS">Nias, Gunung Sitoli</option>
+	<option value="OKQ">Okaba, Okaba Apt.</option>
+	<option value="OKL">Oksibil, Oksibil Apt.</option>
+	<option value="PDG">Padang</option>
+	<option value="PLW">Palu</option>
+	<option value="PSJ">Poso, Kasiguncu Apt.</option>
+	<option value="RTG">Ruteng</option>
+	<option value="SBG">Sabang, Maimun Saleh Apt.</option>
+	<option value="SMQ">Sampit</option>
+	<option value="SQN">Sanana, Sanana Apt.</option>
+	<option value="ZRM">Sarmi</option>
+	<option value="SXK">Saumlaki</option>
+	<option value="SAU">Sawu</option>
+	<option value="ZEG">Senggo</option>
+	<option value="SBQ">Sibolga</option>
+	<option value="SNX">Sinabang</option>
+	<option value="NKD">Sinak</option>
+	<option value="SOQ">Sorong</option>
+	<option value="SUB">Surabaya</option>
+	<option value="TMC">Tambolaka</option>
+	<option value="TMH">Tanahmerah, Tanahmerah Apt.</option>
+	<option value="TRK">Tarakan</option>
+	<option value="TMX">Teminabuan,Teminabuan Apt</option>
+	<option value="TTE">Ternate</option>
+	<option value="TIM">Timika</option>
+	<option value="TMY">Tiom</option>
+	<option value="TLI">Tolitoli</option>
+	<option value="WGP">Waingapu</option>
+	<option value="WMX">Wamena</option>
+	<option value="JOG">Yogyakarta</option>
+
+</select></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">To:</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><span id="Anthem_ctrHome_ctrFlightSearchBase_cmbDestination__"><select name="ctrHome:ctrFlightSearchBase:cmbDestination" id="ctrHome_ctrFlightSearchBase_cmbDestination" tabindex="3" Class="InputAirport">
+	<option selected="selected" value="NDA|0">Banda, Bandanaera</option>
+
+</select></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Flight Date:</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><div class="CalenderBase">
+	<div class="CalenderControl" align="left">
+		<select name="ctrHome:ctrFlightSearchBase:ctlDepatureDate:cmbDay" id="ctrHome_ctrFlightSearchBase_ctlDepatureDate_cmbDay" OnChange="ChangeCalender('ctrHome_ctrFlightSearchBase_ctlDepatureDate','ctrHome_ctrFlightSearchBase')">
+			<option value="01">01</option>
+			<option value="02">02</option>
+			<option selected="selected" value="03">03</option>
+			<option value="04">04</option>
+			<option value="05">05</option>
+			<option value="06">06</option>
+			<option value="07">07</option>
+			<option value="08">08</option>
+			<option value="09">09</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20</option>
+			<option value="21">21</option>
+			<option value="22">22</option>
+			<option value="23">23</option>
+			<option value="24">24</option>
+			<option value="25">25</option>
+			<option value="26">26</option>
+			<option value="27">27</option>
+			<option value="28">28</option>
+			<option value="29">29</option>
+			<option value="30">30</option>
+			<option value="31">31</option>
+
+		</select><select name="ctrHome:ctrFlightSearchBase:ctlDepatureDate:cmbMonthYear" id="ctrHome_ctrFlightSearchBase_ctlDepatureDate_cmbMonthYear" OnChange="ChangeCalender('ctrHome_ctrFlightSearchBase_ctlDepatureDate','ctrHome_ctrFlightSearchBase')">
+			<option selected="selected" value="201006">June 2010</option>
+			<option value="201007">July 2010</option>
+			<option value="201008">August 2010</option>
+			<option value="201009">September 2010</option>
+			<option value="201010">October 2010</option>
+			<option value="201011">November 2010</option>
+			<option value="201012">December 2010</option>
+			<option value="201101">January 2011</option>
+			<option value="201102">February 2011</option>
+			<option value="201103">March 2011</option>
+			<option value="201104">April 2011</option>
+			<option value="201105">May 2011</option>
+
+		</select><img onClick="ShowPopup('', this,'ctrHome_ctrFlightSearchBase_ctlDepatureDate_layer')" src="Images/0/B/bcp.gif" alt="" align="AbsMiddle" border="0" />
+	</div><div id="ctrHome_ctrFlightSearchBase_ctlDepatureDate_layer" class="CalenderLayer" style="display:none;">
+		<table class="CalenderHeader" border="0">
+			<tr class="CalenderHeader">
+				<td class="Left"><a href="javascript:ChangeCalenderMonth('ctrHome_ctrFlightSearchBase_ctlDepatureDate','ctrHome_ctrFlightSearchBase',-1)"><</a></td><td class="Middle"><div id="ctrHome_ctrFlightSearchBase_ctlDepatureDate_label">June 2010</div></td><td class="Right"><a href="javascript:ChangeCalenderMonth('ctrHome_ctrFlightSearchBase_ctlDepatureDate','ctrHome_ctrFlightSearchBase',1)">></a></td>
+			</tr>
+		</table><table id="ctrHome_ctrFlightSearchBase_ctlDepatureDate_calender" class="CalenderCss" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;BORDER-COLLAPSE:separate;">
+			<tr class="Days">
+				<td>Su</td><td>Mo</td><td>Tu</td><td>We</td><td>Th</td><td>Fr</td><td>Sa</td>
+			</tr><tr>
+				<td class="LastMonth">30</td><td class="LastMonth">31</td><td class="DayDisabled">1</td><td class="DayDisabled">2</td><td class="SelectDay">3</td><td class="ThisMonth"><a href="javascript:SelectDate('5','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">4</a></td><td class="ThisMonth"><a href="javascript:SelectDate('6','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">5</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('7','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">6</a></td><td class="ThisMonth"><a href="javascript:SelectDate('8','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">7</a></td><td class="ThisMonth"><a href="javascript:SelectDate('9','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">8</a></td><td class="ThisMonth"><a href="javascript:SelectDate('10','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">9</a></td><td class="ThisMonth"><a href="javascript:SelectDate('11','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">10</a></td><td class="ThisMonth"><a href="javascript:SelectDate('12','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">11</a></td><td class="ThisMonth"><a href="javascript:SelectDate('13','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">12</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('14','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">13</a></td><td class="ThisMonth"><a href="javascript:SelectDate('15','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">14</a></td><td class="ThisMonth"><a href="javascript:SelectDate('16','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">15</a></td><td class="ThisMonth"><a href="javascript:SelectDate('17','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">16</a></td><td class="ThisMonth"><a href="javascript:SelectDate('18','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">17</a></td><td class="ThisMonth"><a href="javascript:SelectDate('19','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">18</a></td><td class="ThisMonth"><a href="javascript:SelectDate('20','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">19</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('21','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">20</a></td><td class="ThisMonth"><a href="javascript:SelectDate('22','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">21</a></td><td class="ThisMonth"><a href="javascript:SelectDate('23','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">22</a></td><td class="ThisMonth"><a href="javascript:SelectDate('24','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">23</a></td><td class="ThisMonth"><a href="javascript:SelectDate('25','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">24</a></td><td class="ThisMonth"><a href="javascript:SelectDate('26','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">25</a></td><td class="ThisMonth"><a href="javascript:SelectDate('27','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">26</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('28','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">27</a></td><td class="ThisMonth"><a href="javascript:SelectDate('29','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">28</a></td><td class="ThisMonth"><a href="javascript:SelectDate('30','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">29</a></td><td class="ThisMonth"><a href="javascript:SelectDate('31','ctrHome_ctrFlightSearchBase_ctlDepatureDate')">30</a></td><td class="NextMonth">1</td><td class="NextMonth">2</td><td class="NextMonth">3</td>
+			</tr><tr>
+				<td class="NextMonth">4</td><td class="NextMonth">5</td><td class="NextMonth">6</td><td class="NextMonth">7</td><td class="NextMonth">8</td><td class="NextMonth">9</td><td class="NextMonth">10</td>
+			</tr>
+		</table>
+	</div>
+</div></td>
+                        </tr>
+                        <tr id="FlightSearch">
+                            <td colspan="2">
+                                <table width="100%" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td>Return Date:</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="CalenderBase">
+	<div class="CalenderControl" align="left">
+		<select name="ctrHome:ctrFlightSearchBase:ctlReturnDate:cmbDay" id="ctrHome_ctrFlightSearchBase_ctlReturnDate_cmbDay" OnChange="ChangeCalender('ctrHome_ctrFlightSearchBase_ctlReturnDate','')">
+			<option value="01">01</option>
+			<option value="02">02</option>
+			<option selected="selected" value="03">03</option>
+			<option value="04">04</option>
+			<option value="05">05</option>
+			<option value="06">06</option>
+			<option value="07">07</option>
+			<option value="08">08</option>
+			<option value="09">09</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20</option>
+			<option value="21">21</option>
+			<option value="22">22</option>
+			<option value="23">23</option>
+			<option value="24">24</option>
+			<option value="25">25</option>
+			<option value="26">26</option>
+			<option value="27">27</option>
+			<option value="28">28</option>
+			<option value="29">29</option>
+			<option value="30">30</option>
+			<option value="31">31</option>
+
+		</select><select name="ctrHome:ctrFlightSearchBase:ctlReturnDate:cmbMonthYear" id="ctrHome_ctrFlightSearchBase_ctlReturnDate_cmbMonthYear" OnChange="ChangeCalender('ctrHome_ctrFlightSearchBase_ctlReturnDate','')">
+			<option selected="selected" value="201006">June 2010</option>
+			<option value="201007">July 2010</option>
+			<option value="201008">August 2010</option>
+			<option value="201009">September 2010</option>
+			<option value="201010">October 2010</option>
+			<option value="201011">November 2010</option>
+			<option value="201012">December 2010</option>
+			<option value="201101">January 2011</option>
+			<option value="201102">February 2011</option>
+			<option value="201103">March 2011</option>
+			<option value="201104">April 2011</option>
+			<option value="201105">May 2011</option>
+
+		</select><img onClick="ShowPopup('', this,'ctrHome_ctrFlightSearchBase_ctlReturnDate_layer')" src="Images/0/B/bcp.gif" alt="" align="AbsMiddle" border="0" />
+	</div><div id="ctrHome_ctrFlightSearchBase_ctlReturnDate_layer" class="CalenderLayer" style="display:none;">
+		<table class="CalenderHeader" border="0">
+			<tr class="CalenderHeader">
+				<td class="Left"><a href="javascript:ChangeCalenderMonth('ctrHome_ctrFlightSearchBase_ctlReturnDate','',-1)"><</a></td><td class="Middle"><div id="ctrHome_ctrFlightSearchBase_ctlReturnDate_label">June 2010</div></td><td class="Right"><a href="javascript:ChangeCalenderMonth('ctrHome_ctrFlightSearchBase_ctlReturnDate','',1)">></a></td>
+			</tr>
+		</table><table id="ctrHome_ctrFlightSearchBase_ctlReturnDate_calender" class="CalenderCss" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;BORDER-COLLAPSE:separate;">
+			<tr class="Days">
+				<td>Su</td><td>Mo</td><td>Tu</td><td>We</td><td>Th</td><td>Fr</td><td>Sa</td>
+			</tr><tr>
+				<td class="LastMonth">30</td><td class="LastMonth">31</td><td class="DayDisabled">1</td><td class="DayDisabled">2</td><td class="SelectDay">3</td><td class="ThisMonth"><a href="javascript:SelectDate('5','ctrHome_ctrFlightSearchBase_ctlReturnDate')">4</a></td><td class="ThisMonth"><a href="javascript:SelectDate('6','ctrHome_ctrFlightSearchBase_ctlReturnDate')">5</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('7','ctrHome_ctrFlightSearchBase_ctlReturnDate')">6</a></td><td class="ThisMonth"><a href="javascript:SelectDate('8','ctrHome_ctrFlightSearchBase_ctlReturnDate')">7</a></td><td class="ThisMonth"><a href="javascript:SelectDate('9','ctrHome_ctrFlightSearchBase_ctlReturnDate')">8</a></td><td class="ThisMonth"><a href="javascript:SelectDate('10','ctrHome_ctrFlightSearchBase_ctlReturnDate')">9</a></td><td class="ThisMonth"><a href="javascript:SelectDate('11','ctrHome_ctrFlightSearchBase_ctlReturnDate')">10</a></td><td class="ThisMonth"><a href="javascript:SelectDate('12','ctrHome_ctrFlightSearchBase_ctlReturnDate')">11</a></td><td class="ThisMonth"><a href="javascript:SelectDate('13','ctrHome_ctrFlightSearchBase_ctlReturnDate')">12</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('14','ctrHome_ctrFlightSearchBase_ctlReturnDate')">13</a></td><td class="ThisMonth"><a href="javascript:SelectDate('15','ctrHome_ctrFlightSearchBase_ctlReturnDate')">14</a></td><td class="ThisMonth"><a href="javascript:SelectDate('16','ctrHome_ctrFlightSearchBase_ctlReturnDate')">15</a></td><td class="ThisMonth"><a href="javascript:SelectDate('17','ctrHome_ctrFlightSearchBase_ctlReturnDate')">16</a></td><td class="ThisMonth"><a href="javascript:SelectDate('18','ctrHome_ctrFlightSearchBase_ctlReturnDate')">17</a></td><td class="ThisMonth"><a href="javascript:SelectDate('19','ctrHome_ctrFlightSearchBase_ctlReturnDate')">18</a></td><td class="ThisMonth"><a href="javascript:SelectDate('20','ctrHome_ctrFlightSearchBase_ctlReturnDate')">19</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('21','ctrHome_ctrFlightSearchBase_ctlReturnDate')">20</a></td><td class="ThisMonth"><a href="javascript:SelectDate('22','ctrHome_ctrFlightSearchBase_ctlReturnDate')">21</a></td><td class="ThisMonth"><a href="javascript:SelectDate('23','ctrHome_ctrFlightSearchBase_ctlReturnDate')">22</a></td><td class="ThisMonth"><a href="javascript:SelectDate('24','ctrHome_ctrFlightSearchBase_ctlReturnDate')">23</a></td><td class="ThisMonth"><a href="javascript:SelectDate('25','ctrHome_ctrFlightSearchBase_ctlReturnDate')">24</a></td><td class="ThisMonth"><a href="javascript:SelectDate('26','ctrHome_ctrFlightSearchBase_ctlReturnDate')">25</a></td><td class="ThisMonth"><a href="javascript:SelectDate('27','ctrHome_ctrFlightSearchBase_ctlReturnDate')">26</a></td>
+			</tr><tr>
+				<td class="ThisMonth"><a href="javascript:SelectDate('28','ctrHome_ctrFlightSearchBase_ctlReturnDate')">27</a></td><td class="ThisMonth"><a href="javascript:SelectDate('29','ctrHome_ctrFlightSearchBase_ctlReturnDate')">28</a></td><td class="ThisMonth"><a href="javascript:SelectDate('30','ctrHome_ctrFlightSearchBase_ctlReturnDate')">29</a></td><td class="ThisMonth"><a href="javascript:SelectDate('31','ctrHome_ctrFlightSearchBase_ctlReturnDate')">30</a></td><td class="NextMonth">1</td><td class="NextMonth">2</td><td class="NextMonth">3</td>
+			</tr><tr>
+				<td class="NextMonth">4</td><td class="NextMonth">5</td><td class="NextMonth">6</td><td class="NextMonth">7</td><td class="NextMonth">8</td><td class="NextMonth">9</td><td class="NextMonth">10</td>
+			</tr>
+		</table>
+	</div>
+</div></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>		              
+                        <tr>
+                            <td colspan="2">How many Passengers? </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div style="float:left; width:65px;">12+Years</div>	
+                                <div style="float:left; width:65px;">2-11 Years</div>
+                                <!--<div style="float:left; width:60px;">0-23 Months</div>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><!-- <template.en.Home.FlightSearch.PassengerType.html> -->
+<div class="Passengers">
+	<select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbAdult" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult" onchange="CheckAdultInfant('ctrHome_ctrFlightSearchBase_ctlPassengerType');CheckAllPax('ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult','ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild');" style="width:64px;">
+	<option selected="selected" value="1">1 Adult</option>
+	<option value="2">2 Adults</option>
+	<option value="3">3 Adults</option>
+	<option value="4">4 Adults</option>
+	<option value="5">5 Adults</option>
+
+</select><select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbChild" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild" onchange="CheckAllPax('ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild','ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult');" style="width:64px;">
+	<option selected="selected" value="0">Children</option>
+	<option value="1">1 Child</option>
+	<option value="2">2 Children</option>
+	<option value="3">3 Children</option>
+	<option value="4">4 Children</option>
+
+</select><!--<select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbInfant" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbInfant" onchange="CheckAdultInfant('ctrHome_ctrFlightSearchBase_ctlPassengerType');" style="width:64px;">
+	<option selected="selected" value="0">Infants</option>
+	<option value="1">1 Infant</option>
+	<option value="2">2 Infants</option>
+	<option value="3">3 Infants</option>
+	<option value="4">4 Infants</option>
+	<option value="5">5 Infants</option>
+	<option value="6">6 Infants</option>
+	<option value="7">7 Infants</option>
+	<option value="8">8 Infants</option>
+	<option value="9">9 Infants</option>
+
+</select>-->
+<!--
+	<select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbAdult" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult" tabindex="110" onchange="CheckAdultInfant('ctrHome_ctrFlightSearchBase_ctlPassengerType');CheckAllPax('ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult','ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild');" style="width:64px;">
+	<option selected="selected" value="1">1 Adult</option>
+	<option value="2">2 Adults</option>
+	<option value="3">3 Adults</option>
+	<option value="4">4 Adults</option>
+	<option value="5">5 Adults</option>
+
+</select>&nbsp;<span class="a">Adult (12 years+)</span><br clear="all" />
+	<div style="padding:1px;"></div>
+	<select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbChild" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild" tabindex="111" onchange="CheckAllPax('ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbChild','ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbAdult');" style="width:64px;">
+	<option selected="selected" value="0">Children</option>
+	<option value="1">1 Child</option>
+	<option value="2">2 Children</option>
+	<option value="3">3 Children</option>
+	<option value="4">4 Children</option>
+
+</select>&nbsp;<span class="a">Children (2-11 years)</span><br clear="all" />
+	<div style="padding:1px;"></div>
+	<select name="ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbInfant" id="ctrHome_ctrFlightSearchBase_ctlPassengerType_cmbInfant" tabindex="112" onchange="CheckAdultInfant('ctrHome_ctrFlightSearchBase_ctlPassengerType');" style="width:64px;">
+	<option selected="selected" value="0">Infants</option>
+	<option value="1">1 Infant</option>
+	<option value="2">2 Infants</option>
+	<option value="3">3 Infants</option>
+	<option value="4">4 Infants</option>
+	<option value="5">5 Infants</option>
+	<option value="6">6 Infants</option>
+	<option value="7">7 Infants</option>
+	<option value="8">8 Infants</option>
+	<option value="9">9 Infants</option>
+
+</select>&nbsp;<span class="a">Infants (0-23 months)</span>
+-->		
+</div>
+<!-- </template.en.Home.FlightSearch.PassengerType.html> --></td>
+                        </tr>
+                        <tr>
+					        <td colspan="2">* 5 passengers only for one reservation including child</td>
+					    </tr>
+					    <tr>
+                            <td colspan="2"><div style="float:left; width:81px;">Class:</div><div style="float:left; width:60px;"><select name="ctrHome:ctrFlightSearchBase:cmbBoardingClass" id="ctrHome_ctrFlightSearchBase_cmbBoardingClass" style="width:111px;">
+	<option value="Y">Economy </option>
+	<option value="C">Business</option>
+
+</select></div></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><div style="float:left; width:81px;">Promotion Code:</div><div style="float:left; width:60px;"><input name="ctrHome:ctrFlightSearchBase:tboPromotionCode" type="text" id="ctrHome_ctrFlightSearchBase_tboPromotionCode" AutoCompleteType="Disabled" onKeyUp="ShowHideButton('ctrHome_ctrFlightSearchBase')" style="width:105px;" /></div></td>              				
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input type="image" name="ctrHome:ctrFlightSearchBase:btmSearch" id="ctrHome_ctrFlightSearchBase_btmSearch" tabindex="200" class="Button" onclick="ValidSDate('ctrHome_ctrFlightSearchBase');" src="Images/0/B/bsf.gif" alt="" border="0" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+		<!--<table border="0" width="100%" cellspacing="0" cellpadding="0">
+            <tr><td height="3"></td></tr>
+            <tr>
+                <td id="flightNetwork"></td>
+            </tr>
+            <tr>
+                <td width="238" valign="top" height="163" background="Images/0/M/bg_updatenews.gif" style="background-repeat: no-repeat">
+                    <table border="0" width="100%" cellspacing="0" cellpadding="0" id="TBLUpdateNews">
+                        <tr>
+                            <td width="100%" height="30"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsDateTextHome">26 February 2008</td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsTitleTextHome">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, <a href="http://">( more )</a></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" height="4"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsDateTextHome">26 February 2008</td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsTitleTextHome">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, <a href="http://">( more )</a></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" height="4"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsDateTextHome">26 February 2008</td>
+                        </tr>
+                        <tr>
+                            <td width="100%" class="NewsTitleTextHome">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, <a href="http://">( more )</a></td>
+                        </tr>
+                        <tr>
+                            <td width="100%" height="4"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%"></td>
+                        </tr>
+                        <tr>
+                            <td width="100%"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>-->
+        <br />
+        <div class="belowBooking">
+            <div class="content">* Passenger travelling with Infant could not book via Merpati Online Booking. Please contact our Call Center or the nearest Merpati Sales Office</div>
+			 <div class="content" align="center" style="height: 60px; padding-top: 10px;">
+				<img src="Images/0/I/visa.jpg" width="75" height="30" style="vertical-align: middle;" />&nbsp;<img src="Images/0/I/master.jpg" width="55" height="30"  style="vertical-align: middle;"/>&nbsp; <img src="Images/0/I/klick_bca.gif" width="61" height="56" style="vertical-align: middle;"/>
+			</div>
+
+			 <div class="content" align="center"><a href="https://seal.verisign.com/splash?form_file=fdf/splash.fdf&dn=www.merpati.co.id&lang=env" target="_blank"><img src="Images/0/I/ssl.jpg" width="61" height="30" /></a></div>
+        </div>
+    </div>
+    <div class="RightPanel">
+        <iframe src="./HTML/HomeFlightSearch.html" name="HomeFrame" id="HomeFrame" width="600" height="800" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" align="left"></iframe>
+	</div>
+</div>
+<script language="JavaScript">
+	if(document.getElementById('changeLanguage') != null){
+		document.getElementById('changeLanguage').style.display = '';
+	}
+</script>
+<script language="JavaScript">
+    // Add for toggle Oneway radio in Flight Availability.
+    function ToggleFlightType()
+    {
+        if(document.getElementById('ctrHome_ctrFlightSearchBase_rdoOneway') != null)
+	    {
+		    if(document.getElementById('ctrHome_ctrFlightSearchBase_rdoOneway').checked == true)
+		        HideGroup('FlightSearch','none');
+	    }
+    }
+    window.onload = ToggleFlightType;
+</script>
+<!-- </template.en.Home.FlightSearch.html> -->
+<!-- ctrFareShopperWeekBase -->
+<!-- ctrFareShopperMonthSearch -->
+
+
+
+<!-- </template.en.Home.html> -->
+			
+			
+			<!-- </template.en.Home.Footer.html> -->
+</center>
+<center><div class="Footer">
+<MAP NAME="FrontPageMap"><AREA SHAPE="RECT" COORDS="715, 2, 852, 20" HREF="http://www.tiksystems.com" TARGET="_blank"></MAP><a href="_vti_bin/shtml.exe/index_2_bottom.htm/map"><img ismap usemap="#FrontPageMap" border="0" height="24" src="Images/0/F/pic_footer.gif" width="859"></a>
+</div>
+</center>
+			
+		</form>
+		<script src="Scripts/Default.js"></script>
+	</body>
+</HTML>
+

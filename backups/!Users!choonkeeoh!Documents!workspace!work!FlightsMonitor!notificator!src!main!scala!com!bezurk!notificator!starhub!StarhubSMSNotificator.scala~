@@ -1,0 +1,63 @@
+package com.bezurk.notificator.starhub
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.lang.StringUtils;
+
+class StarhubSMSNotificator extends Notificator{
+  val sendUrl:String ="http://websms.starhub.com/websmsn/usr/createMsgSessionSubmit.do?method=createSession"
+  val startUrl:String="http://websms.starhub.com/websmsn/usr/createMsgSessionPageShow.do?method=initCreateSession"
+  
+  private def send(f: (PostMethod, HttpClient, String, String)=>Unit){
+    val params:HttpClientParams=new HttpClientParams()
+    params.setConnectionManagerTimeout(10000)
+    val client:HttpClient = new HttpClient(params)
+    val get:GetMethod = new GetMethod(startUrl)
+    client.executeMethod(get)
+    val post:PostMethod = new PostMethod(sendUrl)
+    try{
+      val recipientNumber = recipient.toInt
+      f(post, client, message, recipient)
+    }
+    catch{
+      case ex:NumberFormatException=>{
+        throw new NotificatonError(recipient+" is not a valid number", ex)
+      }
+      case ex:Exception={
+        throw new NotificatonError(ex)
+      }
+    }
+    finally{
+      post.releaseConnection()
+    }
+  }
+  
+  
+  def sendNotification(message:String, recipients:Array[String]){
+    recipients.foreach(arg=>sendNotification(message, arg))
+  }
+  
+  def postRequest(post:PostMethod, client:HttpClient, message:String, recipient:String){
+    post.setQueryString(Array[NameValuePair](
+      new NameValuePair("isUTF", ""),
+      new NameValuePair("message", message),
+      new NameValuePair("recipients", recipient),
+      new NameValuePair("senderName", "notificator"),
+      
+
+  }
+  
+  def sendNotification(message:String, recipient:String){
+    
+
+
+      
+      

@@ -1,0 +1,22 @@
+public class Notifier{
+    private NotificatorFactory notificatorFactory = new NotificatorFactory();
+
+    public void sendNotification(String message, String[] receipients, String[] receipientsTypes) throws NotificationError{
+        this.send(message, receipients, receipientsTypes, 0);
+    }
+
+    private void send(String message, String[] receipients, String[] receipientsTypes, int current) throws NotificationError{
+        if(current>=receipients.length){
+            return;
+        }
+        else{
+            String receipient = receipients[current];
+            String receipientType = receipientsTypes[current];
+            Notificator notificator = notificatorFactory.getNotificator(receipientType);
+            notificator.sendNotification(message, receipient);
+            this.send(message, receipients, receipientsTypes, current+1);
+        }
+    }
+}
+
+    

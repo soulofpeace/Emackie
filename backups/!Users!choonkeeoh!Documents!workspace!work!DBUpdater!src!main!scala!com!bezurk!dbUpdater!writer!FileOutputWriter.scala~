@@ -1,0 +1,7 @@
+package com.bezurk.dbUpdater
+
+import java.io.{FileWriter, IOException}
+
+
+class FileWriter(fileName:String) extends Writer{
+  private val 

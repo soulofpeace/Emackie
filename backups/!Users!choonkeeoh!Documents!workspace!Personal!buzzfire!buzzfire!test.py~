@@ -1,0 +1,20 @@
+from twitter_app.models import User
+from twitter_app.dao import UserDao
+from bookmark_app.models import Bookmark
+from bookmark_app.dao import BookmarkDao
+
+import redis
+
+conn = redis.Redis("localhost")
+bookmarkDao = BookmarkDao(conn)
+bookmark = Bookmark("1", "1", "hello", "kenny_shen")
+id = bookmarkDao.save(bookmark)
+print id
+tag ="test"
+bookmarkDao.tag_bookmark(tag, 1)
+print bookmarkDao.get_bookmark_of_user("1")[0].id
+print bookmarkDao.get_bookmark_of_user("1")[0].created
+print bookmarkDao.get_bookmark_by_tag("test")[0].id
+bookmarkDao.like_bookmark("1", 1)
+bookmarkDao.like_bookmark("2", id)
+

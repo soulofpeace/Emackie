@@ -1,0 +1,86 @@
+package com.bezurk.manager.deeplink.builder.chinahighlights; 
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.bezurk.provider.flight.deeplink.DeeplinkBuilder;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.model.deeplink.DeepLinkRequest;
+import com.bezurk.search.model.deeplink.DeepLinkStrategy;
+import org.apache.commons.httpclient.NameValuePair;
+
+
+package com.bezurk.manager.deeplink.builder.chinahighlights;
+package com.bezurk.manager.deeplink.builder.chinahighlights;
+
+/**
+ * Describe class ChinaHighlightsDLBuilder here.
+ *
+ *
+ * Created: Thu Aug 19 10:34:34 2010
+ *
+ * @author <a href="mailto:choonkeeoh@mettaAbode-2">Choon Kee Oh</a>
+ * @version 1.0
+ */
+public class ChinaHighlightsDLBuilder implements DeeplinkBuilder {
+
+    private final static String CUSTOMER_CODE="AG10054";
+    private final static String PRODUCT_CODE="PD1007"
+    private final static String SEARCH_URL="http://www.chinahighlights.com/forms/travel-copartner.html";
+	
+
+    /**
+     * Creates a new <code>ChinaHighlightsDLBuilder</code> instance.
+     *
+     */
+    public ChinaHighlightsDLBuilder() {
+
+    }
+
+    // Implementation of com.bezurk.provider.flight.deeplink.DeeplinkBuilder
+
+    /**
+     * Describe <code>buildDeepLinkStrategy</code> method here.
+     *
+     * @param flightSearchRequest a <code>FlightSearchRequest</code> value
+     * @return a <code>List</code> value
+     */
+
+    // http://www.chinahighlights.com/forms/travel-copartner.htm?CustomerCode=CTP账户编号&CptPDCode=CTP账户产品编号&searchtype=flight&to=目的机场编号&from=出发机场编号&DepDate=出发日期&BackDate=返程日期&TripType=行程类型0为单程，1为往返&adults=成人数&children=儿童数&baby=婴儿数
+    public final List<DeepLinkStrategy> buildDeepLinkStrategy(final FlightSearchRequest flightSearchRequest) {
+	List<DeepLinkStrategy> strategies = new ArrayList<DeepLinkStrategy();
+	DeepLinkStrategy strategy = new DeepLinkStrategy();
+	DeepLinkRequest search_request = new DeepLinkRequest();
+	search_request.setDisplay(true);
+	search_request.setPost(false);
+	search_request.setUrl(SEARCH_URL);
+	search_request.setParams(this.get_search_params(request));
+	strategy.addRequest(search_request);
+	strategies.add(strategy);
+	return strategies;
+
+
+    }
+
+    
+    private NameValuePair[] get_search_params(FlightSearchRequest request){
+	List<NameValuePair> params = new ArrayList<NameValuePair>();
+	SimpleDateFormat date_format = new SimpleDateFormat("yyyy-M-d");
+	params.add(new NameValuePair("CustomerCode", CUSTOMER_CODE));
+	params.add(new NameValuePair("CptPDCode", PRODUCT_CODE));
+	params.add(new NameValuePair("searchtype", "flights"));
+	params.add(new NameValuePair("to", request.getFromLocation().getCode()));
+	params.add(new NameValuePair("from", request.getToLocation().getCode()));
+	params.add(new NameValuePair("DepDate",date_format.format(request.getOutboundDate())));
+	params.add(new NameValuePair("BackDate", request.isRoundTrip()?date_format.format(request.getInboundDate()):date_format.format(request.getOutboundDate)));
+	params.add(new NameValuePair("TripType", request.isRoundTrip()?"1":"0"));
+	params.add(new NameValuePair("adults", request.getNumAdults()));
+	params.add(new NameValuePair("children", request.getNumChildren()));
+	params.add(new NameValuePair("baby", "0"));
+	params.toArray(new NameValuePair[0]);
+    }
+  
+}
+
+

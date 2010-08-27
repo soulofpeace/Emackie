@@ -1,0 +1,5 @@
+package com.bezurk.dbUpdater.state.data
+
+import com.bezurk.dbUpdater.data._
+
+case class State(name:String, code:String, country:String, permalink:String) extends Data

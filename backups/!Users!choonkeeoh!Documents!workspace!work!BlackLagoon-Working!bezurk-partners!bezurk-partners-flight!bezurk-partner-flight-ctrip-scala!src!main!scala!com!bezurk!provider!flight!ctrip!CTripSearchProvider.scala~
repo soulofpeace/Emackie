@@ -1,0 +1,278 @@
+package com.bezurk.provider.flight.ctrip
+
+
+import scala.xml._
+import scala.xml.parsing.ConstructingParser 
+import scala.io.Source
+
+
+import com.bezurk.provider.flight.FlightSearchProviderException;
+import com.bezurk.provider.flight.HttpFlightSearchProvider;
+import com.bezurk.search.flight.FlightSearchReport;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.flight.model.FlightClass;
+import com.bezurk.search.flight.model.FlightItinerary;
+import com.bezurk.search.flight.model.FlightLeg;
+import com.bezurk.search.flight.model.FlightPrice;
+import com.bezurk.search.flight.model.FlightSegment;
+import com.bezurk.search.flight.model.FullFlightNumber;
+import com.bezurk.search.model.OagLocation;
+
+import org.apache.commons.httpclient.HttpClient;
+
+import com.bezurk.provider.flight.ctrip.log.LogHelper;
+
+class CTripSearchProvider extends HttpFlightSearchProvider with LogHelper{
+  
+  val MAX_LIMIT:int=100
+  
+  @scala.reflect.BeanProperty
+  private var cTripWSClient:CTripWSClient=_;
+
+
+  private val ptr = new scala.xml.PrettyPrinter(scala.Math.MAX_INT, 2)
+
+  private val currencyCode = "CNY"
+
+  def performSearch(request:FlightSearchRequest):FlightSearchReport={
+    val client:HttpClient = new HttpClient()
+    //client.getHttpConnectionManager().getParams.setSoTimeout(60000)
+    client.getParams().setParameter("User-Agent", "BezurkBot")
+    val response =cTripWSClient.search(client, request)
+    logger.debug("CTrip Response: "+response)
+    if(response!=null){
+      parse_and_post_itinerary(request, response)
+    }
+    else{
+      logger.error("Something bad has happened while retrieving xml Response")
+      throw new FlightSearchProviderException("Unable to retrieve xml response")
+    }
+    
+    return null
+  }
+  
+  private def parse_and_post_itinerary(request:FlightSearchRequest, response:Document):Unit={
+    log.debug("xml_response: "+(response\\ "SearchResult").text)
+    val search_result_string = (response\\ "SearchResult").text.trim()
+    val search_result = XML.loadString(search_result_string.substring(search_result_string.indexOf("<")))
+    val flights = search_result\\ "Flight"
+    //flights.foreach(arg=>println("flight: "+ptr.format(arg)))
+    val flightLegs = getFlightLegs(flights.toList, request)(List())(List())
+    val outLegs = flightLegs._1
+    val itineraries:List[FlightItinerary]=
+      if(request.isRoundTrip()){
+        val inLegs  = flightLegs._2
+        outLegs.flatMap(outLeg=>{
+          inLegs.map(inLeg=>{
+            val itinerary = new FlightItinerary()
+            itinerary.addOutboundLeg(outLeg)
+            itinerary.addInboundLeg(inLeg)
+            itinerary
+          })
+        })
+      }
+      else{
+        outLegs.map(outLeg=> {
+          val itinerary = new FlightItinerary()
+          itinerary.addOutboundLeg(outLeg)
+          itinerary
+        })
+      }
+    
+
+    def sortByPrice(i1:FlightItinerary, i2:FlightItinerary):Boolean={
+      val outBoundPrice1 = java.lang.Double.parseDouble(i1.getOutboundLegs().get(0).getPrices().get(0).getTotalAmount());
+      val totalPrice = outBoundPrice1 +(if(i1.getInboundLegs()!=null && i1.getInboundLegs().size()>0){
+        java.lang.Double.parseDouble(i1.getInboundLegs().get(0).getPrices().get(0).getTotalAmount());
+      }
+                                        else{
+                                          0.0
+                                        })
+      
+      val outBoundPrice2 = java.lang.Double.parseDouble(i2.getOutboundLegs().get(0).getPrices().get(0).getTotalAmount());
+      val totalPrice2= outBoundPrice2+(if(i2.getInboundLegs()!=null && i2.getInboundLegs().size()>0){
+        java.lang.Double.parseDouble(i2.getInboundLegs().get(0).getPrices().get(0).getTotalAmount());
+      }
+                                       else{
+                                         0.0
+                                       })
+      totalPrice <=totalPrice2 
+    }
+    val itinerariesSorted = itineraries.sort(sortByPrice)
+    itinerariesSorted.slice(0, MAX_LIMIT).foreach(postItinerary)
+    itinerariesSorted
+  }
+
+  def postItinerary(request:FlightSearchRequest, itinerary:FlightItinerary){
+    logger.debug(itinerary); 
+    checkItinerary(itinerary, request);
+    List<FlightItinerary> itineraries = new ArrayList<FlightItinerary>();
+    itineraries.add(itinerary);
+    //postItineries(itineraries, request);
+  }
+
+                    private def getFlightLegs(flightNodes:List[Node], request:FlightSearchRequest)(out_legs:List[FlightLeg])(in_legs:List[FlightLeg]):(List[FlightLeg], List[FlightLeg])={
+                      val airports = getAirports(request)
+                      val fromLocationAirports = airports._1
+                      val toLocationAirports = airports._2
+                      logger.debug(fromLocationAirports.foreach(println))
+                      logger.debug(toLocationAirports.foreach(println))
+                      flightNodes match{
+                        case hd::tail=>{
+                          val departureAirportCode = (hd\\ "DepartAirportCode").text
+                          val arriveAirportCode = (hd\\ "ArriveAirportCode").text
+                          val valid = isValid(departureAirportCode, arriveAirportCode, fromLocationAirports, toLocationAirports)
+                          if(valid){
+                            val inbound = isInbound(departureAirportCode, arriveAirportCode, fromLocationAirports, toLocationAirports)
+                            log.debug(if (inbound) "inbound leg" else "outbound leg")
+                            log.debug("flightleg: "+ptr.format(hd))
+                            val leg:FlightLeg = new FlightLeg()
+                            val segment:FlightSegment = getFlightSegment(request, (hd\\ "FlightNo"))
+                            leg.addSegment(segment)
+                            val price:FlightPrice = getFlightPrice(request, hd)
+                            leg.addPrice(price)
+                            //hd.child.foreach(arg=>log.debug("element: "+ptr.format(arg)))
+                            return getFlightLegs(tail, request)(if(! inbound) leg::out_legs else out_legs)(if(inbound) leg::in_legs else in_legs)
+                          }
+                                                                                                           else{
+                                                                                                             logger.info("Skipping this leg because it does not match search criteria "+ptr.format(hd))
+                                                                                                             return getFlightLegs(tail, request)(out_legs)(in_legs)
+                                                                                                           }
+                        }
+                        case Nil=>{
+                          return (out_legs, in_legs)
+                        }
+                      }
+                    }
+
+
+                    private def getAirports(request:FlightSearchRequest):(List[String], List[String])={
+                      val fromLocation = request.getFromLocation()
+                      val toLocation = request.getToLocation()
+                      val fromLocationChildAirports = if (fromLocation.hasChildren()) fromLocation.getCode::List(fromLocation.getAirports().toArray(new Array[OagLocation](0)):_*).map(arg=>arg.getCode()) else fromLocation.getCode()::Nil
+                      val toLocationChildAirports = if (toLocation.hasChildren()) toLocation.getCode::List(toLocation.getAirports().toArray(new Array[OagLocation](0)):_*).map(arg=>arg.getCode()) else toLocation.getCode()::Nil
+                      return (fromLocationChildAirports, toLocationChildAirports)
+                    }
+                    
+                    //check whether airport is specified in search)
+                    private def isValid(departureAirportCode:String, arriveAirportCode:String, fromLocationChildAirports:List[String], toLocationChildAirports:List[String]):boolean={
+                      (fromLocationChildAirports.contains(departureAirportCode) && toLocationChildAirports.contains(arriveAirportCode))|| (fromLocationChildAirports.contains(arriveAirportCode) && toLocationChildAirports.contains(departureAirportCode))
+                    }
+
+
+                    private def isInbound(departureAirportCode:String, arriveAirportCode:String, fromLocationChildAirports:List[String], toLocationChildAirports:List[String]):boolean={
+                      fromLocationChildAirports.contains(arriveAirportCode) && toLocationChildAirports.contains(departureAirportCode)
+                    }
+
+
+                    private def getFlightSegment(request:FlightSearchRequest, flightNumberNode:NodeSeq):FlightSegment={
+                      if(flightNumberNode ==null){
+                        logger.error("Unable to get flightNumber")
+                        throw new FlightSearchProviderException("Unable to get FlightNumber")
+                      }
+                      val flightNumber = flightNumberNode.text
+                      log.debug("FlightNumber: "+flightNumber)
+                      val segment = new FlightSegment()
+                      val fullFlightNo = new FullFlightNumber(flightNumber.substring(0,2), flightNumber.substring(2))
+                      segment.setFlightNumber(fullFlightNo)
+                      segment.setFlightClass(determineFlightClass(request))
+                      segment
+                    }
+
+                    private def getFlightPrice(request:FlightSearchRequest, flightLegNode:Node):FlightPrice={
+                      val price = new FlightPrice()
+                      val adultFuelFee = if ((flightLegNode\\ "AdultFee")!=null) {
+                        java.lang.Double.parseDouble((flightLegNode\\ "AdultFee").text)
+                      }else{ 
+                        logger.error("Cannot get fuel tax for adult"); throw new FlightSearchProviderException("Cannot get fuel fee for adult")}
+                      log.debug("Adult Fuel Fee: "+adultFuelFee)
+                      val childFuelFee = if ((flightLegNode\\ "ChildFee")!=null) {
+                        java.lang.Double.parseDouble((flightLegNode\\ "ChildFee").text)
+                      }else{ 
+                        logger.error("Cannot get fuel tax for Child"); throw new FlightSearchProviderException("Cannot get fuel fee for child")}
+                      logger.debug("Child Fuel Fee: "+childFuelFee)
+                      val adultTax = if ((flightLegNode\\ "AdultTax")!=null) {
+                        java.lang.Double.parseDouble((flightLegNode\\ "AdultTax").text)
+                      }else{ 
+                        logger.error("Cannot get tax for adult"); throw new FlightSearchProviderException("Cannot get tax for adult")}
+                      logger.debug("Adult Tax:"+ adultTax)
+                      val childTax =if ((flightLegNode\\ "ChildTax")!=null) {
+                        java.lang.Double.parseDouble((flightLegNode\\ "ChildTax").text)
+                      }else{ 
+                        logger.error("Cannot get tax for child"); throw new FlightSearchProviderException("Cannot get tax  for child")}
+                      logger.debug("Child Tax:"+ childTax)
+                      val cabinClassSuffix = if(request.getCabinClass() == CABIN_CLASS.Economy){
+                        "EconomyStandardPrice"}
+                                             else if(request.getCabinClass() == CABIN_CLASS.Business){
+                                               "BusinessStandardPrice"}
+                                             else{
+                                               "FirstStandardPrice"}
+                      val adultFarePrice = 
+                        if ((flightLegNode\\ ("Adult"+ cabinClassSuffix ))!=null) {
+                          java.lang.Double.parseDouble((flightLegNode\\ ("Adult"+ cabinClassSuffix)).text)
+                        }else{ 
+                          -1.0
+                        }
+                      logger.debug("Adult Fare Price: "+ adultFarePrice)
+                      val childFarePrice = if ((flightLegNode\\ ("Child"+ cabinClassSuffix))!=null) {
+                        java.lang.Double.parseDouble((flightLegNode\\ ("Child"+ cabinClassSuffix)).text)
+                      }else{ 
+                        log.error("Cannot get fare for child"); throw new FlightSearchProviderException("Cannot get fare for child")}
+                      logger.debug("Child Fare Price: "+ childFarePrice)
+                      val adultPromoPrice = if ((((flightLegNode\\ "PriceList")\ "Price")\ "Price")!=null) {
+                        java.lang.Double.parseDouble((((flightLegNode\\ "PriceList")\ "Price")\ "Price").text)
+                      }else{ 
+                        -1.0
+                      }
+                      logger.debug("Adult Promo Fare:" + adultPromoPrice)
+                      price.setCurrencyCode(currencyCode)
+                      price.setIncludesTax(true)
+                      price.setPricePerAdult(String.valueOf(if(adultPromoPrice >0) adultPromoPrice else adultFarePrice))
+                      val totalPricePerAdult = if(adultPromoPrice > 0) adultPromoPrice + adultFuelFee + adultTax else adultFarePrice + adultFuelFee + adultTax
+                      price.setTotalPricePerAdult(String.valueOf(totalPricePerAdult))
+                      if(request.getNumChildren() >0){
+                        price.setPricePerChild(String.valueOf(childFarePrice))
+                        price.setTotalPricePerChild(String.valueOf(childFarePrice+ childTax + childFuelFee))
+                      }
+                      val amount = adultFarePrice*request.getNumAdults() + (if (request.getNumChildren()>0) childFarePrice * request.getNumChildren() else 0.0)
+                      log.debug("Amount :"+ amount)
+                      val pricePerPassenger = amount/(request.getNumAdults() + request.getNumChildren())
+                      log.debug("PricePerPassenger: "+ pricePerPassenger)
+                      val totalAmount = java.lang.Double.parseDouble(price.getTotalPricePerAdult())*request.getNumAdults()+(if(request.getNumChildren>0) java.lang.Double.parseDouble(price.getTotalPricePerChild()) * request.getNumChildren() else 0.0)
+                      log.debug("totalAmount: "+ totalAmount)
+                      val totalPricePerPassenger = totalAmount/(request.getNumAdults() + request.getNumChildren())
+                      log.debug("totalPricePerPassenger: "+ totalPricePerPassenger)
+                      price.setAmount(amount.toString())
+                      price.setTotalAmount(totalAmount.toString())
+                      price.setPricePerPassenger(pricePerPassenger.toString())
+                      price.setTotalPricePerPassenger(totalPricePerPassenger.toString())
+                      price
+                    }
+
+                    private def determineFlightClass(request:FlightSearchRequest):FlightClass={
+                      val flightClass:FlightClass = new FlightClass()
+                      request.getCabinClass() match{
+                        case CABIN_CLASS.Economy=>{
+                          flightClass.setEconomyClass()
+                        }
+                        case CABIN_CLASS.Business=>{
+                          flightClass.setBusinessClass()
+                        }
+                        case CABIN_CLASS.First=>{
+                          flightClass.setFirstClass()
+                        }
+                        
+                      }
+                      flightClass
+                    }
+                    protected def servicesRoute(from:String, to:String):Boolean={
+                      true
+                    }
+
+                    protected def isSearchRelevant(request:FlightSearchRequest)={
+                      true
+                    }
+
+
+                  }

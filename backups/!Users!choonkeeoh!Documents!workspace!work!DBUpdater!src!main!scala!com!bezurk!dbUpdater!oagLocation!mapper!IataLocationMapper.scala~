@@ -1,0 +1,192 @@
+package com.bezurk.dbUpdater.oagLocation.mapper
+
+import scala.actors.Futures._
+import scala.actors.Future
+
+import com.bezurk.log._
+
+import com.bezurk.dbUpdater.mapper._
+import com.bezurk.dbUpdater.output._
+import com.bezurk.dbUpdater.data._
+import com.bezurk.dbUpdater.input._
+import com.bezurk.dbUpdater.db._
+
+import com.bezurk.dbUpdater.oagLocation.data._
+
+trait IataLocationMapperComponent extends MapperComponent {
+  this:InputFactoryComponent with DBComponent =>
+    val mapper = new IataLocationMapper()
+  class IataLocationMapper extends Mapper with LogHelper{  
+
+    def map(source:String):Seq[Result]={
+      val input:Seq[Data]=inputFactory.getInputSeq(source)
+      return generateResult(input)
+    }
+
+    def run(statements:Seq[String]):Seq[(String, Boolean)]={
+      val waiting:Seq[(String, Future[Boolean])]  = for(statement<-statements) yield (statement, future(db.executeUpdate(statement)))       
+      val result = for(wait <- waiting) yield (wait._1, wait._2())
+      result
+      
+    }
+    
+    private def generateResult(input:Seq[Data]):Seq[Result]={
+      val results:Seq[Future[Seq[Result]]] = for(data<-input) yield future(generateResult(data))
+      val output = for(arg<-results; result<-arg()) yield result
+      output
+      /**
+       result.foldLeft(future(Seq[Result]()))(
+       (arg1, arg2)=>{ 
+       val seq1 = arg1()
+       val seq2 = arg2()
+       seq1++seq2
+       })
+       * */
+    }
+
+
+    private def generateResult(data:Data):Seq[Result]={
+      data match{
+        case Location(location_code, multi_airport_city_code, location_type, location_sub_type, location_name, country_code, _, _, state_code, _, time_division_in_a_country, latitude, longitude, active)=>{
+          val response:Seq[Map[String, String]] = db.execute("select * from iata_locations where location_code ='" +location_code +"' and location_type ='"+location_type+"' and location_sub_type ='"+location_sub_type+"'")
+          if (response.length==0){
+            val compareString = location_code+","+
+            location_type+","+
+            location_sub_type+","+
+            location_name+","+
+            multi_airport_city_code+","
+            country_code+","
+            state_code+","
+            active+","
+            latitude+","
+            longitude+","
+            time_division_in_a_country
+            val newResult = Result(Result.NewResult, compareString)
+            logger.debug(newResult::generateInsertSQLResult(data.asInstanceOf[Location])::Nil)
+            return newResult::generateInsertSQLResult(data.asInstanceOf[Location])::Nil
+          }
+          else{
+            val compareString:String =location_code+","+
+            location_type+","+
+            location_sub_type+","+
+            (if(location_name!=response(0)("location_name"))"*" else "") +response(0)("location_name")+","+
+            (if( multi_airport_city_code != response(0)("multi_airport_city_code"))"*" else "")+response(0)("multi_airport_city_code") +","+
+            (if( country_code != response(0)("country_code"))"*" else "")+response(0)("country_code") +","+
+            (if( state_code != response(0)("state_code"))"*" else "") +response(0)("state_code") +"," +
+            (if( active!= response(0)("active"))"*" else "")+response(0)("active") +","+
+            (if( latitude!=response(0)("latitude"))"*" else "") +response(0)("latitude") +","+
+            (if( longitude!= response(0)("longitude"))"*" else "")+response(0)("longitude") +","+
+            (if( time_division_in_a_country!= response(0)("time_division_in_a_country"))"*" else"")+response(0)("time_division_in_a_country") +">"+
+            location_code+","+
+            location_type+","+
+            location_sub_type+","+
+            location_name+","+
+            multi_airport_city_code+","+
+            country_code+","+
+            state_code+","+
+            active+","+
+            latitude+","+
+            longitude+","+
+            time_division_in_a_country
+            
+            if(compareString.indexOf("*")!= -1){
+              val differenceResult = Result(Result.DifferenceResult, compareString)
+              logger.debug(differenceResult:: generateUpdateSQLResult(data.asInstanceOf[Location], response(0)("id"))::Nil)
+              return differenceResult:: generateUpdateSQLResult(data.asInstanceOf[Location], response(0)("id"))::Nil
+
+            }
+            else{
+              logger.debug(Result(Result.EquivalentResult, compareString)::Nil)
+              return Result(Result.EquivalentResult, compareString)::Nil
+            }
+          }
+        }
+      }
+    }
+    
+    
+    
+    private def generateInsertSQLResult(location:Location):Result={
+      val id = if(location.state!=null) checkStateId(location) else null
+      if(id==null || id!=None){
+        val state_id = if(id!=null) id.get else null
+        val sqlInsertStatement = "insert into iata_locations(location_code, location_name, multi_airport_city_code, location_type, location_sub_type, country_code, state_code, active, latitude, longitude, time_division_in_a_country, state_id, include_in_hotels_autocomplete, include_in_flights_autocomplete, created_at, updated_at) values("+
+        generateValue(location.location_code)+", "+
+        generateValue(location.name)+", "+
+        generateValue(location.multicity)+", "+
+        generateValue(location.locationType)+", "+
+        generateValue(location.subtype)+", "+
+        generateValue(location.country_code)+", "+
+        generateValue(location.state)+", "+
+        generateValue(location.active)+", "+
+        generateValue(location.latitude)+", "+
+        generateValue(location.longitude)+", "+
+        generateValue(location.timediv)+", "+
+        generateValue(state_id)+", "+
+        generateValue("1")+","+
+        generateValue("1")+","+
+        "now(), now() );"
+        return Result(Result.SQLResult, sqlInsertStatement)
+      }
+                       else{
+                         return Result(Result.ErrorResult, "Missing location state "+location.state)
+                       }
+    }
+
+    private def generateUpdateSQLResult(location:Location, id:String):Result={
+      val state_id_option = if(location.state!=null) checkStateId(location) else null
+      if(state_id_option==null || state_id_option != None){
+        val state_id = if(state_id_option!=null) state_id_option.get else null
+        val sqlUpdateStatement = "update iata_locations set "+
+        generateSetCode("iata_locations.location_code", location.location_code)+", "+
+        generateSetCode("iata_locations.location_name", location.name)+", "+
+        generateSetCode("iata_locations.multi_airport_city_code", location.multicity)+", "+
+        generateSetCode("iata_locations.location_type", location.locationType)+", "+
+        generateSetCode("iata_locations.location_sub_type", location.subtype)+", "+
+        generateSetCode("iata_locations.country_code", location.country_code)+", "+
+        generateSetCode("iata_locations.state_code", location.state)+", "+
+        generateSetCode("iata_locations.active", location.active)+", "+
+        generateSetCode("iata_locations.latitude", location.latitude)+", "+
+        generateSetCode("iata_locations.longitude", location.longitude)+", "+
+        generateSetCode("iata_locations.time_division_in_a_country", location.timediv)+", "+
+        generateSetCode("iata_locations.state_id", state_id)+", "+
+        generateSetCode("iata_locations.updated_at", "now()")+
+        " where "+generateSetCode("iata_locations.id", id)+";"
+        return Result(Result.SQLResult, sqlUpdateStatement)
+      }
+                       else{
+                         return Result(Result.ErrorResult, "Missing location state "+location.state)
+                       }
+      
+    }
+
+    //link to state table need to check whether state table contain state code
+    private def checkStateId(location:Location):Option[String]={
+      val response = db.execute("select id from states where state_code='"+location.state+"' and country_code='"+location.country_code+"'")
+      if (response.length==0){
+        None
+      }
+      else{
+        Some(response(0)("id"))
+      }
+    }
+
+    private def generateSetCode(key:String, value:String)={
+      key+"="+generateValue(value)
+    }
+    
+    private def isNullOrMethod(value:String):Boolean={
+      val methodRegex = "(\\w+\\(.*?\\))".r
+      value match{
+        case null=> true
+        case methodRegex(matchValue)=> true
+        case _=> false
+      }
+    }
+    
+    private def generateValue(value:String)=(if(!isNullOrMethod(value)) "'"+value+"'" else value)
+      
+  }
+}
+
+

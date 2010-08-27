@@ -1,0 +1,7 @@
+
+--This line, and those below, will be ignored--
+
+M    bezurk-partner-flight-garuda-indonesia.com/src/test/java/com/bezurk/provider/flight/garudaindonesia/TestGarudaIndonesiaRouteGetter.java
+M    bezurk-partner-flight-garuda-indonesia.com/src/test/java/com/bezurk/provider/flight/garudaindonesia/TestGarudaIndonesiaSearchProvider.java
+M    bezurk-partner-flight-garuda-indonesia.com/src/main/java/com/bezurk/provider/flight/garudaindonesia/GarudaIndonesiaSearchProvider.java
+M    bezurk-partner-flight-garuda-indonesia.com/src/main/resources/routes.properties

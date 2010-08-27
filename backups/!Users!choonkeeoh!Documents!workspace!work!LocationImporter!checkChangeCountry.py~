@@ -1,0 +1,12 @@
+import re, sys
+
+countryPattern = re.compile(r"\(.*?,.*?,.*?,.*?,.*?,\*(.*?),.*?\(.*?,.*?,.*?,.*?,.*?,(.*?),.*", re.I)
+filein=open(sys.argv[1], 'r')
+for line in filein:
+    result = countryPattern.match(line)
+    if result.match():
+        oldCountry = result.group(1)
+        newCountry = result.group(2)
+        output = "%s\t%s", %(oldCountry, newCountry)
+        print output
+

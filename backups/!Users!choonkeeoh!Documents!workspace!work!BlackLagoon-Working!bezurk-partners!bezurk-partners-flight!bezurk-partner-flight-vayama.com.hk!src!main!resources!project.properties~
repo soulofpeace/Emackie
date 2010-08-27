@@ -1,0 +1,13 @@
+# Name of the partner module
+partner.module.name=vayama.com
+partner.module.ip=localhost
+
+# ======= Service concurrency
+# Number of consumers
+service.concurrency.poolSize=5
+# Timeout of search in queue
+service.concurrency.timeoutSeconds=60
+# Timeout of running search
+service.concurrency.searchTimeoutSeconds=180
+
+memcached.urls=${memcached.urls}

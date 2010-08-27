@@ -1,0 +1,9 @@
+<soap:Envelopexmlns:soap="http://www.w3.org/2003/05/soap-envelope"xmlns:tem="http://tempuri.org/">
+   <soap:Header/>
+   <soap:Body>
+      <tem:FlightRequest>
+         <!--Optional:-->
+         <tem:requestXML>&lt;FlightRequest requestType=&quot;flightNormal&quot; UserPassword=&quot;wego&quot; UserAccount=&quot;wego&quot;&gt; &lt;SendTicketCityID&gt;2&lt;/SendTicketCityID&gt; &lt;IsSingleFlightSearchRequest&gt;false&lt;/IsSingleFlightSearchRequest&gt; &lt;Routes&gt; &lt;Route&gt; &lt;DepartCityCode&gt;BJS&lt;/DepartCityCode&gt; &lt;ArriveCityCode&gt;SHA&lt;/ArriveCityCode&gt; &lt;DepartDate&gt;2010-08-27&lt;/DepartDate&gt; &lt;ClassRange&gt;Y&lt;/ClassRange&gt; &lt;/Route&gt; &lt;/Routes&gt; &lt;SingleFlightSearchParamter&gt;&lt;/SingleFlightSearchParamter&gt; &lt;/FlightRequest&gt;</tem:requestXML>
+      </tem:FlightRequest>
+   </soap:Body>
+</soap:Envelope>

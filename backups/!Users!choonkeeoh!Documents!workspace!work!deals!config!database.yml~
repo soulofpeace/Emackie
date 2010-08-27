@@ -1,0 +1,19 @@
+login: &login
+  adapter: mysql
+  encoding: utf8
+  username: root
+  password:
+  host: localhost
+
+development:
+  database: travel_deals_development
+  <<: *login
+
+test:
+  database: travel_deals_test
+  <<: *login
+
+production:
+  adapter: mysql
+  database: travel_deals
+  <<: *login

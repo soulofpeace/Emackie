@@ -1,0 +1,57 @@
+from twisted.internet import protocol, reactor, defer
+from twisted.application import internet, service
+from twisted.protocols import basic
+from datetime import datetime
+import time
+
+class TimeProtocol (basic.LineReceiver):
+    def connectionMade(self):
+        self.lines =[]
+        
+    def lineReceived(self, line):
+        self.lines.append(line)
+        
+    def connectionLost(self, reason):
+        host = self.lines[0]
+        time = self.lines[1]
+
+
+class TimeService(service.Service):
+    
+    def __init__(self, hostFile):
+        self.host=[]
+        self.hostTimeDict={}
+        self.hostFile = hostFile
+
+    def _read(self):
+        for line in file(self.hostFile):
+            host.append(line.strip())
+        self.call = reactor.callLater(30, self._read)
+        
+    def startService(self):
+        self._read()
+        service.Service.startService(self)
+
+    def stopService(self):
+        service.Service.stopService(self)
+        self.call.cancel()
+        
+    def setHostTime(self, host, time):
+        self.hostTimeDict[host]= time
+        if(float(time) > time.time() +5000):
+            print "out of sync"
+            
+    def getHostTimeSetterFactory(self):
+        f = protocol.ServerFactory()
+        f.protocol= TimeProtocol
+        f.setHostTime = self.setHostTime
+        return f
+
+
+application = service.Application('timeSync')
+f = TimeService()
+serviceCollection=service.IServiceCollection(application)
+internet.TCPServer(8888, f.getHostTimeSetterFactory()).setServiceParent(serviceCollection)
+
+                          
+        

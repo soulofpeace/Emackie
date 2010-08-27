@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+    <format>dir</format>
+  </formats>
+  <!-- ============================= -->
+  <!-- Specify what files to include -->
+  <!-- ============================= -->
+  <moduleSets>
+    <moduleSet>
+      <includes>
+        <include>SingtelNotificator.Notificator:SingtelNotificator</include>
+        <include>M1Notificator.Notificator:M1Notificator</include>
+      </includes>
+      <binaries>
+        <outputDirectory>modules/${artifactId}</outputDirectory>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
+  <!-- ======================================= -->
+  <!-- Include any other misc files (optional) -->
+  <!-- ======================================= -->
+  <!-- 
+  <files>
+		<file>
+			<source>../commons/cars.sh</source>
+			<outputDirectory>bin</outputDirectory>
+			<filtered>true</filtered>
+			<fileMode>0755</fileMode>
+		</file>		
+	</files>
+	-->
+</assembly>

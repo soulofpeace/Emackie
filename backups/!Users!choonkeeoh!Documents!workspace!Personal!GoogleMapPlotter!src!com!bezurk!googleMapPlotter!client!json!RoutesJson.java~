@@ -1,0 +1,15 @@
+package com.bezurk.googleMapPlotter.client.json;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayString;
+
+
+public class RoutesJson extends JavaScriptObject{
+    protected RoutesJson(){}
+
+    public static final native RoutesJson fromJson(String json)/*-{ return eval(json) }=*/;
+    public static final native String getCode()/*-{ return this.code }-*/;
+
+    public static final native JsArrayString getDestCodes()/*-{ return this.dest }-*/;
+}

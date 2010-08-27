@@ -1,0 +1,800 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Wego Flights API Documentation</title>
+
+    <meta name="keywords" content="api, documentation, wego, Flights , flight search" />
+    <meta name="description" content="Documentation for the Wego Flights API" />
+
+    <style type="text/css" media="screen">
+      /*
+        Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+        Code licensed under the BSD License:
+        http://developer.yahoo.net/yui/license.txt
+        version: 2.7.0
+        */
+        html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var,optgroup{font-style:inherit;font-weight:inherit;}del,ins{text-decoration:none;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:baseline;}sub{vertical-align:baseline;}legend{color:#000;}input,button,textarea,select,optgroup,option{font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;}input,button,textarea,select{*font-size:100%;}
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #fff;
+            color: #333;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            height: 100%;
+        }
+
+        em {
+            font-style: italic;
+        }
+
+        h1, h2, h3, h4, h5, h6, strong, th, label {
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 10px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 24px 0 10px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin: 16px 0 4px;
+        }
+
+        h4 {
+            font-size: 14px;
+            margin: 8px 0 4px;
+        }
+
+        p {
+            line-height: 20px;
+            margin: 0 0 15px;
+        }
+
+        li p {
+            margin: 0 0 5px;
+        }
+
+        table {
+            margin: 8px 0;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 3px 5px;
+        }
+
+        a {
+            color: #253D81;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #911;
+            text-decoration: underline;
+        }
+
+        acronym {
+            border-bottom: 1px dotted #000;
+        }
+
+
+        #container {
+            margin: auto;
+            width: 740px;
+            padding: 20px;
+        }
+
+        #nav_main {
+            font-size: 18px;
+            margin: 0 0 20px;
+            padding: 0;
+        }
+
+        #nav_main li {
+            float: left;
+            list-style-type: none;
+            padding: 0 16px 0 0;
+        }
+
+        #nav_main:after {
+            content: ".";
+            clear: both;
+            display: block;
+            height: 0;
+            visibility: hidden;
+        }
+
+        div.section {
+            margin: 0 0 30px;
+        }
+
+        ol, ul {
+            margin: 0 0 12px;
+            padding: 0 0 0 30px;
+        }
+
+        ul li {
+            line-height: 18px;
+            list-style-type: disc;
+            padding: 2px 0;
+        }
+
+        ul li ul {
+            margin: 0;
+            padding: 0 0 0 30px;
+        }
+
+        ul li ul li {
+            list-style-type: circle;
+        }
+
+        ol li {
+            list-style-type: decimal;
+        }
+
+        ol li {
+            padding: 2px 0;
+        }
+
+        pre, blockquote {
+            margin: 14px 28px;
+        }
+
+        code {
+            color: #060;
+        }
+
+        .args {
+            color: #060;
+        }
+
+        .warn {
+            color: red;
+        }
+        </style>
+
+    </head>
+
+  <body>
+
+    <div id="container">
+
+      <h1>Wego Flights API documentation</h1>
+      <p>Wego's Flights Search Service allows clients to search for
+        flight fares and availabilty in real-time across Wego's
+        inventory of partners.  The service is available via standard
+        HTTP GET methods and responses are made available in both XML
+        and JSON formats.</p>
+
+      <p>Please report any bugs to <a href="mailto:api@wego.com">api@wego.com</a>.</p>
+      <h2>Table of Contents</h2>
+      
+      <ul class="toc">
+        <li>
+          <a href="#core_concepts">Core Concepts</a>
+          <ul>
+            <li><a href="#what">What can you do with the API?</a></li>
+            <li><a href="#authentication">Authentication/Rate-limiting</a></li>
+            <li><a href="#response_types">Response types</a></li>
+            <li><a href="#errors">Errors</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#api_methods">API methods</a>
+          
+          <ul>
+            <li><a href="#api_login">/login</a></li>
+            <li><a href="#api_logout">/logout</a></li>
+            <li><a href="#api_startSearch">/startSearch</a></li>
+            <li><a href="#api_pull">/pull</a></li>
+            <li><a href="#api_book">/book</a></li>
+            <li><a href="#api_usage">/usage</a></li>
+          </ul>
+        </li>    
+      </ul>
+      
+      <h2 id="core_concepts">Core Concepts</h2>
+      
+      <div class="section">
+               <h3 id="what"> What can you do with the API?</h3>
+               <p> There are 3 main components that you'll most likely
+               care about:</p>
+               
+               <ol>
+                 <li>
+                   <p>
+                     <strong>Search</strong><br />
+                     Allows you to start a flight search and retrieve results
+                   </p>
+                 </li>
+                 <li>
+                   <p>
+                     <strong>Booking a flight with our
+                     partners</strong><br />
+                     Taking users to continue the booking process for
+                     a flight at one of our partners' sites
+                   </p>
+                 </li>
+                 <li>
+                   <p>
+                     <strong>API usage</strong><br />
+                     The flights API only allow users to make a
+                     certain number of calls per day. Therefore, you
+                     would most likely want to check how many calls
+                     you have already made.
+                   </p>
+                 </li>
+               </ol>
+               <p>The typical use case of a user searching for
+               Flights would involve:</p>
+               <ol>
+                 <li><p>A user, let's call her Yui, is looking for
+                 Economy class flights to fly from Singapore to Bangkok on 13 June
+                 2010 and She is thinking of coming back to Singapore on 27 June 2010. She fill in the
+                 relevant fields on the search form and submit her search
+                 typ</p></li>
+                 <li>
+                   <p> You first login to begin using the API by
+                   sending a login API<a href="#api_login">/login</a>
+                   request</p>
+                   <blockquote>
+                     <p><code>GET
+                         http://202.157.132.5:8082/flights_api/login?format=json&apiKey=testAPIKey</code></p>
+                   </blockquote>
+                   <p>The API responds with:</p>
+                   <blockquote>
+                     <pre>{"login":{  
+  "status":"Success",
+   "message":"Login Successfully"
+ }}
+                     </pre>
+                   </blockquote>
+                 </li>
+                 <li>
+                   <p>
+                     After logging in, you check how many API calls
+                     you have made and whether you are still within
+                     the limits:</p>
+                     <blockquote>
+                       <p><code>GET http://202.157.132.5:8082/flights_api/usage?format=json&apiKey=testAPIKey</code></p>
+                     </blockquote>
+                   <p>
+                     The API responds with:
+                   </p>
+                   <blockquote>
+                     <pre>
+{"APIUsageData": {
+  "date": "2010-04-14 14:59:10.995 SGT",
+  "usageCountCurrent": {
+    "value": 0
+  },
+  "usageCountToday": {
+    "value": 4
+  },
+  "ownerName": "testAcc",
+  "sessionId": "1271228350995355000"
+}}
+                     </pre>
+                   </blockquote>
+                 </li>
+                 <li>  
+                   <p> After checking that you can still within the
+                   API limit, you can start using the API. You send a startSearch
+                   API <a href="#api_startSearch">/startSearch</a>
+                   request to start a search for flights meeting her
+                   requirement </p>
+                   <blockquote>
+                     <p><code>GET http://202.157.132.5:8082/flights_api/startSearch?format=json&fromLocation=SIN&toLocation=BKK&tripType=roundTrip&cabinClass=Economy&inboundDate=2010-06-26&outboundDate=2010-06-23&numAdults=1&apiKey=testApiKey</code></p>
+                   </blockquote>
+                   
+                   <p>The API responds with:</p>
+                   <blockquote>
+                     <pre>{"request":{
+ <strong>"instanceId": "123456abcde"</strong>
+ }}</pre>
+                   </blockquote>
+                   
+                   <p> you can use the <code>instanceId</code> to
+                   fetch search results with
+                   the <a href="#api_pull">/pull</a> API method.</p>
+                   
+
+                   <p>To use the <a href="#api_pull">/pull</a> method,
+                   A rand parameter need to be passed in together with
+                   the <code>instanceId </code> parameter to form a
+                   unique key that will keep track of number of
+                   results returned to Yui. </p>
+                   <p><strong> Important</strong>: If you wish to start polling from the very first result then issue a new rand  value, otherwise continue using the same rand till you reach the end of result list.</p>
+                     
+                   <blockquote>
+                     <p><code>GET http://202.157.132.5:8082/flights_api/pull?format=json&apiKey=testApiKey&instanceId=c90a013e708e5ffcc526dd81ac42acf5f6040739&rand=1</code></p>
+                   </blockquote>
+                   
+                   <p> the API responds with:</p>
+                   <blockquote>
+                     <pre>
+ {"response": {
+  "pendingResults": true,
+  "itineraries": [
+    {
+      "providerId": "singaporeair.com",
+      "price": {
+        "currencyCode": "SGD",
+        "amount": "403.0",
+        "includesTax": true,
+        "totalAmount": "670.8",
+        "pricePerPassenger": "201.5",
+        "totalPricePerPassenger": "335.4"
+      },
+      "outboundLeg": {
+        "localDepartureTime": "2010/06/23 07:10 +0800",
+        "localArrivalTime": "2010/06/23 08:35 +0700",
+        "duration": 145,
+        "numStops": 0,
+        "segments": [
+          {
+            "flightClass": {
+              "name": "Economy",
+              "fareClass": 1
+            },
+            "flightNumber": {
+              "designator": "SQ",
+              "number": "970"
+            }
+          }
+        ]
+      },
+      "inboundLeg": {
+        "localDepartureTime": "2010/06/26 12:40 +0700",
+        "localArrivalTime": "2010/06/26 16:05 +0800",
+        "duration": 145,
+        "numStops": 0,
+        "segments": [
+          {
+            "flightClass": {
+              "name": "Economy",
+              "fareClass": 1
+            },
+            "flightNumber": {
+              "designator": "SQ",
+              "number": "975"
+            }
+          }
+        ]
+      },
+      "bookingCode": "1271214629587733000",
+      "flightId": "SQ970[SIN-BKK]|SQ975[BKK-SIN]"
+    },...
+
+                     </pre>
+                   </blockquote>
+                   
+                 </li>
+                 
+                 <li>
+                   <p>Yui is shown a page where results from the
+                   <a href="#api_pull">/pull</a> method are
+                   displayed</p>
+                   
+                   <p>It's best to wait at least 10 seconds after
+                   starting the search before making
+                   the <a href="#api_pull">/pull</a> call.</p>
+                   
+                   <p>To retrieve all the results, you would have call
+                   the <a href="#api_pull">/pull</a> until the
+                   response return a false for
+                   the <code>pendingResults</code> field
+                   </p>
+                   
+                 </li>
+                 
+                 <li>
+                   <p> Yui sees a Flight(<code>bookingCode</code>
+                   1271214629587733000, <code>providerId</code> singaporeair.com ) that she would like to book
+                   and clicks to continue to book the flight at the
+                   partner site.</p>
+                 </li>
+
+                 <li>
+                   <p>
+                     You send a book API <a href="#api_book">/book</a>
+                     request to retrieve a handoff page that redirect the user
+                     to the booking site of the partner so that she
+                     can continue her booking directly with them:
+                   </p>
+                   
+                   <blockquote>
+                     <p><code>GET http://202.157.132.5:8082/flights_api/book?format=json&apiKey=testAPIKey&bookingCode=<strong>1271214629587733000</strong>&providerId=<strong>singaporeair.com</strong>&dlfrom=SIN&dlto=BKK&instanceId=%22c90a013e708e5ffcc526dd81ac42acf5f6040739</code></p>
+                   </blockquote>
+                 </li>
+                  
+                 <li>
+                     <p>After Yui session has ended, you send a logout
+                     API <a href="#api_logout">/logout</a> request to
+                     end the API session</p>
+                     <blockquote>
+                       <p><code>GET http://202.157.132.5:8082/flights_api/logout&format=json&apiKey=testAPIKey</code></p>
+                     </blockquote>
+                   </li>
+                   
+               </ol>
+      </div>
+      <div class="section">
+        <h3 id="authentication">Authentication/Rate-limiting</h3>
+        <p> All API requests require you to authenticate with your API
+        Key(given to you by Wego). Always pass along
+        the <code>apiKey</code> in your API requests, Example</p>
+
+        <blockquote>
+                     <p><code>GET
+                         http://202.157.132.5:8082/flights_api/login?format=json&apiKey=testAPIKey</code></p>
+        </blockquote>
+        
+        <p> Your API key is used to track usage and to limit the
+        number of API requests you can make (for some API
+        methods). The API rate limits have not been decided at this time</p>
+      </div>
+     
+      <div class="section">
+        <h3 id="response_types">Response Types</h3>
+        <h4 id="response_type_itineraries">Itinerary</h4>
+        <p>The itinerary type represents a single flight search result that
+        matches the user requirement</p>
+        <p>A sample itinerary response in JSON looks like:</p>
+        <blockquote>
+          <pre>
+ "itineraries": [
+    {
+      "providerId": "singaporeair.com",
+      "price": {
+        "currencyCode": "SGD",
+        "amount": "403.0",
+        "includesTax": true,
+        "totalAmount": "670.8",
+        "pricePerPassenger": "201.5",
+        "totalPricePerPassenger": "335.4"
+      },
+      "outboundLeg": {
+        "localDepartureTime": "2010/06/23 07:10 +0800",
+        "localArrivalTime": "2010/06/23 08:35 +0700",
+        "duration": 145,
+        "numStops": 0,
+        "segments": [
+          {
+            "flightClass": {
+              "name": "Economy",
+              "fareClass": 1
+            },
+            "flightNumber": {
+              "designator": "SQ",
+              "number": "970"
+            }
+          }
+        ]
+      },
+      "inboundLeg": {
+        "localDepartureTime": "2010/06/26 12:40 +0700",
+        "localArrivalTime": "2010/06/26 16:05 +0800",
+        "duration": 145,
+        "numStops": 0,
+        "segments": [
+          {
+            "flightClass": {
+              "name": "Economy",
+              "fareClass": 1
+            },
+            "flightNumber": {
+              "designator": "SQ",
+              "number": "975"
+            }
+          }
+        ]
+      },
+      "bookingCode": "1271214629587733000",
+      "flightId": "SQ970[SIN - BKK]|SQ975[BKK - SIN]"
+    },
+
+          </pre>
+        </blockquote>
+        <ul>
+          <li><code>providerId</code>  -  Id of the flight
+          provider </li>
+          <li><code>price</code>  -  Price information of Flights
+            <ul>
+              <li><code>currencyCode</code> - Currency of price</li>
+              <li><code>amount</code> -  Price of ticket Without
+              Taxes</li>
+              <li><code>includesTax</code> -  Indicate whether flight result
+              contains tax inclusive price</li>
+              <li><code>totalAmount</code> -  Total Price of ticket
+              including taxes</li>
+              <li><code>pricePerPassenger</code> - Average Price per
+              Passenger without taxes</li>
+              <li><code>totalPricePerPassenger</code> -  Average Price
+              per Passenger with taxes</li>
+            </ul>
+          </li>
+          <li><code>outboundLeg</code> - Departure Flight Information
+            <ul>
+              <li><code>localDepatureTime</code> -  Departure time of
+              Flight</li>
+              <li><code>localArrivalTime</code> -  Arrival time of
+              flight</li>
+              <li><code>duration</code> -  Duration of Flight</li>
+              <li><code>numStops</code> -  Number of transit stops</li>
+              <li><code>segments</code> -  Flights Stop information
+                <ul>
+                  <li><code>flightClass</code> -  Flight Class
+                  Information
+                    <ul>
+                      <li><code>name</code> -  Name of Flight Class,
+                      Economy, Business, First</li>
+                      <li><code>fareClass</code> -  1 is Economy, 2 is
+                      Business and 3 is First</li>
+                    </ul>
+                  </li>
+                  <li><code>flightNumber</code> -  Flight Number
+                  Information
+                    <ul>
+                      <li><code>designator</code> -  Airline Code</li>
+                      <li><code>number</code> -  Flight Number</li>
+                    </ul>
+                  </li> 
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><code>InboundLeg</code> - Arrival Flight Information for
+          round trip search
+            <ul>
+              <li><code>localDepatureTime</code> -  Departure time of
+              Flight</li>
+              <li><code>localArrivalTime</code> -  Arrival time of
+              flight</li>
+              <li><code>duration</code> -  Duration of Flight</li>
+              <li><code>numStops</code> -  Number of transit stops</li>
+              <li><code>segments</code> -  Flights Stop information
+                <ul>
+                  <li><code>flightClass</code> -  Flight Class
+                  Information
+                    <ul>
+                      <li><code>name</code> -  Name of Flight Class,
+                      Economy, Business, First</li>
+                      <li><code>fareClass</code> -  1 is Economy, 2 is
+                      Business and 3 is First</li>
+                    </ul>
+                  </li>
+                  <li><code>flightNumber</code> -  Flight Number
+                  Information
+                    <ul>
+                      <li><code>designator</code> -  Airline Code</li>
+                      <li><code>number</code> -  Flight Number</li>
+                    </ul>
+                  </li> 
+                </ul>
+              </li>              
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="section">
+        <h3 id="errors">Errors</h3>
+        <p>The API returns appropriate <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">HTTP status codes</a>. In addition, the API also includes error information in the response body. Error responses have a single <code>error</code> property that is a string describing the error, e.g.:</p>
+        <blockquote>
+          <p><code>{"error": {"message": "apiKey:testApiKey does not have
+          a valid session"}}</code></p>
+        </blockquote>
+        <p> An additional <code>message</code> property is sometimes
+          available for further diagnostics.</p>
+        <p> Possible error are:</p>
+        <ul>
+          <li>
+            <code> apiKey:testApiKey does not have
+          a valid session</code> -  Please ensure you have logged in or
+          you are using a correct api key
+          </li>
+          <li><code><i>parameter</i> is invalid </code> -  Please
+          ensure that you have not missed out
+          the <code><i>parameter</i></code> value or
+          the <code><i>parameter</i></code> value is valid</li>
+        </ul>
+      </div>
+      
+      <div class="section">
+        <h2 id="api_methods">API Methods </h2>
+         <p>All API methods are HTTP GET requests and require API
+         key-based <a href="#authentication">authentication</a>. The
+         response data format is in either JSON or XML.</p>
+         
+         <table>
+           <thead>
+             <th>Request</th>
+             <th>Description</th>
+             <th>Example</th>
+           </thead>
+           
+           <tbody>
+             <tr>
+               <td><a href="#api_login">/login</a></td>
+               <td>Login to use the service</td>
+               <td><a href="http://202.157.132.5:8082/flights_api/login?format=json&apiKey=testAPIKey">
+                   http://202.157.132.5:8082/flights_api/login?format=json&amp;apiKey=testAPIKey</a></td>
+             </tr>
+             <tr>
+               <td><a href="#api_logout">/logout</a></td>
+               <td>Logout to exit using the service</td>
+               <td><a href="http://202.157.132.5:8082/flights_api/logout&format=json&apiKey=testAPIKey">http://202.157.132.5:8082/flights_api/logout&amp;format=json&amp;apiKey=testAPIKey</a></td>
+             </tr>
+             <tr>
+               <td><a href="#api_startSearch">/startSearch</a></td>
+               <td>Start a new flight Search</td>
+               <td><a href="http://202.157.132.5:8082/flights_api/startSearch?format=json&fromLocation=SIN&toLocation=BKK&tripType=roundTrip&cabinClass=Economy&inboundDate=2010-06-26&outboundDate=2010-06-23&numAdults=1&apiKey=testApiKey"> http://202.157.132.5:8082/flights_api/startSearch?format=json&amp;fromLocation=SIN&amp;toLocation=BKK&amp;tripType=roundTrip&amp;cabinClass=Economy&amp;inboundDate=2010-06-26&amp;outboundDate=2010-06-23&amp;numAdults=1&amp;apiKey=testApiKey</a></td>
+             </tr>
+             <tr>
+               <td><a href="#api_pull">/pull</a></td>
+               <td>Retrieve the results of the search</td>
+               <td><a href="http://202.157.132.5:8082/flights_api/pull?format=json&apiKey=testApiKey&instanceId=c90a013e708e5ffcc526dd81ac42acf5f6040739&rand=1">http://202.157.132.5:8082/flights_api/pull?format=json&amp;apiKey=testApiKey&amp;instanceId=c90a013e708e5ffcc526dd81ac42acf5f6040739&amp;rand=1</a></td>
+             </tr>
+             <tr>
+               <td><a href="#api_book">/book</a></td>
+               <td>Redirect the user to the partner page for
+               booking </td>
+               <td><a href="http://202.157.132.5:8082/flights_api/book?format=json&apiKey=testAPIKey&bookingCode=1271214629587733000&providerId=singaporeair.com&dlfrom=SIN&dlto=BKK&instanceId=%22c90a013e708e5ffcc526dd81ac42acf5f6040739">http://202.157.132.5:8082/flights_api/book?format=json&amp;apiKey=testAPIKey&amp;bookingCode=1271214629587733000&amp;providerId=singaporeair.com&amp;dlfrom=SIN&amp;dlto=BKK&amp;instanceId=%22c90a013e708e5ffcc526dd81ac42acf5f604073</a></td>
+             </tr>
+             <tr>
+               <td><a href="#api_usage">/usage</a></td>
+               <td>Check the usage for an apiKey</td>
+               <td><a href="http://202.157.132.5:8082/flights_api/usage?format=json&apiKey=testAPIKey">http://202.157.132.5:8082/flights_api/usage?format=json&amp;apiKey=testAPIKey</a></td>
+             </tr>
+           </tbody>
+         </table>
+      </div>
+      
+      <div class="section">
+        <h3 id="api_login">/login - Login to use the service</h3>
+        <p>Login to use the service</p>
+        <blockquote>
+          <p><code>GET
+          http://202.157.132.5:8082/flights_api/login?format=<strong>format</strong>&apiKey=<strong>APIKey</strong>&callback=<strong>callback</strong></code></p>
+          <p>Example:<a href="http://202.157.132.5:8082/flights_api/login?format=json&apiKey=testAPIKey">
+              http://202.157.132.5:8082/flights_api/login?format=json&amp;apiKey=testAPIKey</a> </p>
+        </blockquote>
+        <p><strong>Parameters</strong>:</p>
+        <ul>
+          <li><code>format</code> - Format of response. Possible
+          values: <code>json</code>, <code>xml</code> Defaults
+          to <code> xml</code>.</li>
+          <li><code>APIKey</code> - <strong>required</strong> - Apikey
+          given by Wego</li>
+          <li><code>callback</code> - callback - JSON-P callback function name.
+        </ul>
+        <p> The response indicate whether the login is
+        successful. Example:</p>
+        <p>A session will be invalidated after 30 minutes of inactivity.  Users are required to login thereafter to resume usage of the service.</p>
+        <blockquote>
+          <pre>
+{"login": {
+  "status": "Success",
+  "message": "Login successfully"
+}}      
+          </pre>
+        </blockquote>
+      </div>
+      
+      <div class="section">
+        <h3 id="api_logout">/logout - Logout of the service </h3>
+        <p>Logout of the service</p>
+        <blockquote>
+          <p><code> GET http://202.157.132.5:8082/flights_api/logout&format=<strong>format</strong>&apiKey=<strong>APIKey</strong>>&callback=<strong>callback</strong</code></p>
+          <p>Example:<a href="http://202.157.132.5:8082/flights_api/logout&format=json&apiKey=testAPIKey">http://202.157.132.5:8082/flights_api/logout&amp;format=json&amp;apiKey=testAPIKey</a></p>
+        </blockquote>
+        <p><strong>Parameters</strong>:</p>
+        <ul>
+          <li><code>format</code> - Format of response. Possible
+          values: <code>json</code>, <code>xml</code> Defaults
+          to <code> xml</code>.</li>
+          <li><code>APIKey</code> - <strong>required</strong> - Apikey
+          given by Wego</li>
+          <li><code>callback</code> - callback - JSON-P callback function name.
+        </ul>
+        <p>The response indicate whether the logout is successful</p>
+        <blockquote>
+          <pre>
+{"logout": {
+  "status": "Success",
+  "message": "You've been logged out successfully"
+}}            
+          </pre>
+        </blockquote>
+      </div>
+      
+      <div class="section">
+        <h3 id="api_startSearch">/startSearch- Start a new Flight Search </h3>
+        <p>Start a new Flight Search</p>
+        <blockquote>
+          <p><code> GET
+              http://202.157.132.5:8082/flights_api/startSearch?format=<strong>format</strong>&fromLocation=<strong>departureAirportCode</strong>&toLocation=<strong>arrivalAirportCode</strong>&tripType=<strong>tripType</strong>&cabinClass=<strong>cabinClass</strong>&inboundDate=<strong>inboundDate</strong>&outboundDate=<strong>outboundDate</strong>&numAdults=<strong>numAdults</strong>&numChildren=<strong>numChildren</strong>&callback=<strong>callback</strong>&apiKey=<strong>APIKey</strong></code></p>
+          <p>Example:<a href="http://202.157.132.5:8082/flights_api/startSearch?format=json&fromLocation=SIN&toLocation=BKK&tripType=roundTrip&cabinClass=Economy&inboundDate=2010-06-26&outboundDate=2010-06-23&numAdults=1&apiKey=testApiKey"> http://202.157.132.5:8082/flights_api/startSearch?format=json&amp;fromLocation=SIN&amp;toLocation=BKK&amp;tripType=roundTrip&amp;cabinClass=Economy&amp;inboundDate=2010-06-26&amp;outboundDate=2010-06-23&amp;numAdults=1&amp;apiKey=testApiKey</a></p>
+        </blockquote>
+        <p><strong>Parameters</strong>:</p>
+        <ul>
+          <li><code>format</code> - Format of response. Possible
+          values: <code>json</code>, <code>xml</code> Defaults
+            to <code> xml</code>.</li>
+          <li><code>formLocation</code> - <strong>required</strong> -
+          3-letter IATA airport code (e.g. SIN)</li>
+          <li><code>toLocation</code> - <strong>required</strong> -
+            3-letter IATA airport code (e.g. BKK)</li>
+          <li><code>tripType</code> - <strong>required</strong> -
+          Possible Values: <code>oneWay</code>, <code>roundTrip</code>
+          </li>
+          <li><code>cabinClass</code> - <strong>required</strong> -
+          Possible
+            Values: <code>Economy</code>, <code>Business</code>, <code>First</code></li>
+          <li><code>inboundDate</code> - yyyy-MM-dd (not required for
+            oneWay flights)</li>
+          <li><code>outBoundDate</code> - <strong>required</strong> -
+          yyyy-MM-dd</li>
+          <li><code>numAdults</code> - <strong> required</strong> - 1-
+          9
+          <li><code>numChildren</code> - <strong> required</strong> - 0- 9
+          <li><code>APIKey</code> - <strong>required</strong> - Apikey
+          given by Wego</li>
+          <li><code>callback</code> - callback - JSON-P callback function name.
+            
+
+        </ul>
+        <p>Return the <code>instanceId</code> for the flight search</p>
+        <blockquote>
+          <pre>
+{"request":{
+ <strong>"instanceId": "123456abcde"</strong>
+ }}</pre>            
+          </pre>
+        </blockquote>
+      </div>
+      <div class="section">
+        <h3 id="api_logout">/logout - Logout of the service </h3>
+        <p>Logout of the service</p>
+        <blockquote>
+        </blockquote>
+        <p><strong>Parameters</strong>:</p>
+        <ul>
+          <li></li>
+        </ul>
+        <p></p>
+        <blockquote>
+          <pre>
+          </pre>
+        </blockquote>
+      </div>
+      <div class="section">
+        <h3 id="api_logout">/logout - Logout of the service </h3>
+        <p>Logout of the service</p>
+        <blockquote>
+        </blockquote>
+        <p><strong>Parameters</strong>:</p>
+        <ul>
+          <li></li>
+        </ul>
+        <p></p>
+        <blockquote>
+          <pre>
+          </pre>
+        </blockquote>
+      </div>
+    </div>
+  </body>
+</html>

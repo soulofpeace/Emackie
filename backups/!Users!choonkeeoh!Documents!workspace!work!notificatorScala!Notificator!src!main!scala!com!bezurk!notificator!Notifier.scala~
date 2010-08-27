@@ -1,0 +1,16 @@
+package com.bezurk.notificator
+
+class Notifier{
+  private val notificatorFactory:NotificatorFactory = new NotificatorFactory();
+  
+  @throws(classOf[NotificationError])
+  def sendNotification(message:String, recipients:Array[String], recipientTypes:Array[String]){
+    (0 to recipients.length-1).foreach(arg=>sendNotification(message, recipients(arg), recipientTypes(arg)))
+  }
+
+  @throws(classOf[NotificationError])
+  def sendNotification(message:String, recipient:String, recipientType:String){
+    val notificator:Notificator = notificatorFactory.getNotificator(recipientType)
+    notificator.sendNotification(message, recipient)
+  }
+}

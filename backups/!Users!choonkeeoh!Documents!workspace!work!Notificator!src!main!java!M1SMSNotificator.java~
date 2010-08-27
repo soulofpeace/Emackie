@@ -1,0 +1,64 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.lang.StringUtils;
+
+
+public class M1SMSNotificator implements Notificator{
+    private final String sendUrl = "http://msgctr.m1.com.sg/MessageCentre/jsp/guest/processMessage.jsp";
+
+    public void sendNotification(String message, String[] receipients) throws NotificationError{
+        for(String receipient: receipients){
+            this.sendNotification(message, receipient); 
+        }
+    }
+
+    public void sendNotification(String message, String receipient) throws NotificationError{
+        HttpClientParams params = new HttpClientParams();
+        params.setConnectionManagerTimeout(10000);
+        HttpClient client = new HttpClient(params);
+        PostMethod post = new PostMethod(sendUrl);
+        try{
+            
+            int receipientNumber = Integer.parseInt(receipient);
+            post.setQueryString(new NameValuePair[]{
+                    new NameValuePair("msisdn", receipient),
+                    new NameValuePair("counter", String.valueOf(message.length())),
+                    new NameValuePair("msg", message)
+                });
+            client.executeMethod(post);
+            String response = post.getResponseBodyAsString();
+            if (response.indexOf("thankyou")==-1){
+                System.out.println("Failed To send Message");
+                throw new NotificationError("Failed To Send Message");
+            }
+            
+            
+        }
+        catch(NumberFormatException ex){
+            throw new NotificationError(receipient+" is not a valid number", ex);
+        }
+        catch(Exception ex){
+            throw new NotificationError(ex);
+        }
+        finally{
+            post.releaseConnection();
+        }
+    }
+
+    
+        
+    
+
+}

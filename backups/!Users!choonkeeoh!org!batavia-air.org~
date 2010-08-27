@@ -1,0 +1,67 @@
+* batavia-air.com
+** url params for search
+
+Submit	Find a Flight
+ajax_type	non_ajax
+blnBerangkatKembali	05
+blnBerangkatPergi	5
+jmlInfant	0
+jmlPenumpang	1
+page	booking
+page	booking
+ruteBerangkat	CGK
+ruteKembali	CGK
+ruteTujuan	DPS
+tglBerangkatKembali	18
+tglBerangkatPergi	15
+thnBerangkatKembali	10
+thnBerangkatPergi	10
+
+
+Submit	Find a Flight
+ajax_type	non_ajax
+blnBerangkatPergi	5
+jmlInfant	0
+jmlPenumpang	1
+page	booking
+page	booking
+ruteBerangkat	CGK
+ruteKembali	kembali
+ruteTujuan	DPS
+tglBerangkatPergi	15
+thnBerangkatPergi	10
+
+** url params for booking
+Booking
+Kembali	0
+Pergi	0
+Submit	Next Step - Price Details
+blnBerangkatKembali	05
+blnBerangkatPergi	5
+cacheBln	MAY
+cacheBln	MAY
+cacheTgl	15
+cacheTgl	18
+cacheThn	10
+cacheThn	10
+classKembali	
+classPergi	
+dateKembali	
+dateKembali0	1274137200
+dateKembali1	1274174400
+datePergi	
+datePergi0	1273913100
+datePergi1	1273935900
+flightBerangkatKembali	11343057
+flightBerangkatPergi	10988191
+formAction	/etiket/index.php
+jmlInfant	0
+jmlPenumpang	1
+page	step1
+ruteBerangkat	CGK
+ruteKembali	CGK
+ruteTujuan	DPS
+tglBerangkatKembali	18
+tglBerangkatPergi	15
+thnBerangkatKembali	10
+thnBerangkatPergi	10

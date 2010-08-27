@@ -1,0 +1,20 @@
+* merpati ...
+** url params
++ EVENTTARGET:
+__EVENTARGUMENT:
+__VIEWSTATEKEY:9f389820-116d-4e82-9ed7-210e50d6c6ed
+__VIEWSTATE:
+keyword:
+ctrHome:ctrFlightSearchBase:FlightType:rdoReturn
+ctrHome:ctrFlightSearchBase:cmbOrigin:CGK
+ctrHome:ctrFlightSearchBase:cmbDestination:DPS|0
+ctrHome:ctrFlightSearchBase:ctlDepatureDate:cmbDay:05
+ctrHome:ctrFlightSearchBase:ctlDepatureDate:cmbMonthYear:201005
+ctrHome:ctrFlightSearchBase:ctlReturnDate:cmbDay:09
+ctrHome:ctrFlightSearchBase:ctlReturnDate:cmbMonthYear:201005
+ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbAdult:1
+ctrHome:ctrFlightSearchBase:ctlPassengerType:cmbChild:0
+ctrHome:ctrFlightSearchBase:cmbBoardingClass:Y
+ctrHome:ctrFlightSearchBase:tboPromotionCode:
+ctrHome:ctrFlightSearchBase:btmSearch.x:28
+ctrHome:ctrFlightSearchBase:btmSearch.y:14

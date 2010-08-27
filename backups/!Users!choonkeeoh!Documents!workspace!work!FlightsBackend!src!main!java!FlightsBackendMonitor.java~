@@ -1,0 +1,211 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.ResourceBundle;
+
+import javax.jms.Queue;
+
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
+
+
+public class FlightsBackendMonitor {
+	
+    public enum Phase{START_SEARCH,PULLING};
+	
+    private static final long _ONEDAY = 24 *60 *60 *1000;
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String[] DESTINATIONS = new String[]{
+        "LHR", "BKK", "SYD"
+    };
+	
+    private static Random RANDOM = new Random();
+    // 	private static SingtelSMSNotificator NOTIFIER = new SingtelSMSNotificator();
+    private static Notifier NOTIFIER = new Notifier();
+	
+    public static void main(String[] args) throws Exception{
+		
+        /*Queue queue = new ActiveMQQueue("matching.work");
+          Queue deadQueue = new ActiveMQQueue("ActiveMQ.DLQ");
+          ActiveMQQueueBrowser browser = new ActiveMQQueueBrowser("tcp://ironforge:61619");*/
+		
+        ResourceBundle monitProps = ResourceBundle.getBundle("monit");
+        String searchUrl = monitProps.getString("searchUrl");
+        String pullUrl = monitProps.getString("pullUrl");
+        String[] receipients = monitProps.getString("contactList").split(",");
+        String[] receipientsTypes= monitProps.getString("contactType").split(",");
+		
+        // Start loop
+        while(true){
+            // Loop flags
+            boolean goToStart = true;
+            boolean goToPull = true;
+			
+            System.out.println("Starting monitoring (" + new Date() + ")");
+			
+            // monitor the matching queue
+            /*int numPendingMessages = browser.getMessageCount(queue);
+              System.out.println(numPendingMessages + " in matching queue");
+              if(numPendingMessages > 300){
+              goToStart=false;
+              NOTIFIER.sendNotification("Matching under heavy load, currently holding " + numPendingMessages + " messages in matching queue", receipients, receipientsTypes);
+              }
+			
+              // Monitor the dead letter queue in activemq
+              int numDeadMessages = browser.getMessageCount(deadQueue);
+              System.out.println(numDeadMessages + " in ActiveMQ's dead letter queue");
+              if(numPendingMessages > 300){
+              goToStart=false;
+              NOTIFIER.sendNotification(numPendingMessages + " dead messages in activeMQ's dead letter queue, please purge", receipients, receipientsTypes);
+              }*/
+			
+            // Monitor search
+            if(goToStart){
+                HttpClient client = new HttpClient();
+				
+                String instanceId = null;
+                try {
+                    instanceId = startSearch(client, searchUrl);
+                } catch (Exception e) {
+					
+                    handleException(e, Phase.START_SEARCH, receipients, receipientsTypes);
+                    goToPull = false;
+                }
+				
+                // Proceed to pulling phase
+                if(goToPull){
+                    System.out.println("Search started successfully, proceeding to pulling");
+                    Thread.sleep(8000);
+					
+                    // Start pulling
+                    int resultsCount = 0;
+                    for(int x=1;x<8;x++){
+                        try{
+                            resultsCount = resultsCount + pullResults(client, pullUrl, instanceId);	
+                        }
+                        catch(Exception e){
+                            handleException(e, Phase.PULLING, receipients, receipientsTypes);
+                            break;
+                        }
+						
+                        // must have result by the third pull, else likely things have gone wrong
+                        if(x >= 3 && resultsCount < 10){
+                            // Time to throw new error
+                            System.out.println("Limited results after 3 pulls,sending notification (" + new Date() + ")");
+                            NOTIFIER.sendNotification("Matching might be down, limited results after 3 pulls", receipients, receipientsTypes);
+                            break;
+                        }else if(x == 7){
+                            // last pull. output total results count
+                            System.out.println("total results pull: " + resultsCount + " ("
+                                               + new Date() + ")");
+                        }
+                        Thread.sleep(2000);
+                    }
+					
+                }	
+            }
+			
+            // Poll again later
+            Thread.sleep(600000);
+			
+        }
+    }
+	
+    private static int pullResults(HttpClient client, String url, String instanceId) throws Exception{
+        GetMethod get = new GetMethod(url);
+        get.getParams().setParameter("http.socket.timeout", new Integer(3000));
+		
+        get.setQueryString(new NameValuePair[]{
+                new NameValuePair("instanceId",instanceId),
+                new NameValuePair("format","json"),
+                new NameValuePair("rand",String.valueOf(RANDOM.nextInt(99999)))
+				
+            });
+		
+        client.executeMethod(get);
+        StringBuffer buf = new StringBuffer();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(get.getResponseBodyAsStream()));
+        String line = null;
+        while((line = reader.readLine()) != null){
+            buf.append(line);
+        }
+        get.releaseConnection();
+        return buf.toString().split("\"itinerary\":").length - 1;
+    }
+	
+    private static void handleException(Exception e, Phase phase, String[] receipients, String[] receipientsTypes) throws Exception{
+        if (e instanceof Http500Exception){
+            System.out.println("Sending notification for HTTP500 error (" + new Date() + ")");
+            NOTIFIER.sendNotification("Http 500 error occurred while in " + (Phase.START_SEARCH.equals(phase)?"start search":"results pulling") + " phase", receipients, receipientsTypes);
+        }
+        else if(e instanceof SocketTimeoutException){
+            System.out.println("Sending notification for Socket timeout error (" + new Date() + ")");
+            NOTIFIER.sendNotification("Tomcat not responding (socket T/O) in " + (Phase.START_SEARCH.equals(phase)?"start search":"results pulling") + " phase", receipients, receipientsTypes);
+        }
+        else{
+            System.out.println("Sending notification for unhandled error (" + new Date() + ")");
+            NOTIFIER.sendNotification("Unhandled exception occured in Monitoring, please check", receipients, receipientsTypes);
+        }
+    }
+	
+    private static String startSearch(HttpClient client, String searchUrl) throws Exception{
+
+        // Start a search
+        GetMethod get = new GetMethod(searchUrl);
+        get.setQueryString(getSearchParams());
+        get.getParams().setParameter("http.socket.timeout", new Integer(8000));
+        //		System.out.println(get.getQueryString());
+        String instanceId = null;
+
+        client.executeMethod(get);
+		
+        if(get.getStatusCode() == 500){
+            // notify of tomcat down
+            throw new Http500Exception();
+        }
+		
+        // get the instance Id
+        instanceId = StringUtils.substringBetween(get.getResponseBodyAsString(), "\"instanceId\": \"","\",");
+        get.releaseConnection();
+
+        return instanceId;
+    }
+	
+    private static NameValuePair[] getSearchParams(){
+				
+        List<NameValuePair> params = new ArrayList<NameValuePair>(); 
+        Date startDate = createRandomReturnDate(new Date());
+        params.add(new NameValuePair("fromLocation","SIN"));
+        params.add(new NameValuePair("inboundDate",FORMAT.format(createRandomReturnDate(startDate))));
+        params.add(new NameValuePair("numAdults","1"));
+        params.add(new NameValuePair("numChildren","0"));
+        params.add(new NameValuePair("outboundDate",FORMAT.format(startDate)));
+        params.add(new NameValuePair("toLocation",DESTINATIONS[RANDOM.nextInt(DESTINATIONS.length-1)]));
+        params.add(new NameValuePair("format","json"));
+        params.add(new NameValuePair("siteId","wego.com"));
+        params.add(new NameValuePair("affiliateId","wego.com"));
+        params.add(new NameValuePair("tripType","roundtrip"));
+        params.add(new NameValuePair("cabinClass","Economy"));
+        params.add(new NameValuePair("wgz","1317b"));
+        params.add(new NameValuePair("dFormat","1"));
+        params.add(new NameValuePair("wego_visitor_id","test"));
+        params.add(new NameValuePair("wego_session_id","test"));
+		
+        return params.toArray(new NameValuePair[0]);
+    }
+	
+    private static Date createRandomReturnDate(Date minStartDate) {
+		
+        // return a date at least 3 days from minStatrDate
+        return new Date(minStartDate.getTime() + (_ONEDAY * (3 + RANDOM.nextInt(100))));
+		
+    }
+}

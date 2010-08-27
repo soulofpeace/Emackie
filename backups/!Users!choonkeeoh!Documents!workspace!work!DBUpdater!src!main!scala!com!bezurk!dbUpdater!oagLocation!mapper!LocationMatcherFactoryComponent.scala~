@@ -1,0 +1,14 @@
+package com.bezurk.dbUpdater.oagLocation.matcher
+
+import com.bezurk.dbUpdater.matcher._
+import com.bezurk.dbUpdater.input._
+
+//returns a matcher that match input with mapper
+trait LocationMatcherFactoryComponent extends MatcherFactoryComponent{
+  this: InputFactoryComponent =>
+    class LocationMatcherFactory extends MatcherFactory{
+      def get
+    }
+    
+}
+

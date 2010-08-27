@@ -1,0 +1,13 @@
+import scala.io.Source
+
+object airlineRouteFinder extends Application{
+  
+  def processAirlineId(file:String):Set[String]={
+    val airlineIdsInput = Source.fromFile(file).getLines.toList.map(arg=>arg.split("=")[1].split(".")[0])
+    airlineIdsInput.foreach(println)
+    
+  }
+  def main(args:Array[String]){
+    processAirlineId
+  }
+}

@@ -1,0 +1,83 @@
+# Create your views here.
+import oauth2 as oauth
+import cgi
+import httplib
+
+from django.http import HttpResponse, HttpResponseRedirect
+from django.conf import settings
+
+from twitter_app.models import User
+
+server = "twitter.com"
+
+consumer = oauth.Consumer(settings.TWITTER_TOKEN, settings.TWITTER_SECRET)
+client = oauth.Client(consumer)
+
+request_token_url = 'http://twitter.com/oauth/request_token'
+access_token_url = 'http://twitter.com/oauth/access_token'
+
+authenticate_url = 'http://twitter.com/oauth/authenticate'
+authorise_url = 'http://twitter.com/oauth/authorize'
+
+connection = httplib.HTTPSConnection(server)
+
+signature_method = oauth.OAuthSignatureMethod_HMAC_SHA1()
+
+def login(request):
+    resp, content = client.request(request_token_url, "GET")
+    if resp['status'] != '200':
+        raise Exception("Invalid response from Twitter.")
+
+    request.session['request_token'] = dict(cgi.parse_qsl(content))
+    url = "%s?oauth_token=%s" % (authenticate_url, request.session['request_token']['oauth_token'])
+    print url
+
+    return HttpResponseRedirect(url)
+
+
+#def logout(request):
+
+
+def authenticated(request):
+    token= oauth.Token(request.session['request_token']['oauth_token'], request.session['request_token']['oauth_token_secret'])
+    client = oauth.Client(consumer, token)
+    
+    resp, content = client.request(access_token_url, "GET")
+    if resp['status'] != '200':
+        print content
+        raise Exception("Invalid Response from Twitter")
+    print content
+    access_token = dict(cgi.parse_qsl(content))
+    authorized_token = oauth.Token(access_token['oauth_token'], access_token['oauth_token_secret'])
+    oauth_request = oauth.OAuthRequest.from_consumer_and_token(
+        consumer, token=authorized_token, http_url='https://twitter.com/account/verify_credentials.json', parameters=None,
+    )
+    oauth_request.sign_request(signature_method, consumer, access_token)
+    url = oauth_request.to_url()
+    connection.request(oauth_request.http_method,url)
+    response = connection.getresponse()
+    s = response.read()
+    print s
+    return HttpResponse("Success")
+
+def authorize(request):
+    resp, content = client.request(request_token_url, "GET")
+    if resp['status'] != '200':
+        raise Exception("Invalid Response From Twitter")
+    request.session['request_token']= dict(cgi.parse_qsl(content))
+    url = "%s?oauth_token=%s" %(authorise_url, request.session['request_token']['oauth_token'])
+    print url
+
+    return HttpResponseRedirect(url)
+
+def authorized(request):
+    token = oauth.Token(request.session['request_token']['oauth_token']. request.session['request_token']['oauth_token_secret'])
+    client = oauth.Client(consumer, token)
+    
+    resp, content = client.request(access_token_url, "POST")
+    if resp['status'] != '200':
+        raise Exception("Invalid Response From Twitter")
+    
+    print content
+    access_token = dict(cgi.parse_qsl(content))
+    

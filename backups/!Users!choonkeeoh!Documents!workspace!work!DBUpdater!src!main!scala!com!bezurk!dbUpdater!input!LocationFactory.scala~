@@ -1,0 +1,54 @@
+trait LocationFactoryComponent extends InputFactoryComponent{
+  class LocationFactory extends InputFactory{
+    def getInputSeq(source:String):Seq[LocationRecord]={
+    }
+  }
+
+  class LocationRecord(val locationCode:String, val multicityCode:String, val locationType:String , val name:String, val countryCode:String, val countryName:String, val stateCode:String, val latitude:String, val longitude:String, val active:String){
+    
+    override def equals(other:Any):Boolean=
+      other match{
+        case that: LocationRecord =>
+          (that canEqual this) &&
+        locationCode == that.locationCode &&
+        multicityCode == that.multicityCode &&
+        locationType == that.locationType &&
+        name == that.name &&
+        countryCode == that.countryCode &&
+        //countryName == that.countryName &&
+        stateCode == that.stateCode &&
+        latitude == that.latitude &&
+        longitude == that.longitude &&
+        active == that.active
+        
+        case _=> false
+      }
+
+    def canEqual(other: Any):Boolean =
+      other.isInstanceOf[LocationRecord]
+    
+    override def hashCode: Int =
+      41*(41*(41*(41*(41*(41*(41*(41*(41*(41+locationCode.hashCode)+multicityCode.hashCode)+locationType.hashCode)+name.hashCode)+countryCode.hashCode)+countryName.hashCode)+ stateCode.hashCode)+latitude.hashCode)+longitude.hashCode)+active.hashCode
+
+    override def toString =
+      locationCode+"\t"+multicityCode+"\t"+locationType+"\t"+name+"\t"+countryCode+"\t"+countryName+"\t"+stateCode+"\t"+latitude+"\t"+longitude+"\t"+active
+    
+    def printChangedField(other: LocationRecord){
+      println("**"+locationCode+"\t"
+              +(if(multicityCode!=other.multicityCode) "*"+multicityCode else multicityCode)+"\t"
+              +locationType+"\t"
+              +(if(name!=other.name)"*"+ name else name) +"\t"
+              +(if(countryCode!=other.countryCode) "*"+countryCode else countryCode)+"\t"
+	      +(if(countryName!=other.countryName) "*"+ countryName else countryName)+"\t" 
+	      +(if(stateCode!=other.stateCode) "*"+ stateCode else stateCode)+"\t"
+	      +(if(latitude!=other.latitude) "*"+ latitude else latitude)+"\t"
+	      +(if(longitude!=other.longitude) "*"+longitude else longitude)+"\t"
+	      +(if(active!=other.active) "*"+active else active)+">"+
+              other
+	    )
+    }
+    
+  }
+
+  
+}

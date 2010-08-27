@@ -1,0 +1,11 @@
+package com.bezurk.dbUpdater.oagLocation.db
+
+import com.bezurk.dbUpdater.db._
+import com.bezurk.db.common._
+
+trait IataLocationDBComponent extends DBComponent{
+  private val connectionFactory = new MySQLPoolingConnectionFactory(1, 1, 50000, 100000, true, 1, "ophelia.bezurk.com", "3306", "flight_statistics", "bezurk", "B3zurk0")
+  val db = new DB(connectionFactory)
+    
+}
+

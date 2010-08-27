@@ -1,0 +1,12 @@
+package notificator
+
+class NotificationError(msg:String, e:Exception) extends Exception(msg, e){
+  
+  def this(e: Exception){
+    this(null, e)
+  }
+  
+  def this(msg: String){
+    this(msg, null)
+  }
+}

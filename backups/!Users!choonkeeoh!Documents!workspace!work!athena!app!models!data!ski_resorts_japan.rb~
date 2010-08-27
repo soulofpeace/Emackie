@@ -1,0 +1,38 @@
+class Ski_resorts_japan
+  def self.run
+    src = Source.new
+    src.import
+  end
+end
+
+
+class Source
+  def initialize
+    @passed = Array.new
+    @failed = Array.new
+  end
+
+  def import
+    main_src = MyURIAdaptor.new("http://www.ski-resorts-japan.com/packages-deals")
+    main_doc = Hpricot(main_src.read)
+    save_to_db(main_doc)
+    
+  end
+
+  def save_to_db(main_doc)
+    packages = main_doc.search('//h3/a[@title]').each do |elem|
+      doc = Hpricot(MyURIAdaptor.new(elem['href']).read)
+      doc.search("//div[@class='content clear-block']/h3").each do |h3|
+        puts "from #{elem['href']}/#{h3}"
+        puts h3.methods
+      end
+    end.compact
+  end
+
+  
+
+  
+end
+
+
+

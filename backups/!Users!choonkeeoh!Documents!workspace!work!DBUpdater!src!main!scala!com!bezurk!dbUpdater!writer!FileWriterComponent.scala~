@@ -1,0 +1,8 @@
+package com.bezurk.dbUpdater.writer
+
+trait FileWriterComponent extends WriterComponent{
+  val writerFactory:WriterFactory = new FileWriterFactory()
+  class FileWriterFactory extends WriterFactory{
+    def getWriter(output:String):Writer={
+      new FileOutputWriter(output)
+    }

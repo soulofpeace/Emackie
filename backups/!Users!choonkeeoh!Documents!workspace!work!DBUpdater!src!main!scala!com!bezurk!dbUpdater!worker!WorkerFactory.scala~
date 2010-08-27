@@ -1,0 +1,28 @@
+package com.bezurk.dbUpdater.worker
+
+import scala.actors.Actor._
+import com.bezurk.dbUpdater.db._
+
+
+trait WorkerComponent{
+  this: DBComponent =>
+  
+    val workerFactory:WorkerFactory
+
+    class WorkerFactory {
+      def apply(f: seq[Data] => seq[Result])={
+        actor{
+          loop{
+            react{
+              case data:Seq[Data] =>{
+                val result =f(data)
+                sender!result
+                exit()
+              }
+            }
+          }
+        }
+      }
+    }
+}
+    

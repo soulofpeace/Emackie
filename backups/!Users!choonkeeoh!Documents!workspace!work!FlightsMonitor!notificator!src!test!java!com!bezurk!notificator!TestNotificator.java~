@@ -1,0 +1,17 @@
+package com.bezurk.notificator;
+
+import junit.framework.TestCase;
+
+
+public class TestNotificator extends TestCase{
+
+    // SingtelSMSNotificator noti = new SingtelSMSNotificator();
+    Notifier notifier = new Notifier();
+	
+    public void testSendNotification() throws Exception{
+            
+        notifier.sendNotification("Hello", 
+                                  new String[]{"84026121"},
+                                  new String[]{"Singtel"});
+    }
+}

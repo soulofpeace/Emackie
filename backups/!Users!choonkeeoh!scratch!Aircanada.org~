@@ -1,0 +1,264 @@
+EMBEDDED_TRANSACTION:FlexPricerAvailabilityServlet
+SO_SITE_POINT_OF_SALE:YOW
+SO_SITE_POINT_OF_TICKETING:YOW
+SO_SITE_COUNTRY_OF_RESIDENCE:CA
+LANGUAGE:US
+COUNTRY:CA
+SITE:SAADSAAD
+PRIVATE_LABEL:ACO_AC_AIR
+USERID:GUEST
+EXTERNAL_ID:GUEST
+TITLE:
+FNAME:
+MNAME:
+LNAME:
+FFMILES:
+B_DATE_1:201006240000
+B_DATE_2:201007220000
+B_ANY_TIME_1:TRUE
+B_ANY_TIME_2:TRUE
+B_LOCATION_1:YVR
+E_LOCATION_1:SIN
+B_LOCATION_2:SIN
+E_LOCATION_2:YVR
+DATE_RANGE_QUALIFIER_1:C
+DATE_RANGE_QUALIFIER_2:C
+DATE_RANGE_VALUE_1:0
+DATE_RANGE_VALUE_2:0
+NTP_AUTHORIZATION:true
+TRIP_FLOW:YES
+BOOKING_FLOW:INTERNATIONAL
+MARKET:CA
+SO_SITE_FP_WITHHOLD_SURCHARG:TRUE
+SO_SITE_EDITION:CA
+TRAVELLER_TYPE_1:ADT
+TRAVELLER_TYPE_2:ADT
+TRAVELLER_TYPE_3:CHD
+TRAVELLER_TYPE_4:
+TRAVELLER_TYPE_5:
+TRAVELLER_TYPE_6:
+TRAVELLER_TYPE_7:
+TRAVELLER_TYPE_8:
+TRAVELLER_TYPE_9:
+IS_YOUTH_1:FALSE
+IS_YOUTH_2:FALSE
+IS_YOUTH_3:FALSE
+IS_YOUTH_4:
+IS_YOUTH_5:
+IS_YOUTH_6:
+IS_YOUTH_7:
+IS_YOUTH_8:
+IS_YOUTH_9:
+HAS_INFANT_1:FALSE
+HAS_INFANT_2:FALSE
+HAS_INFANT_3:FALSE
+HAS_INFANT_4:
+HAS_INFANT_5:
+HAS_INFANT_6:
+HAS_INFANT_7:
+HAS_INFANT_8:
+HAS_INFANT_9:
+TRIP_TYPE:R
+SEVEN_DAY_SEARCH:FALSE
+DIRECT_NON_STOP:FALSE
+PRICING_TYPE:I
+DISPLAY_TYPE:3
+COMMERCIAL_FARE_FAMILY_1:FLEXIWDREV
+COMMERCIAL_FARE_FAMILY_2:
+COMMERCIAL_FARE_FAMILY_3:
+CORPORATE_NUMBER_1:
+CORPORATE_NUMBER_2:
+TYPE_OF_CORPORATE_FARE:
+ARRANGE_BY:N
+AUTHORIZATION_ID:
+TRAVEL_AGENT_PNR:
+IATA_AGENT_ID_NUMBER:
+IATA_AGENT_LAST_NAME:
+IATA_AGENT_FIRST_NAME:
+SO_SITE_REST_AIRLINES_LST:AC
+CERTIFICATE_NUMBER:
+searchType:
+
+
+ETVparameters: Array (13)
+0: Array (6)
+0: "UK"
+1: "UK"
+2: "LON"
+3: "LON"
+4: "GBP"
+5: "SAAVSAAV"
+length: 6
+__proto__: Array
+1: Array (6)
+0: "FR"
+1: "FR"
+2: "CDG"
+3: "CDG"
+4: "EUR"
+5: "SAAXSAAX"
+length: 6
+__proto__: Array
+2: Array (6)
+0: "HK"
+1: "HK"
+2: "HKG"
+3: "HKG"
+4: "HKD"
+5: "SAAZSAAZ"
+length: 6
+__proto__: Array
+3: Array (6)
+0: "AU"
+1: "AU"
+2: "SYD"
+3: "SYD"
+4: "AUD"
+5: "SABASABA"
+length: 6
+__proto__: Array
+4: Array (6)
+0: "IL"
+1: "IL"
+2: "TLV"
+3: "TLV"
+4: "ILS"
+5: "SABBSABB"
+length: 6
+__proto__: Array
+5: Array (6)
+0: "DE"
+1: "DE"
+2: "FRA"
+3: "FRA"
+4: "DEM"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+6: Array (6)
+0: "IT"
+1: "IT"
+2: "ROM"
+3: "ROM"
+4: "ITL"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+7: Array (6)
+0: "CH"
+1: "CH"
+2: "ZRH"
+3: "ZRH"
+4: "CHF"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+8: Array (6)
+0: "IE"
+1: "IE"
+2: "DUB"
+3: "DUB"
+4: "EUR"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+9: Array (6)
+0: "NL"
+1: "NL"
+2: "AMS"
+3: "AMS"
+4: "EUR"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+10: Array (6)
+0: "NO"
+1: "NO"
+2: "OSL"
+3: "OSL"
+4: "NOK"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+11: Array (6)
+0: "SE"
+1: "SE"
+2: "STO"
+3: "STO"
+4: "SEK"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+12: Array (6)
+0: "DK"
+1: "DK"
+2: "CPH"
+3: "CPH"
+4: "DKK"
+5: "SAADSAAD"
+length: 6
+__proto__: Array
+length: 13
+__proto__: Array
+
+ if (country == "CA") {
+
+            document.myBookingsPlanitgo.SO_SITE_POINT_OF_SALE.value = "YOW";
+
+            document.myBookingsPlanitgo.SO_SITE_POINT_OF_TICKETING.value = "YOW";
+
+        } else if (country == "US") {
+
+            document.myBookingsPlanitgo.SO_SITE_POINT_OF_SALE.value = "WAS";
+
+            document.myBookingsPlanitgo.SO_SITE_POINT_OF_TICKETING.value = "WAS";
+
+        }else if(country == COUNTRY_POS.toString().match(country)){
+
+            for (i =0; i < COUNTRY_POS.length; i++) {
+
+                if(country == COUNTRY_POS[i]){
+
+                    document.myBookingsPlanitgo.SO_SITE_POINT_OF_SALE.value = ETVparameters[i][2];
+
+                    document.myBookingsPlanitgo.SO_SITE_POINT_OF_TICKETING.value = ETVparameters[i][3];
+
+                    document.myBookingsPlanitgo.MARKET.value = ETVparameters[i][1];
+
+                }
+
+            }
+
+        }else if (IsCaribbean(country)){
+
+            document.myBookingsPlanitgo.MARKET.value = "SUN";
+
+            document.myBookingsPlanitgo.SO_SITE_POINT_OF_SALE.value = "TPA";
+
+            if (country == "BB")
+
+                document.myBookingsPlanitgo.SO_SITE_POINT_OF_TICKETING.value = "BGI";
+
+            else
+
+                document.myBookingsPlanitgo.SO_SITE_POINT_OF_TICKETING.value = "NAS";
+
+        }
+        
+
+          var CARIBBEAN=new Array("MQ","AW","LC","BM","BB","BS","AG","TT","VE","JM","MX","CU","CR","DO","KY","GD","GP","GT","HT","PR","AN","TC");
+          
+          var ETVparameters = new Array(
+124new Array("UK","UK","LON","LON","GBP","SAAVSAAV"),
+125new Array("FR","FR","CDG","CDG","EUR","SAAXSAAX"),
+126new Array("HK","HK","HKG","HKG","HKD","SAAZSAAZ"),
+127new Array("AU","AU","SYD","SYD","AUD","SABASABA"),
+128new Array("IL","IL","TLV","TLV","ILS","SABBSABB"),
+129new Array("DE","DE","FRA","FRA","DEM","SAADSAAD"),
+130new Array("IT","IT","ROM","ROM","ITL","SAADSAAD"),
+131new Array("CH","CH","ZRH","ZRH","CHF","SAADSAAD"),
+132new Array("IE","IE","DUB","DUB","EUR","SAADSAAD"),
+133new Array("NL","NL","AMS","AMS","EUR","SAADSAAD"),
+134new Array("NO","NO","OSL","OSL","NOK","SAADSAAD"),
+135new Array("SE","SE","STO","STO","SEK","SAADSAAD"),
+136new Array("DK","DK","CPH","CPH","DKK","SAADSAAD")); 

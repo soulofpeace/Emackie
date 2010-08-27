@@ -1,0 +1,17 @@
+import scala.io.Source
+import java.io.FileWriter
+
+
+val inputs = Source.fromFile(args(0).getLines.toList
+val fileWriter = new FileWriter(args(1))
+
+val output = for(input <- inputs){
+  val tokens = input.split(",")
+  val date = tokens(0)+tokens(1)+tokens(2)
+  val clicks = tokens(3)
+  yield ((date, clicks))
+}
+
+output.foreach( arg => fileWriter.write(arg._1+","+arg._2+"\n"))
+fileWriter.flush()
+fileWriter.close()

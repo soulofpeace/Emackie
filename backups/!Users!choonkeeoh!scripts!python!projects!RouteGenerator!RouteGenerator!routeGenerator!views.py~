@@ -1,0 +1,21 @@
+# Create your views here.
+from django.http import HttpResponse, Http404
+from RouteGenerator.routeGenerator.models import *
+from django.core import serializers
+
+
+def location(request):   
+    print 'yoyo'
+    if request.method == 'GET':
+        print request.GET
+        if request.GET.has_key("code"):
+            codeParam = request.GET['code']
+            results = Location.objects.filter(code=codeParam)
+            json = serializers.serialize("json", results)
+            response = HttpResponse()
+            response['Content-Type']='application/json'
+            response.write(json)
+            return response
+            
+        
+            

@@ -1,0 +1,15 @@
+package notificator
+
+class NotificatorFactory{
+  def getNotificator(type:String):Notificator throws NotificationError{
+    type match{
+      case "Singtel"=> new SingtelSMSNotificator()
+      case "M1"=> new M1SMSNotificator()
+      case "Starhub" => new StarhubSMSNotificator()
+      case _ => throw new NotificationError("Unsupported Provider Type")
+    }
+  }
+    
+}
+
+

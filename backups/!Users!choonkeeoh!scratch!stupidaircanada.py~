@@ -1,0 +1,8 @@
+import re
+
+file1 = open("stupidaircanada", "r")
+for line in file1:
+    tokens = line.split(";")
+    for token in tokens:
+        part1= token.replace("c.add", "FAREDRIVENLOCATION.put")
+        print part1

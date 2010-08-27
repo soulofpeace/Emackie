@@ -1,0 +1,55 @@
+import java.io._
+import scala.io.Source
+
+//author: choon kee
+//program to use image magick to resize image
+object ImageResizer{
+  private val flightsImageSize = "120x23" :: "120x40" :: "18x18" :: "27x23" :: "44x31" :: "80x27" :: Nil
+  private val partnersImageSize = "24x80" :: "80x24" :: "200x70" :: Nil
+
+  def main(args: Array[String]){
+    args(0) match{
+      case "Flights"=>
+        flightsImageResizer(args)
+      case "Partners"=>
+        partnersImageResizer(args)
+      case _=>
+        println("usage: scala ImageResizer [Flights|Partners] [ImageFileName]")
+    }
+  }
+
+  def flightsImageResizer(args:Array[String]){
+    if (args.length<2)
+      return
+    else{
+      val inputFile: File = new File(args(1))
+      resize(inputFile, flightsImageSize)
+    }
+  }
+
+  def partnersImageResizer(args:Array[String]){
+    if(args.length<2)
+      return 
+    else{
+      val inputFile: File = new File(args(1))
+      resize(inputFile, partnersImageSize)
+    }
+  }
+
+  def resize(file:File, sizeList:List[String]){
+    for(size<-sizeList){
+      val outputDir:File = new File(file.getParent()+"/"+size)
+      if(!outputDir.exists())
+        outputDir.mkdir()
+      val command: String = "mogrify -format gif -resize "+size +"! -path "+file.getParent()+"/"+size +" "+file.getAbsolutePath()
+      println(command)
+      val resize: Process = Runtime.getRuntime().exec(command)
+      val inputStream = Source.fromInputStream(resize.getInputStream()).getLines
+      val errorStream = Source.fromInputStream(resize.getErrorStream()).getLines
+      for(input<-inputStream){
+        println(output)
+      }
+    }
+  }
+  
+}

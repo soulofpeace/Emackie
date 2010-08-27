@@ -1,0 +1,46 @@
+import scala.io.Source
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Set
+import java.io.FileWriter
+
+def getMap(input:List[String]):HashMap[String, Set[String]]={
+  val Map:HashMap[String, Set[String]] = new HashMap[String, Set[String]]
+  for(line<-input){
+    val tokens = line.split(",")
+    val key = tokens(0).trim()
+    val value = tokens(1).trim()
+    if (Map.isDefinedAt(key)){
+      Map(key)=  Map(key) + value
+    }
+    else{
+      Map(key) = Set(value)
+    }
+  }
+  Map
+  
+}
+
+def printInput(input: HashMap[String, Set[String]]){
+  val fileWriter = new FileWriter(args(1))
+  for(key <- input.keys){
+    val sb = new StringBuffer()
+    sb.append(key+"=")
+    val list = input.get(key).get
+    for(value <- list){
+      sb.append(value+",")
+    }
+    fileWriter.write(sb.toString().slice(0, sb.toString().length-1)+"\n")
+  }
+  fileWriter.flush()
+  fileWriter.close()
+    
+}
+
+def main(){
+  val input = Source.fromFile(args(0)).getLines.toList
+  val Map = getMap(input)
+  printInput(Map)
+
+}
+
+main()

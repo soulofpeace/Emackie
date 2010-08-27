@@ -1,0 +1,368 @@
+package com.bezurk.provider.flight.chinahighlights;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.log4j.Logger;
+
+import com.bezurk.provider.flight.FlightSearchProviderException;
+import com.bezurk.provider.flight.HttpFlightSearchProvider;
+import com.bezurk.search.flight.FlightSearchReport;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.flight.model.FlightClass;
+import com.bezurk.search.flight.model.FlightItinerary;
+import com.bezurk.search.flight.model.FlightLeg;
+import com.bezurk.search.flight.model.FlightPrice;
+import com.bezurk.search.flight.model.FlightSegment;
+import com.bezurk.search.flight.model.FullFlightNumber;
+import com.bezurk.search.model.OagLocation;
+
+
+public class ChinaHighlightsSearchProvider extends HttpFlightSearchProvider {
+
+    private static Logger log = Logger.getLogger(ChinaHighlightsSearchProvider.class);
+
+    private final int MAX_LIMIT = 100;
+
+    private ChinaHighlightsWSClient chinaHighlightsWSClient;
+
+    private final static String CURRENCYCODE="CNY";
+
+
+
+    public ChinaHighlightsWSClient getChinaHighlightsWSClient() {
+	return chinaHighlightsWSClient;
+    }
+
+    public void setChinaHighlightsWSClient(
+					   ChinaHighlightsWSClient chinaHighlightsWSClient) {
+	this.chinaHighlightsWSClient = chinaHighlightsWSClient;
+    }
+
+    @Override
+    protected FlightSearchReport performSearch(FlightSearchRequest request)
+	throws FlightSearchProviderException {
+
+	log.debug("Starting search...");
+
+	HttpClient client = new HttpClient();
+	client.getHttpConnectionManager().getParams().setSoTimeout(60000);
+	client.getParams().setParameter("User-Agent", "BezurkBot");
+	String response = this.chinaHighlightsWSClient.search(client, request);
+	if(response!=null){
+	    if(isSOAPFault(response)){
+		log.warn("SOAP ERROR "+response);
+		throw new FlightSearchProviderException("SOAP ERROR: "+response);
+	    }
+
+	    log.debug("response: "+response);
+	    this.parseAndPost(request, response);
+	}
+	else{
+	    log.error("Unable to get XML Response");
+	    throw new FlightSearchProviderException("Unable to retrieve xml response");
+	}
+
+	return null;
+
+
+    }
+
+    private void parseAndPost(FlightSearchRequest request, String response) throws FlightSearchProviderException{
+	List<FlightItinerary> itineraries  = new ArrayList<FlightItinerary>();
+	String responseChunk = StringUtils.substringBetween(response, "<CHTDataServiceResult>", "</CHTDataServiceResult>").trim().replaceAll("&lt;", "<").replaceAll("&gt;", ">");
+	log.debug("ResponseChunk: "+responseChunk);
+
+	String[] flightLegChunks = StringUtils.substringsBetween(responseChunk, "<FlightNO>", "</FlightNO>");
+	if(flightLegChunks!=null){
+	    List<String> flightLegChunksList = Arrays.asList(flightLegChunks);
+	    List<FlightLeg> outLegs = this.getFlightLeg(flightLegChunksList, request, false);
+	    if(request.isRoundTrip()){
+		List<FlightLeg> inLegs = this.getFlightLeg(flightLegChunksList, request, true);
+		for(FlightLeg outLeg: outLegs){
+		    for(FlightLeg inLeg: inLegs){
+			FlightItinerary itinerary = new FlightItinerary();
+			itinerary.addOutboundLeg(outLeg);
+			itinerary.addInboundLeg(inLeg);
+			itineraries.add(itinerary);
+		    }
+		}
+	    }
+	    else{
+		for(FlightLeg outLeg: outLegs){
+		    FlightItinerary itinerary = new FlightItinerary();
+		    itinerary.addOutboundLeg(outLeg);
+		    itineraries.add(itinerary);
+		}
+	    }
+			
+	    Collections.sort(itineraries, new Comparator<FlightItinerary>(){
+
+		    public int compare(FlightItinerary o1, FlightItinerary o2) {
+			double outBoundPrice1 = Double.parseDouble(o1.getOutboundLegs().get(0).getPrices().get(0).getTotalPricePerPassenger());
+			double inBoundPrice1 =0.0;
+			if(o1.getInboundLegs()!=null && o1.getInboundLegs().size()>0){
+			    inBoundPrice1 = Double.parseDouble(o1.getInboundLegs().get(0).getPrices().get(0).getTotalPricePerPassenger());
+			}
+			double totalPrice1 =outBoundPrice1+inBoundPrice1;
+					
+			double outBoundPrice2 = Double.parseDouble(o2.getOutboundLegs().get(0).getPrices().get(0).getTotalPricePerPassenger());
+			double inBoundPrice2=0.0;
+			if(o2.getInboundLegs()!=null && o2.getInboundLegs().size()>0){
+			    inBoundPrice2 = Double.parseDouble(o2.getInboundLegs().get(0).getPrices().get(0).getTotalPricePerPassenger());
+			}
+			double totalPrice2 = outBoundPrice2+ inBoundPrice2;
+			return new Double(totalPrice1).compareTo(new Double(totalPrice2));
+		    }
+				
+		});
+	    int totalPosted =0;
+	    for (int i = 0; i < itineraries.size() && i < MAX_LIMIT; i++) {
+		this.postItinerary(request, itineraries.get(i));
+		totalPosted = i;
+	    }
+
+	    log.info("total posted: " + totalPosted);
+	}
+	else{
+	    log.error("Cannot get Itinerary Chunks, response: "+response);
+	    throw new FlightSearchProviderException("Cannot get Itinerary Chunk");
+	}
+    }
+
+	
+
+	
+    private FlightPrice getFlightPrice(String legChunks, FlightSearchRequest request) throws FlightSearchProviderException{
+	try{
+	    Double adultAirportTax = Double.parseDouble(StringUtils.substringBetween(legChunks, "<fcn>", "</fcn>"));
+	    Double adultFuelTax = Double.parseDouble(StringUtils.substringBetween(legChunks, "<fyq>", "</fyq>"));
+	    Double adultBaseFare = Double.parseDouble(StringUtils.substringBetween(legChunks, "<fcny>", "</fcny>"));
+	    FlightPrice price = new FlightPrice();
+	    price.setIncludesTax(true);
+	    price.setCurrencyCode(CURRENCYCODE);
+	    price.setPricePerAdult(adultBaseFare.toString());
+	    price.setTotalPricePerAdult(String.valueOf(adultAirportTax+adultBaseFare+adultFuelTax));
+	    price.setPricePerPassenger(adultBaseFare.toString());
+	    price.setTotalPricePerPassenger(String.valueOf(adultAirportTax+adultBaseFare+adultFuelTax));
+	    price.setAmount(String.valueOf(adultBaseFare*request.getNumAdults()));
+	    price.setTotalAmount(String.valueOf((adultAirportTax+adultBaseFare+adultFuelTax)*request.getNumAdults()));
+	    return price;
+	}
+	catch(NumberFormatException ex){
+	    log.error("Flight Price returned is not numeric, legChunks :"+legChunks);
+	    throw new FlightSearchProviderException("Unable to get flightPrice");
+	}
+	catch(NullPointerException ex){
+	    log.error("Unable to get FlightPrice Chunk, legChunks: "+legChunks);
+	    throw new FlightSearchProviderException("Unable to get flightPrice");
+	}
+    }
+
+
+
+    private List<FlightLeg> getFlightLeg(List<String> flightLegChunksList, FlightSearchRequest request, boolean inbound) throws FlightSearchProviderException{
+	List<FlightLeg> legs = new ArrayList<FlightLeg>();
+	int index = 0;
+	Set<String> startLocationSet = inbound?this.getDestinationsFromRequest(request):this.getOriginsFromRequest(request);
+	Set<String> endLocationSet = inbound?this.getOriginsFromRequest(request):this.getDestinationsFromRequest(request);
+	log.debug("startLocationSet: "+startLocationSet.toArray(new String[0])[0]);
+	log.debug("EndLocationSet: "+endLocationSet.toArray(new String[0])[0]);
+	boolean startFlag = false;
+	FlightLeg currentFlightLeg = null;
+	String lastArrivalAirport= null;
+	while(index<flightLegChunksList.size()){
+	    log.debug("Current Leg Chunks: "+flightLegChunksList.get(index));
+	    String origin = StringUtils.substringBetween(flightLegChunksList.get(index), "<cstar>", "</cstar>");
+	    log.debug("origin: "+origin);
+			
+	    String destination = StringUtils.substringBetween(flightLegChunksList.get(index), "<cdest>", "</cdest>");
+	    log.debug("destination: "+destination);
+	    if(origin!=null && destination!=null){
+		if(!startFlag){
+		    if(startLocationSet.contains(origin.trim())){
+			startFlag = true;
+			currentFlightLeg = new FlightLeg();
+			try{
+			    log.debug("Getting FLightprice");
+			    FlightPrice price = this.getFlightPrice(flightLegChunksList.get(index), request);
+			    currentFlightLeg.addPrice(price);
+			}
+			catch(FlightSearchProviderException ex){
+			    log.error(ex.getMessage());
+			    index++;
+			    continue;
+							
+			}
+			lastArrivalAirport = origin;
+		    }
+		    else{
+			log.warn("this is funny. no start location matches the request start location, how come they return me this as start location?");
+			log.warn("startLocation: "+origin);
+		    }
+		}
+				
+		if(!origin.equalsIgnoreCase(lastArrivalAirport)){
+		    log.error("Weird there is a break in the flightsegments");
+		    log.error("last arrival airport was "+lastArrivalAirport+" but current departure airport is "+origin);
+		    log.error("reseting everything");
+		    currentFlightLeg =null;
+		    startFlag = false;
+		    lastArrivalAirport = null;
+
+		}
+		else{
+		    String flightSegmentChunk = StringUtils.substringBetween(flightLegChunksList.get(index), "<flight>", "</flight");
+		    FlightSegment segment = this.getFlightSegment(flightSegmentChunk, request);
+		    currentFlightLeg.addSegment(segment);
+		    lastArrivalAirport= destination;
+		    if(endLocationSet.contains(destination.trim())){
+			legs.add(currentFlightLeg);
+			startFlag = false;
+			currentFlightLeg =null;
+			startFlag = false;
+			lastArrivalAirport = null;
+		    }
+		}
+
+	    }
+	    else{
+		log.error("Cannot get origin and destination from xml, legChunk:"+flightLegChunksList.get(index));
+		log.warn("continuing to see if can get other legs");
+
+	    }
+	    index++;
+	}
+	return legs;
+    }
+
+
+    private FlightSegment getFlightSegment(String flightSegmentBlock, FlightSearchRequest request) throws FlightSearchProviderException{
+	FlightSegment segment = new FlightSegment();
+	segment.setFlightClass(this.determineFlightClass(request));
+	segment.setFlightNumber(new FullFlightNumber(flightSegmentBlock.substring(0, 2), flightSegmentBlock.substring(2)));
+
+	return segment;
+    }
+
+    private FlightClass determineFlightClass(FlightSearchRequest request){
+	FlightClass flightClass = new FlightClass();
+	if(request.getCabinClass().equals(CABIN_CLASS.Economy)){
+	    flightClass.setEconomyClass();
+	}
+	else if(request.getCabinClass().equals(CABIN_CLASS.Business)){
+	    flightClass.setBusinessClass();
+	}
+	else{
+	    flightClass.setFirstClass();
+	}
+	return flightClass;
+    }
+
+    private boolean isSOAPFault(String xml){
+	return xml.toUpperCase().indexOf("<env:Fault>".toUpperCase())!=-1;
+    }
+
+	
+
+
+
+
+    private void postItinerary(FlightSearchRequest request, FlightItinerary itinerary)
+	throws FlightSearchProviderException {
+	log.debug(itinerary); 
+	checkItinerary(itinerary, request);
+	List<FlightItinerary> itineraries = new ArrayList<FlightItinerary>();
+	itineraries.add(itinerary);
+
+	//		postItineries(itineraries, request);
+    }
+
+    private Set<String> getOriginsFromRequest(FlightSearchRequest request){
+	Set<String> origins = new HashSet<String>();
+	OagLocation fromLocation = request.getFromLocation();
+	log.debug("adding Origin"+fromLocation.getCode());
+	origins.add(fromLocation.getCode());
+	if(fromLocation.hasChildren()){
+	    for(OagLocation airports: fromLocation.getAirports()){
+		log.debug("adding Origin"+airports.getCode());
+		origins.add(airports.getCode());
+	    }
+	}
+	log.debug("Origin length: "+origins.size());
+	return origins;
+    }
+
+    private Set<String> getDestinationsFromRequest(FlightSearchRequest request){
+	Set<String> destinations = new HashSet<String>();
+	OagLocation toLocation = request.getToLocation();
+	log.debug("adding destination"+toLocation.getCode());
+	destinations.add(toLocation.getCode());
+	if(toLocation.hasChildren()){
+	    for(OagLocation airports: toLocation.getAirports()){
+		log.debug("adding destination"+airports.getCode());
+		destinations.add(airports.getCode());
+	    }
+	}
+	log.debug("destination length: "+destinations.size());
+	return destinations;
+    }
+
+
+
+
+    @Override
+    protected boolean isSearchRelevant(FlightSearchRequest request)
+	throws FlightSearchProviderException {
+	return true;
+    }
+
+    @Override
+    protected boolean servicesRoute(String from, String to) {
+	return false;
+    }
+
+    // test method
+    private String readFromFile(String pathToFile) {
+	StringBuffer strBuff = new StringBuffer();
+
+	try {
+	    FileReader input = new FileReader(pathToFile);
+	    BufferedReader bufRead = new BufferedReader(input);
+
+	    String line;
+
+	    // Read first line
+	    line = bufRead.readLine();
+
+	    // Read through file one line at time. Print line # and line
+	    while (line != null) {
+
+		strBuff.append(line);
+		line = bufRead.readLine();
+	    }
+
+	} catch (Exception e) {
+	    System.err.println("File input error");
+	}
+
+	return strBuff.toString();
+    }
+
+
+}

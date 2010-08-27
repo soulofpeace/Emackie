@@ -1,0 +1,236 @@
+# -*- coding: utf-8 -*-
+require 'nokogiri'
+require 'mechanize'
+require 'Hpricot'
+
+class NewShanTravel
+
+  def self.run
+    src = Source.new
+    src.import
+  end
+
+end
+
+class Source
+
+  @@SOURCE_URL="http://202.157.130.10/p/newshan/XML_Query"
+  @@CLIENT_ID ="WEGO"
+  @@PASSCODE="W40T29"
+  @@MAX_RESULTS="250"
+
+  def initialize
+    @passed= Array.new
+    @failed = Array.new
+    @currency_converter = YahooFinance::CurrencyConverter.new
+  end
+
+
+  
+  #  <?xml version="1.0" encoding="utf‐8" ?>
+  #  <TourListRQ Version="1.0.1" >
+  #    <ClientID>XXXX
+  #  </ClientID> <ReturnMaxRecord Number="20" />
+  #    <OrderBy Code="0" Desc="false" />
+  #    <TravelPreferences>
+  #    <Destination>
+  #    <Country Code="TW" />
+  #    <City Code="TPE">Taipei
+  #  </City> <City Code="KHH">Kaohsiung</City>
+  #    </Destination> <Duration MinDay="2" MaxDay="8" />
+  #    <Budget CurrencyCode="SGD" Min="500" Max="2000" />
+  #    <AirlinePref Code="SQ" />
+  #    <AirlinePref Code="CX" />
+  #    <TourType>GTO
+  #  </TourType>
+  # </TravelPreferences> </TourListRQ>
+  
+  def import
+
+    body = send_request(Nokogiri::XML::Builder.new do |xml|
+                          xml.TourListRQ(:Version=>"1.0.1"){
+                            xml.ClientID_ @@CLIENT_ID
+                            xml.ReturnMaxRecord_ @@MAX_RESULTS
+                            xml.OrderBy(:Code=>"0", :Desc=>"false")
+                            xml.TravelPreference{
+                              xml.TourType_ "ALL"}
+                          }
+                        end.to_xml)
+    doc = Hpricot::XML(body)
+    doc.search('//Tour').each do |tour|
+      save_to_db(tour) 
+    end
+  end
+
+  def save_to_db(tour)
+    
+    tour_code = tour.at('//TourName')['TourCode']
+    body = send_request( Nokogiri::XML::Builder.new do |xml|
+                           xml.TourDetailsRQ(:Version=>"1.0.1"){
+                             xml.ClientID_ @@CLIENT_ID
+                             xml.Tour(:Code=>tour_code)
+                           }      
+                         end.to_xml)
+    
+    price =tour.at("Price")["Min"].to_i
+    currency=tour.at("Price")["CurrencyCode"]
+    tour_type = tour.at("TourType").inner_text
+    details = Hpricot::XML(body)
+    
+    begin
+      base_attrs = {
+        :headline           => details.at("TourName").inner_text,
+        :highlights         => details.at("TourName").inner_text,
+        :code               => tour_code,
+        :days               => tour.at("Duration")['Days'].to_i,
+        :nights             => tour.at("Duration")['Days'].to_i - 1,
+        :airlines           => details.at("Airline")["Code"],
+        :hotels             => "Accomodation",
+        :remarks            => attributize_remarks(details),
+        :sales_from         => Date.parse(tour.at("Valid")["From"]),
+        :sales_till         => Date.parse(tour.at("Valid")["To"]),
+        :image              => nil,
+        :published          => 1,
+        :currency           => currency,
+        :price              => price,
+        :normalized_price   => @currency_converter.convert(price, currency, "USD"),
+        :rank               => nil,
+        :language           => "en-us",
+        :classification     => attributize_tour_type(tour.at("TourType").inner_text),
+        :guided             => tour_type =="GTO"?"1":"0",
+        :url                => tour.at("Url").inner_text,
+        :email              => nil,
+        :brochure           => details.at("PDFUrl").inner_text,
+        :call_user          => nil,
+        :phone              => nil,
+        :travel_agent_id    => 3
+      }
+
+      puts base_attrs.inspect
+      
+      rels_attrs=[
+                  ["orig_cities", attributize_place("Singapore", "orig_city")],
+                  ["dest_continents", []],
+                  ["dest_countries", attributize_place(tour.search("//Country").collect{
+                                                         |country|
+                                                         country.inner_text
+                                                       }.join(","), "dest_country")],
+                  ["dest_cities", attributize_place(tour.search("City").collect{
+                                                      |city|
+                                                      city.inner_text
+                                                    }.join(","), "dest_city")],
+                  ["dest_attractions", attributize_place(details.search("Title").collect {
+                                                           |title|
+                                                           title.inner_text
+                                                         }.join(","), "dest_attraction")],
+                  ["prices", []],
+                  ["itineraries", attributize_itinerary(details.search("//Itinerary"))],
+                  ["themes", []]
+                  
+                 ]
+      
+      puts rels_attrs.inspect
+      # ActiveRecord::Base.transaction do
+      #   package = Package.new(base_attrs)
+      #   rels_attrs.each do |rel_attr|
+      #     name = rel_attr[0]
+      #     vals = rel_attr[1]
+      #     vals.each do |val|
+      #       if val[:obj].blank?
+      #         package.send(name).build(val)       # Create
+      #       else
+      #         package.send(name).push(val[:obj])  # Add
+      #       end
+      #     end
+      #   end
+      #   package.save
+      #   @passed << package
+
+      # end
+
+
+      
+    rescue
+     
+      @failed << details
+    end
+
+    
+  end
+
+  def send_request(request_xml)
+    agent = Mechanize.new
+    agent.read_timeout=300
+    page = agent.post(@@SOURCE_URL, [["ClientID",@@CLIENT_ID], ["PassCode",@@PASSCODE], ["data",request_xml], ["Submit","Submit"]])
+    return page.body
+  end
+
+  
+  def attributize_tour_type(tour_type)
+
+    if tour_type =="GTO"
+      return "all"
+    else
+      return "freeneasy"
+    end
+    
+  end
+
+
+  def attributize_place(places, classification)
+    return [] if places==nil||places.empty?
+    array  = Array.new
+    klass  = classification.camelize.constantize
+    values = places.split(",")
+    values.each do |value|
+      obj = klass.find_by_name(value.downcase.strip)
+      if obj.blank?
+        array << { :name => value.downcase.strip, :classification => classification.camelize }
+      else
+        array << { :obj => obj }
+      end
+    end
+    array
+  end
+
+  def attributize_itinerary(itineraries)
+    return [] if itineraries==nil||itineraries.empty? 
+    array = Array.new
+    itineraries.each do |itinerary|
+      itinerary.search("Day").each do |day|
+        # Skip for Note Items
+        
+        array <<  { :headline => day.at("Title").inner_text,
+          :days     => day["Number"],
+          :message  => day.at("Details").inner_text }
+
+      end
+    end
+    array
+  end
+
+  def attributize_remarks(details)
+    remarks=""
+    unless details.search("//Price")==nil||details.search("//Price").empty?
+      remarks  += details.search("//Price").collect{
+        |price|{
+          "Option "+price["Number"]+"=>"+
+          "Departure From: "+price.at("Departure")["From"]+
+          "to"+
+          price.at("Departure")["To"]+
+          (price.at("HotelName")==nil||price.at("HotelName").blank?)?"Accomodation:"+price.at("HotelName").inner_text +:""+
+          "Airline Code: "+price.at("Airline")["Code"]+
+          "Adult(Price): "+price.at("Adult")["TWN"]+"(TWN), "+price.at("Adult")["SGL"]+"(SGL)" unless price.at("Adult")==nil||price.at("Adult").blank?+
+          "Child(Price): "+price.at("Child")["CNB"]+"(CNB), "+price.at("Child")["CNB"]+"(CNB), "+price.at("Child")["CHT"]+"(CHT)" unless price.at("Child")==nil||price.at("Child").blank?+
+          "Extension(Price): "+price.at("Extension")["TWN"]+"(TWN), "+price.at("Extension")["SGL"]+"(SGL), "+price.at("Extension")["CNB"]+"(CNB), "+price.at("Extension")["CNB"]+"(CNB), "+price.at("Extension")["CHT"]+"(CHT)" unless price.at("Extension")==nil||price.at("Extension").blank?
+        }
+        
+      }.join(",")
+      
+    end
+    puts "Remarks:" +remarks
+    return remarks
+  end
+  
+  
+end

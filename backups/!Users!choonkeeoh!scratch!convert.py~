@@ -1,0 +1,3 @@
+test = '<FlightRequest RequestType="FlightSingleTrip" UserAccount="wego" UserPassword="wego">  <Routes>    <Route>      <DepartCityCode>SHA</DepartCityCode>      <ArriveCityCode>BJS</ArriveCityCode>      <DepartDate>2010-04-30T00:00:00</DepartDate>    </Route>  </Routes>  <SendTicketCityID>2</SendTicketCityID>  <IsSingleFlightSearchRequest>false</IsSingleFlightSearchRequest>  <SingleFlightSearchParamter>    <RouteIndex>0</RouteIndex>    <Price>0</Price>  </SingleFlightSearchParamter></FlightRequest>'
+test2 =test.replace("<", "&lt;").replace(">", "&gt;")
+print test2

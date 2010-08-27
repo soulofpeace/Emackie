@@ -1,0 +1,109 @@
+import redis
+import sys
+import os
+
+r_server=redis.Redis("localhost")
+
+def readRouteFolder(routeFolder):
+    for root, dirs, files in os.walk(routeFolder):
+        for file in files:
+            if file == "routes.properties":
+                providerId = root[root.rfind("/")+1:]
+                routes = open(os.path.join(root, file))
+                __parseRoutes(providerId, routes)
+        
+def __parseRoutes(providerId, routes):
+    print "processing providerId %s" %(providerId)
+    disallowedProperties = {}
+    allowedProperties={}
+    for route in routes:
+        print "processing providerId %s route %s" %(providerId, route)
+        if(route.find("=")!=-1):
+            routeTokens = route.split("=")
+            if routeTokens[0].strip().upper().startswith('disallow'.upper()):
+                disallowedProperties[routeTokens[0].strip()]=routeTokens[1].strip()
+                print route
+            elif routeTokens[0].strip().upper().startswith('allow'.upper()):
+                allowedProperties[routeTokens[0].strip()]=routeTokens[1].strip()
+                parseAllowedProperties(providerId, allowedProperties, parseRoute)
+            else:
+                parseNormalRoute(providerId, routeTokens[0].strip(), routeTokens[1].strip(), parseRoute)
+
+def parseAllowedProperties(providerId, allowedProperties, routeParseFn):
+    if allowedProperties.has_key("allowedToCountries"):
+        countryCode = allowedProperties["allowedToCountries"].strip()
+    if allowedProperties.has_key("allowedFromCountries"):
+        countryCode = allowedProperties["allowedFromCountries"].strip()
+    if allowedProperties.has_key("allowedOrigins"):
+        countryCode = allowedProperties["allowedOrigins"].strip()
+    if countryCode != "*":
+        countryId = r_server.get("country:"+countryCode+":id")
+        if countryId:
+            origins = r_server.smembers("country:"+countryId+":locations")
+        else:
+            print "Error countyId is None for countryCode: "+countryCode
+            print "ProviderId: %s, allowedProperties: %s" %(providerId, str(allowedProperties))
+    else:
+        origins  = r_server.smembers("location:members")
+    destinations = r_server.smembers("location:members")
+    if(origins and destinations):
+        routeParseFn(providerId, origins, destinations) 
+    else:
+        print "Error: countryId: %s, origins: %s, destinations: %s is None" %(countryId, origins, destinations)
+        print "ProviderId: %s, allowedProperties: %s" %(providerId, str(allowedProperties))
+    
+        
+
+def parseNormalRoute(providerId, origin, destinations, routeParseFn):
+    if(destinations.strip() !="*"):
+        destinationTokens = destinations.split(",")
+        destinationSet = set()
+        for destination in destinationTokens:
+            destinationId = r_server.get("location:airport:"+destination.strip().replace("'", "")+":id")
+            if destinationId:
+                destinationSet.add(destinationId)
+            else:
+                destinationId = r_server.get("location:city:"+destination.strip().replace("'", "")+":id")
+                if destinationId:
+                    destinationSet.add(destinationId)
+                else:
+                    print "no destination id for "+destination
+                    print "route: providerId: %s, origin: %s, destination: %s" %(providerId, origin, destination)
+                              
+    else:
+        destinationSet = r_server.smembers("location:members")
+    originId = r_server.get("location:airport:"+origin+":id")
+    if originId:
+        routeParseFn(providerId, [originId], destinationSet) 
+    else:
+        originId = r_server.get("location:city:"+origin.strip().replace("'", "")+":id")
+        if originId:
+            routeParseFn(providerId, [originId], destinationSet)
+        else:
+            print "no origin id for "+origin
+            print "route: providerId: %s, origin: %s, destination: %s" %(providerId, origin, destination)
+    
+            
+def parseRoute(providerId, origins, destinations):
+    for originId in origins:
+        if originId:
+            origin = r_server.get("location:"+originId+":code")
+            r_server.sadd("location:"+originId+":origin:providerIds", providerId)
+            r_server.sadd("provider:"+providerId+":origins", originId)
+            if originId in destinations:
+                destinations.remove(originId)
+            for destinationId in destinations:
+                if destinationId:
+                    destination = r_server.get("location:"+destinationId+":code")
+                    r_server.sadd("provider:"+providerId+":destinations", destinationId)
+                    r_server.sadd("provider:"+providerId+":origin:"+originId, destinationId)
+                    r_server.sadd("location:"+destinationId+":destination:providerIds", providerId)
+
+    r_server.sadd("provider:members", providerId)
+
+
+def main():
+    readRouteFolder(sys.argv[1])
+
+if __name__=="__main__":
+    main()

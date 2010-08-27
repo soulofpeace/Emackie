@@ -1,0 +1,6 @@
+package com.bezurk.dbUpdater.oagLocation.matcher
+
+trait LocationMatcherFactoryComponent extends MatcherFactoryComponent{
+  class LocationMatcherFactory extends MatcherFactory{
+  }
+}

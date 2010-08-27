@@ -1,0 +1,34 @@
+package com.bezurk.provider.flight.chinahighlights.rule;
+
+import com.bezurk.provider.rule.IRuleParser;
+import com.bezurk.provider.rule.RuleResult;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+
+
+public class ChinaHighlightsCustomRule implements IRuleParser{
+    
+    public RuleResult applyRule(FlightSearchRequest request){
+	boolean children_check = false;
+	boolean cabin_check= false;
+	RuleResult result = new RuleResult();
+	String message ="";
+	if(request.getNumChildren()==0){
+	    children_check=true
+	}
+	else{
+	    message += "Only Adult Search allowed. ";
+	}
+	if(request.getCabinClass().equals(CABIN_CLASS.Economy)){
+	    cabin_check = true
+	}
+	else{
+	    message += "Only Economy Class Search Allowed. "+request.getCabinClass().toString()+"  is not allowed";
+	}
+	
+	result.setSuccess(children_check && adult_check);
+	result.setMessage(message);
+	return result;
+    }
+
+}

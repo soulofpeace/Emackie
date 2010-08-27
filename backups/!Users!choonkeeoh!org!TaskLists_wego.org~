@@ -1,0 +1,65 @@
+
+#+COLUMNS: %26ITEM %TODO %3PRIORITY %TAGS
+* Task Lists
+** DONE fix parsing of price in jetstar Asia. :bugs:flightsmonitor:flightsPartners:
+   CLOSED: [2010-04-26 Mon 11:37]
+   
+** DONE update chinatraveldepot deeplinking :update:flightsPartners:
+   CLOSED: [2010-04-29 Thu 17:26]
+
+** DONE help Redha find out about the cron schedule and database source for hotel hotspot :help:miscellaneous:
+   CLOSED: [2010-04-27 Tue 16:36]
+
+** DONE remove airfares that are $0 from airfares_bestprices db :bugs:airfares:
+   CLOSED: [2010-04-27 Tue 18:16]
+   
+** TODO ExploreTrip WebService
++ <2010-04-30 Fri> waiting for them to finish testing
++ <2010-05-03 Mon> dev deeplinking seem to be not working
+
+** TODO FlightsAPI Migration
++ merge FlightAPI and Bezurk-Frontends
++ standardise the method name
++ flightStartSearchController memcached Client not used
++ ehclient and memcached client mixed
++ configuration Class to abstract away configuration
+  + flightStartSearchController
+  + MySQLResultsPullingController
+  + MySQLBookingController
+  
+** DONE CSI on TigerAirway Scrapper
+   CLOSED: [2010-05-03 Mon 10:52]
++ <2010-04-28 Wed>Dump out wegonomics data to compare 
++ <2010-04-29 Thu>check the logs file of tigerairway <- some null pointer exception
++ <2010-04-30 Fri> after investigation, everything seem normal. will continue to monitor
+  
+** DONE Update the route and deeplink tracking code of FlightNetwork
+   CLOSED: [2010-05-03 Mon 10:52]
++ Waiting on the verification of tracking code
+
+** TODO Cox and King Deeplinking Error
++ <2010-04-29 Thu>some search provider errors. deeplinking seem to be ok
++ <2010-04-30 Fri>fixed search provider errors
++ <2010-04-30 Fri>waiting for them to provide specific test cases 
+** DONE VirginBlue New API
+   CLOSED: [2010-04-29 Thu 18:57]
++ waiting for them to get back on deeplinking 
+** DONE update oag ssim db
+   CLOSED: [2010-05-03 Mon 17:32]
+** TODO Mandalaair Search Provider 
+started : <2010-05-04 Tue>
++ all the flights returned are all unmatched.
++ weird
+Blocked: <2010-05-06 Thu> :: need to fix matching Oag Flight Schedule
+do not contain airline code
+** DONE Brindabella Search Provider
+   CLOSED: [2010-05-04 Tue 15:01]
+<2010-05-04 Tue>
+
+**TODO AirAsia Deeplinking<2010-05-04 Tue>
+** TODO merpati.co.id
+   started <2010-05-05 Wed>
+   Blocked <2010-05-06 Thu> :: need to fix matching. Oag FLight
+   Schedule do not contain MZ code
+** TODO batavia-air.com
+   started <2010-05-06 Thu>

@@ -1,0 +1,15 @@
+package com.bezurk.dbUpdater.state.input
+
+trait AviatrixEdgeStateFactoryComponent extends DBInputFactoryComponent{
+  this:DBComponent =>
+    class StateFactory extends InputFactory{
+      def getInputSeq(source:Any):Seq[Data]={
+        source match {
+          case (connectionFactory:String, queryString:String){
+          }
+          case _=> return null
+        }
+      }
+    }
+    
+}

@@ -1,0 +1,29 @@
+package com.bezurk.dbUpdater
+
+import com.bezurk.dbUpdater.oagLocation.client._
+import com.bezurk.dbUpdater.mapper._
+import com.bezurk.dbUpdater.client._
+
+object DBUpdater{
+
+
+  def execute(args:Array[String], clientComponent:DbUpdaterClientComponent){
+    args(1) match{
+      case "printInput"=>
+        clientComponent.dbUpdaterClient.printInput(args(2))
+      case "map"=>
+        clientComponent.dbUpdaterClient.map(args(2))
+      case "run"=>
+        clientComponent.dbUpdaterClient.run(args(2))
+    }
+  }
+
+  def main(args:Array[String]){
+    args(0) match {
+      case "iata_locations" =>
+        execute(args, new IataLocationClientComponent())
+    }
+
+  }
+}
+

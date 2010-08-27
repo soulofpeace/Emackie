@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern"
+				value="%d{ABSOLUTE} [${project.build.finalName}] %p [%t] %c{3}.%M(%L) | %m%n" />
+			<!--%d{ABSOLUTE} %-5p [%c{10}] %m%n"/>-->
+		</layout>
+	</appender>
+	<appender name="MAIN" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${project.build.finalName}_main.log" />
+		<param name="MaxFileSize" value="1MB" />
+		<param name="MaxBackupIndex" value="9" />
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %p [%t] %c{3}.%M(%L) | %m%n" />
+			<!--%d{ABSOLUTE} %-5p [%c{1}.%M(%L)] %m%n"/>-->
+		</layout>
+	</appender>
+
+        <root>
+		<appender-ref ref="MAIN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</log4j:configuration>

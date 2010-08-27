@@ -1,0 +1,27 @@
+class Liquidadventures
+  def self.run
+    src = Source.new
+    src.import
+  end
+end
+
+class Source
+  def initialize
+    @passed =Array.new
+    @failed = Array.new
+  end
+
+
+  def import
+    main_src = MyURIAdaptor.new("http://www.liquidadventures.com.au/our-trips/")
+    main_doc = Hpricot(main_src.read)
+    save_to_db(main_doc)
+  end
+
+  def save_to_db(main_doc)
+    packages = main_doc.search('//div[@class="span-10 last"]/a').each do |a|
+      puts a['href']
+    end
+  end
+  
+end

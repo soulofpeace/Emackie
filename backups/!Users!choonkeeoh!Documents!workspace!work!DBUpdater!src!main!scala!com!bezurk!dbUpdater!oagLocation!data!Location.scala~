@@ -1,0 +1,3 @@
+import com.bezurk.dbUpdater.data._
+
+case Location(location_code:String, multicity:String, type:String, subtype:String, name:String, country_code:String, subcountry:String, country_name:String, state:String, substate:String, timediv:Int, latitude:String, longitude:String, active:Int) extends Data

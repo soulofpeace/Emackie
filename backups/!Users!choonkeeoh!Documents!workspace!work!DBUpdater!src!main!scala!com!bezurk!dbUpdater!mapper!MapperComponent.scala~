@@ -1,0 +1,26 @@
+package com.bezurk.dbUpdater.mapper
+
+import com.bezurk.dbUpdater.input._
+import com.bezurk.dbUpdater.output._
+import com.bezurk.dbUpdater.db._
+
+trait MapperComponent{
+  this: InputFactoryComponent with DBComponent =>
+    val mapper:Mapper
+  trait Mapper{
+      def map(source:String):Seq[Result]
+      def run(source:String):Seq[(String, Boolean)]
+      def printInput(source:String){
+        inputFactory.getInputSeq(source).foreach(println)
+      }
+      def printOutput(output:Seq[Result], resultType:String){
+        output.foreach(arg=> arg match {
+          case Result(resultType, msg) => println(msg)
+        }
+                     )
+      }
+      
+    }
+}
+
+

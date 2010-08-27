@@ -1,0 +1,80 @@
+import datetime
+
+class BookmarkDao:
+    def __init__(self, connection):
+        self._connection = connection
+        connection.setnx("bookmark:next_id", 1)
+    
+    def __validate(self, bookmark):
+        if not hasattr(bookmark, owner_id):
+            return False
+        if not hasattr(bookmark, tweet_id):
+            return False
+        if not hasattr(bookmark, tweet_txt):
+            return False
+        if not hasattr(bookmark, tweeter_screenname):
+            return False
+        return True
+
+    def save(self, bookmark):
+        if __validate(bookmark):
+            if not bookmark.id:
+                bookmark.id = connection.get("bookmark:next_id")
+            connection.set("bookmark:%s:owner_id" %(bookmark.id), bookmark.owner_id)
+            connection.set("bookmark:%s:tweet_id" %(bookmark.id), bookmark.tweet_id)
+            connection.set("bookmark:%s:tweet_txt" %(bookmark.id), bookmark.tweet_txt)
+            connection.set("bookmark:%s:tweeter_screenname" %(bookmark.id), bookmark.tweeter_screenname)
+            connection.set("bookmark:%s:latitude" %(bookmark.id),  bookmark.location[0])
+            connection.set("bookmark:%s:longitude" %(bookmark.id), bookmark.location[1])
+                           
+            connection.set("bookmark:%s:created" %(bookmark.id), bookmark.created.strftime("%Y-%m-%d %H:%M:%S"))
+            connection.set("bookmark:%s:updated" %(bookmark.id), bookmark.updated.strftime("%Y-%m-%d %H:%M:%S"))
+            connection.rpush("bookmark:bytime:bookmarks", bookmark.id)
+            connection.rpush("user:%s:bookmarks" %(bookmark.owner_id), bookmarks)
+            
+            connection.zincrby("bookmark:byscore:bookmarks", bookmark.id, 0.0)
+            connection.incr("bookmark:next_id")
+            return bookmark.id
+        else:
+            return None
+            
+    def delete(self, bookmark_id):
+        connection.zrem("bookmark:byscore:bookmarks", bookmark_id)
+        connection.rpop("bookmark:bytime:bookmarks", bookmark_id)
+        owner_id = connection.rpop("bookmark:%s:owner_id" %(bookmark_id))
+        connection.rpop("user:%s:bookmarks" %(owner_id), bookmark_id)
+        if(connection.exists("bookmark:%s:tags" %(bookmark_id))):
+            tag_ids = connection.smembers("bookmark:%s:tags" %(bookmark_id))
+            for id in tag_ids:
+                connection.srem("tag:%s:bookmarks" %(id), bookmark_id)
+        bookmark_keys = connection.keys("bookmark:%s:*" %(bookmark_id))
+        if(len(bookmark_keys)):
+            for key in bookmark_keys:
+                connection.delete(key)
+            return True
+        else:
+            return False
+        
+
+    def get_bookmark_of_user(self, user_id):
+        if connection.exists("user:%s:bookmarks" %(user_id)):
+            bookmark_ids = connection.smembers("user:%s:bookmarks" %(user_id)):
+            bookmarks= []
+            for id in bookmark_ids:
+                bookmark = get_bookmark(id)
+                bookmarks.append(bookmark)
+        else:
+            return []
+
+
+    def get_bookmark(self, bookmark_id):
+        owner_id = connection.get("bookmark:%s:owner_id" %(bookmark_id))
+        tweet_id = connection.get("bookmark:%s:tweet_id" %(bookmark_id))
+        tweet_txt = connection.get("bookmark:%s:tweet_txt" %(bookmark_id))
+        tweeter_screenname = connection.get("bookmark:%s:tweeter_screenname" %(bookmark_id))
+        location = (connection.get("bookmark:%s:latitude" %(bookmark_id), connection.get("bookmark:%s:longitude" %(bookmark_id))))
+        created = datetime.datetime.strptime(connection.get("bookmark:%s:created" %(id)),"%Y-%m-%d %H:%M:%S")
+        updated = datetime.datetime.strptime(connection.get("bookmark:%s:updated" %(id)),"%Y-%m-%d %H:%M:%S")
+        bookmark = Bookmark(owner_id=owner_id, tweet_id=tweet_id, tweet_txt=tweet_txt, tweeter_screenname=tweeter_screenname, location=location, created=created, updated=updated, id=id)
+        return bookmark
+        

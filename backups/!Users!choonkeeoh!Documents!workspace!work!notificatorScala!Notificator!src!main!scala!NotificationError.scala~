@@ -1,0 +1,11 @@
+
+public class NotificationError extends Exception{
+
+	public NotificationError(Exception e){
+		super(e);
+	}
+	
+	public NotificationError(String msg, Exception e){
+		super(msg, e);
+	}
+}

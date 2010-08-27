@@ -1,0 +1,19 @@
+;; Emacs-W3 HTTP cookies file
+;; Automatically generated file!!! DO NOT EDIT!!!
+
+(setq url-cookie-storage
+ '((".google.com"
+  [cookie "PREF" "ID=a11cf0f5e0f1b43c:U=45cdbb8a71be55b6:TM=1282034422:LM=1282034422:S=dnv6TPrHQK3hTd0X" "16-Aug-2012 08:40:22.00 GMT" "/" ".google.com" nil]
+  [cookie "NID" "37=FGFAQg4V96JmrPtAy_7Oy9OTLoSJ_m40WftiMkilbjE2NcLZXTw5eA2woaH7w7WLKm9-BKImxPi8n-jBAbdEpmHUIfJpHTLmvK-vn0ftlaWhmf4fdrAaF2NjkjKqJkn6" "16-Feb-2011 08:40:22.00 GMT" "/" ".google.com" nil])
+ (".google.com.sg"
+  [cookie "PREF" "ID=843a87bb77ef3777:U=871db777811fe4fa:TM=1282034422:LM=1282034422:S=vQ3A9GzNEQ9PoOFo" "16-Aug-2012 08:40:22.00 GMT" "/" ".google.com.sg" nil]
+  [cookie "NID" "37=fuGHjpEYhtpdb25gw_86LUm5x6Ii-PO0FqAkdzndUgTe4eE4dkEwJSDHw-F_ucNGK8HzZ-Bn5EfbvVWMS_pdkqJ6HJgrnU6LJiyZDG2KZLW9UXMLYW33xEOf8j7PmjI9" "16-Feb-2011 08:40:22.00 GMT" "/" ".google.com.sg" nil]
+  [cookie "HttpOnly" nil "16-Feb-2011 08:40:22.00 GMT" "/" ".google.com.sg" nil]))
+)
+(setq url-cookie-secure-storage
+ 'nil)
+
+;; Local Variables:
+;; version-control: never
+;; no-byte-compile: t
+;; End:

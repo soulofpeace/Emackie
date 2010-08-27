@@ -1,0 +1,16 @@
+package com.bezurk.dbUpdater.client
+
+
+trait DbUpdaterClientComponent{
+  this: InputFactoryComponent with DBComponent with WriterComponent =>
+    val DbUpdaterClient:DbUpdaterClient
+
+  trait DbUpdaterClient{
+    def map()
+    def run()
+    def printInput(source:String){
+      inputFactory.getInputSeq(source).foreach(println)
+    }
+  }
+    
+}

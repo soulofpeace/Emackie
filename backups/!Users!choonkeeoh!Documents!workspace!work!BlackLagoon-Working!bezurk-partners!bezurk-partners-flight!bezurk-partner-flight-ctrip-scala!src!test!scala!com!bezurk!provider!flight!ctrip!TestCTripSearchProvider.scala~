@@ -1,0 +1,77 @@
+package com.bezurk.provider.flight.ctrip;
+
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.model.Country;
+import com.bezurk.search.model.OagLocation;
+
+
+class TestCTripSearchProvider extends TestCase {
+  
+  val provider:CTripSearchProvider = new CTripSearchProvider();
+
+
+  
+  override def setUp(){
+    val client:CTripWSClient = new CTripWSClient();
+    client.setAccount("wego");
+    client.setPassword("wego");
+    client.setSite("http://202.157.130.10/p/flights/ctrip/");
+    this.provider.setCTripWSClient(client);
+  }
+  
+  
+  
+  def testCustomSearch(){
+    val FORMAT_DATE:SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    val fromLocation:OagLocation = new OagLocation();
+    val fromCountry:Country = new Country();
+    fromCountry.setCode("CN");
+    fromLocation.setCountry(fromCountry);
+    fromLocation.setCode("BJS");
+    val childAirport1 = new OagLocation()
+    childAirport1.setCode("NAY")
+    val childAirport2 = new OagLocation()
+    childAirport2.setCode("PEK")
+    fromLocation.addAirport(childAirport1)
+    fromLocation.addAirport(childAirport2)
+    
+    val toLocation:OagLocation = new OagLocation();
+    val toCountry:Country = new Country();
+    toCountry.setCode("CN");
+    toLocation.setCountry(toCountry);
+    toLocation.setCode("SHA");
+    val childAirport3 = new OagLocation()
+    childAirport3.setCode("PVG")
+    val childAirport4 = new OagLocation()
+    childAirport4.setCode("SHA")
+    toLocation.addAirport(childAirport3)
+    toLocation.addAirport(childAirport4)
+
+    val request:FlightSearchRequest = new FlightSearchRequest();
+
+    // From
+    request.setFromLocation(fromLocation);
+
+    // To
+    request.setToLocation(toLocation);
+
+    request.setOutboundDate(FORMAT_DATE.parse("23/10/2010"));
+    request.setInboundDate(FORMAT_DATE.parse("02/11/2010"));
+    request.setNumAdults(1);
+    request.setNumChildren(1);
+    request.setRoundTrip(true);
+    request.setCabinClass(CABIN_CLASS.Economy);
+    provider.performSearch(request);
+
+  }
+
+
+}

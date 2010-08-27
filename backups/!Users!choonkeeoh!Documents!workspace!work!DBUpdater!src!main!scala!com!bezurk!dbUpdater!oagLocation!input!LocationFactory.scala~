@@ -1,0 +1,77 @@
+package com.bezurk.dbUpdater.oagLocation.input
+
+import scala.io.Source
+import com.bezurk.dbUpdater.input._
+
+trait LocationFactoryComponent extends InputFactoryComponent{
+  class LocationFactory extends InputFactory{
+    def getInputSeq(source:Any):Seq[Any]={
+      source match {
+        case input:String => {
+          val inputFile = Source.fromFile(input)
+          val lines = inputFile.getLines.toList.tail
+          // val tokens = lines.map(arg=>arg.trim.split(",").map(arg2=>arg2.substring(1, arg2.length-1)).toList)
+          val tokens = lines.map(arg=>strippedIntoToken(arg))
+          //tokens.foreach(println)
+          val records = tokens.map(arg=>getLocationRecord(arg)).foldLeft(List[Map[String, String]]())(_:::_)
+          println(records.length)
+          return records
+        }
+        case _ => return null
+      }
+    }
+    
+    private def strippedIntoToken(line:String):List[String]={
+      val regex="\"(.*?)\"".r
+      val tokens = regex.findAllIn(line).matchData.toList.map(arg=>arg.group(1))
+      return tokens
+    }
+
+    
+    
+
+    private def getLocationRecord(column:List[String]):List[Map[String, String]]={
+      val locationCode = column(0)
+      val multicityCode = if(column(1).length==0) null else column(1)
+      val locationType = if(column(2).length==0) null else column(2)
+      val subtype = if(column(3).length==0) null else column(3) 
+      val name = if(column(4).length==0) null else column(4).replace("'", "\\'")
+      val countryCode = if(column(5).length==0) null else column(5)
+      val countryName = if(column(7).length==0) null else column(7).replace("'", "\\'")
+      val latitude = if(column(11).length==0) null else column(11)
+      val longitude = if(column(12).length==0) null else column(12)
+      val stateCodeReg = "([^\\d]+)".r;
+      val stateCode = column(8) match{
+        case stateCodeReg(value)=>{
+          if(countryCode=="AU"){
+            value match{
+              case "VI" => "VIC"
+              case "NS" => "NSW"
+              case "QL" => "QLD"
+              case "TS" => "TAS"
+              case "AC" => "ACT"
+              case  _ => value
+            }
+            
+          }
+          else{
+            value
+          }
+        }
+        case _=>{
+	  null
+        }
+      }
+      val timeDiv = if(column(10).length==0) null else column(10).toInt.toString
+      val active = if(column(13)=="I") "0" else "1"
+      if(subtype.trim()=="A" || subtype.trim()==""){
+	Map("location_code"->locationCode,  "multi_airport_city_code"->locationCode,  "location_type"->locationType, "location_sub_type"->subtype, "location_name"->name, "country_code"->countryCode, "country_name"->countryName, "state_code"->stateCode, "latitude"->latitude, "longitude"->longitude, "active"-> active)::Nil                
+      
+      }
+      else{
+        Nil
+      }
+                     
+    }
+  }
+}

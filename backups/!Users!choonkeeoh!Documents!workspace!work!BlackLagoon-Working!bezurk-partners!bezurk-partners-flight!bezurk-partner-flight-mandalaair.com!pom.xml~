@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project>
+	<parent>
+		<artifactId>bezurk-partners-flight</artifactId>
+		<groupId>com.bezurk</groupId>
+		<version>1.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.bezurk</groupId>
+	<artifactId>bezurk-partner-flight-lionair.co.id</artifactId>
+	
+	<name>Bezurk Partner Flight Integration [lionair.co.id]</name>
+	<version>1.0</version>
+	<build>
+		<finalName>Partner-Flight-lionair.co.id</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>../src/main/assembly/assembly-javaApp.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>httpunit</groupId>-->
+<!--			<artifactId>httpunit</artifactId>-->
+<!--			<version>1.6.2</version>-->
+<!--		</dependency>-->
+		    <dependency>
+		      <groupId>htmlunit</groupId>
+		      <artifactId>htmlunit</artifactId>
+		      <version>1.13</version>
+		    </dependency>
+		<dependency>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.6R5</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.bezurk</groupId>
+			<artifactId>json</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+	</dependencies>
+</project>

@@ -1,0 +1,83 @@
+package com.bezurk.provider.flight.chinatraveldepot;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.Logger;
+
+import com.bezurk.search.flight.FlightSearchRequest;
+
+
+
+public class ChinaTravelDepotFactory {
+	private static final Logger log = Logger.getLogger(ChinaTravelDepotFactory.class);
+	
+	private static final String SOAP_ACTION_SEARCH_FLIGHTS="http://tempuri.org/GetFlightCabin3";
+	
+	private static final String url ="http://219.142.87.162:9000/FlightSearchManager.asmx";
+	
+	
+	public static String searchOutboundFlights(HttpClient client, FlightSearchRequest request){
+		String xmlRequest = createSearchFlightsRequest(request, true);
+		String xmlResponse = sendXML(client, xmlRequest, SOAP_ACTION_SEARCH_FLIGHTS);
+		return xmlResponse;
+	}
+	
+	public static String searchInBoundFlight(HttpClient client, FlightSearchRequest request){
+		String xmlRequest = createSearchFlightsRequest(request, false);
+		String xmlResponse = sendXML(client, xmlRequest, SOAP_ACTION_SEARCH_FLIGHTS);
+		return xmlResponse;
+	}
+	
+	private static String createSearchFlightsRequest(FlightSearchRequest request, boolean outbound){
+		SimpleDateFormat format_date = new SimpleDateFormat("yyyy-MM-dd");
+		StringBuffer sb = new StringBuffer();
+		sb.append("<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:tem=\"http://tempuri.org/\">");
+		sb.append("<soap:Header/>");
+		sb.append("<soap:Body>");
+		sb.append("<tem:GetFlightCabin3>");
+		sb.append("<tem:DepPortCode>").append(outbound?request.getFromLocation().getCode():request.getToLocation().getCode()).append("</tem:DepPortCode>");
+		sb.append("<tem:ArrPortCode>").append(outbound?request.getToLocation().getCode():request.getFromLocation().getCode()).append("</tem:ArrPortCode>");
+		sb.append("<tem:DepDate>").append(format_date.format(outbound?request.getOutboundDate():request.getInboundDate())).append("</tem:DepDate>");
+		sb.append("<tem:AirLineCode>ALL</tem:AirLineCode>");
+		sb.append("<tem:bByCity>false</tem:bByCity>");
+		sb.append("<tem:LangID>0</tem:LangID>");
+		sb.append("</tem:GetFlightCabin3>");
+		sb.append(" </soap:Body></soap:Envelope>");
+		return sb.toString();
+	}
+	
+	private static String sendXML(HttpClient client, String xmlRequest, String actionMethod) {
+
+		StringBuffer xmlResponseBuffer = new StringBuffer();
+		PostMethod post = null;
+
+		try {
+			post = new PostMethod(url);
+			post.setRequestHeader("Content-type", "text/xml; charset=UTF-8");
+			post.setRequestHeader("SOAPAction", actionMethod);
+			post.setRequestEntity(new InputStreamRequestEntity(new java.io.ByteArrayInputStream(
+					xmlRequest.getBytes())));
+			client.executeMethod(post);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(post
+					.getResponseBodyAsStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				xmlResponseBuffer.append(line).append(System.getProperty("line.separator"));
+			}
+
+		} catch (Exception e) {
+			log.error("HTTPException occured while sending XML request: " + e.getMessage());
+		} finally {
+			post.releaseConnection();
+		}
+
+		return xmlResponseBuffer.toString();
+	}
+
+}

@@ -1,0 +1,7 @@
+package com.bezurk.dbUpdater
+
+import com.bezurk.bezurk.dbUpdater.data._
+
+trait DBInputFactoryComponent extends InputFactoryComponent{
+  this: DBComponent =>
+}

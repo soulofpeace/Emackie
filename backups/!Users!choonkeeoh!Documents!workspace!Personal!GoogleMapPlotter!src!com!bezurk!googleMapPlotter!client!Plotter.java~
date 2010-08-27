@@ -1,0 +1,241 @@
+package com.bezurk.googleMapPlotter.client;
+
+import com.bezurk.googleMapPlotter.shared.FieldVerifier;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayString;
+
+
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.overlay.Polyline;
+import com.google.gwt.maps.client.overlay.PolylineOptions;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.geom.LatLngBounds;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.maps.client.overlay.MarkerOptions;
+import com.google.gwt.maps.client.overlay.Icon;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.geom.Point;
+import com.google.gwt.core.client.GWT;
+
+
+import com.bezurk.googleMapPlotter.client.json.*;
+
+import java.util.HashMap;
+
+public class Plotter implements EntryPoint {
+    private VerticalPanel innerPanel = new VerticalPanel();
+    private FlexTable outerPanel = new FlexTable();
+    private MapWidget map = new MapWidget();
+    private HTML description = new HTML();
+
+    public void onModuleLoad() {
+        if (!Maps.isLoaded()) {
+            Window.alert("The Maps API is not installed."
+                         + "  The <script> tag that loads the Maps API may be missing or your Maps key may be wrong.");
+            return;
+        }
+
+        if (!Maps.isBrowserCompatible()) {
+            Window.alert("The Maps API is not compatible with this browser.");
+            return;
+        }
+        innerPanel.setStylePrimaryName("hm-mapinnerpanel");
+        innerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+
+        HorizontalPanel horizPanel = new HorizontalPanel();
+        horizPanel.add(new Label("Select Partners: "));
+        
+        innerPanel.add(horizPanel);
+        innerPanel.add(description);
+        innerPanel.setSpacing(10);
+
+        outerPanel.setStylePrimaryName("hm-outerpanel");
+        outerPanel.insertRow(0);
+        outerPanel.insertRow(0);
+        outerPanel.insertRow(0);
+        outerPanel.insertRow(0);
+        outerPanel.insertRow(0);
+
+        outerPanel.addCell(0);
+        outerPanel.addCell(1);
+        outerPanel.addCell(2);
+        outerPanel.addCell(3);
+        outerPanel.addCell(4);
+
+        outerPanel.setWidget(0, 0, new HTML("Display Routes for Partners"));
+
+        outerPanel.setWidget(1, 0, innerPanel);
+
+        DecoratorPanel decorator = new DecoratorPanel();
+        decorator.add(outerPanel);
+
+        RootPanel.get("hm-map").add(decorator);
+        this.setupMap();
+
+
+    }
+
+    private void setupMap(){
+        this.map.setSize(String.valueOf(Window.getClientWidth())+"px", String.valueOf(Window.getClientHeight())+"px");
+        this.map.setUIToDefault();
+        this.innerPanel.add(this.map);
+        map.clearOverlays();
+        
+        JsArray<LocationJson> locations=this.getLocationMap("test");
+        JsArray<RoutesJson> routes = this.getRoutes("test");
+        GWT.log("Routes: "+routes.get(0).output(), null);
+        this.plot(locations, routes);
+        
+     
+        
+        
+    }
+
+    private void plot(JsArray<LocationJson>locations, JsArray<RoutesJson> routes){
+        HashMap<String, Integer> locationIndex = this.buildLocationIndex(locations);
+        HashMap<String, JsArrayString> routeMap = this.getRouteMap(routes);
+        Marker[]  markers =this.plotLocationMarker(locations, routeMap);
+        /**
+        int[][] adjMatrix =this.setUpRoutes(locationIndex, routes);
+        for(int i=0; i< adjMatrix.length; i++){
+            Marker originMarker = markers[i];
+            for(int j=0; j<adjMatrix[i].length; j++){
+                if(adjMatrix[i][j]==1){
+                    Marker destMarker = markers[j];
+                    if(adjMatrix[j][i]==1){
+                        this.createLinks(originMarker, destMarker, true);
+                    }
+                    else{
+                        this.createLinks(originMarker, destMarker, false);
+                    }
+                }
+            }
+        }
+        **/
+     
+    }
+
+    private Marker[] plotLocationMarker(JsArray<LocationJson> locations, HashMap<String, JsArrayString>routeMap){
+        Marker[] markers = new Marker[locations.length()];
+        for(int i=0; i<locations.length();i++){
+            LatLng coordinate = LatLng.newInstance(Double.parseDouble(locations.get(i).getLatitude()), Double.parseDouble(locations.get(i).getLongitude()));
+            markers[i]=createMarker(coordinate, locations.get(i).getCode(), routeMap);
+        }
+        return markers;
+    }
+
+    private HashMap<String, JsArrayString>  getRouteMap(JsArray<RoutesJson> routes){
+        HashMap<String, JsArrayString> routeMap = new HashMap<String, JsArrayString>();
+        for(int i=0; i<routes.length();i++){
+            String code = routes.get(i).getCode();
+            routeMap.put(code, routes.get(i).getDestCodes());
+        }
+        return routeMap;
+    }
+
+    private int[][] setUpRoutes(HashMap<String, Integer> locationIndex, JsArray<RoutesJson> routes){
+        GWT.log("Size: "+locationIndex.size());
+        int[][] adjMatrix = new int[locationIndex.size()+1][locationIndex.size()+1];
+        GWT.log("setting routes", null);
+        for(int i=0; i<routes.length(); i++){
+            String origin = routes.get(i).getCode();
+            GWT.log("origin: "+origin, null);
+            for(int j = 0; j< routes.get(i).getDestCodes().length(); j++){
+                String dest = routes.get(i).getDestCodes().get(j);
+                GWT.log("dest: "+dest);
+                adjMatrix[locationIndex.get(origin)][locationIndex.get(dest)]=1;
+                GWT.log("Setting to 1 for "+origin+dest, null);
+            }
+                
+        }
+        return adjMatrix;
+    }
+
+   
+        
+    
+    private HashMap<String, Integer>  buildLocationIndex(JsArray<LocationJson> locations){
+        HashMap<String, Integer> locationIndex = new HashMap<String, Integer>();
+        for(int i=0; i<locations.length(); i++){
+            GWT.log("new location:"+locations.get(i).getCode()+"\t"+i);
+            locationIndex.put(locations.get(i).getCode(), new Integer(i));
+        }
+        return locationIndex;
+    }
+
+
+    private void createLinks(Marker origin, Marker destination, boolean twoway){
+        LatLng points[] = {origin.getLatLng(), destination.getLatLng()};
+        Polyline pline1 = new Polyline(points, twoway?"#FF0000":"#0066dd", 5, .75,
+                                       PolylineOptions.newInstance(true, true));
+        this.map.addOverlay(pline1);
+    }
+
+
+    private Marker createMarker(LatLng latlong, final String label, HashMap<String, JsArrayString>routeMap){
+        Icon icon = Icon.newInstance("http://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png");
+        icon.setShadowURL("http://maps.google.com/intl/en_us/mapfiles/ms/micons/msmarker.shadow.png");
+        icon.setIconAnchor(Point.newInstance(9, 34));
+        icon.setInfoWindowAnchor(Point.newInstance(9, 2));
+
+        MarkerOptions markerOptions = MarkerOptions.newInstance();
+        markerOptions.setIcon(icon);
+        markerOptions.setTitle(label);
+        final Marker marker = new Marker(latlong, markerOptions);
+        marker.addMarkerClickHandler(new MarkerClickHandler() {
+                public void onClick(MarkerClickEvent event) {
+                    InfoWindow info = map.getInfoWindow();
+                    info.open(marker,
+                              new InfoWindowContent(label));
+                }
+            });
+        this.map.addOverlay(marker);
+        return marker;
+    }
+
+    private JsArray<LocationJson> getLocationMap(String provider){
+        String locationsJson="[{\"code\":\"AMI\", \"latitude\":\"-8.34\", \"longitude\":\"116.06\" },{\"code\":\"AMQ\", \"latitude\":\"-3.42\", \"longitude\":\"128.05\" },{\"code\":\"BDJ\", \"latitude\":\"-3.27\", \"longitude\":\"114.45\" },{\"code\":\"BKS\", \"latitude\":\"-3.52\", \"longitude\":\"102.20\" },{\"code\":\"BPN\", \"latitude\":\"-1.16\", \"longitude\":\"116.54\" },{\"code\":\"BTH\", \"latitude\":\"1.04\", \"longitude\":\"104.08\" },{\"code\":\"BTJ\", \"latitude\":\"5.31\", \"longitude\":\"95.25\" },{\"code\":\"CGK\", \"latitude\":\"-6.08\", \"longitude\":\"106.39\" },{\"code\":\"DJB\", \"latitude\":\"-1.38\", \"longitude\":\"103.38\" },{\"code\":\"DJJ\", \"latitude\":\"-2.35\", \"longitude\":\"140.31\" },{\"code\":\"DPS\", \"latitude\":\"-8.45\", \"longitude\":\"115.10\" },{\"code\":\"GTO\", \"latitude\":\"0.39\", \"longitude\":\"122.55\" },{\"code\":\"JOG\", \"latitude\":\"-7.47\", \"longitude\":\"110.26\" },{\"code\":\"KDI\", \"latitude\":\"-4.05\", \"longitude\":\"122.25\" },{\"code\":\"KOE\", \"latitude\":\"-10.10\", \"longitude\":\"123.40\" },{\"code\":\"KUL\", \"latitude\":\"2.44\", \"longitude\":\"101.41\" },{\"code\":\"KUL\", \"latitude\":\"3.08\", \"longitude\":\"101.42\" },{\"code\":\"MDC\", \"latitude\":\"1.32\", \"longitude\":\"124.55\" },{\"code\":\"MES\", \"latitude\":\"3.34\", \"longitude\":\"98.41\" },{\"code\":\"PDG\", \"latitude\":\"-00.53\", \"longitude\":\"100.21\" },{\"code\":\"PGK\", \"latitude\":\"-2.10\", \"longitude\":\"106.08\" },{\"code\":\"PKU\", \"latitude\":\"00.28\", \"longitude\":\"101.27\" },{\"code\":\"PLM\", \"latitude\":\"-2.54\", \"longitude\":\"104.42\" },{\"code\":\"PLW\", \"latitude\":\"-0.55\", \"longitude\":\"119.55\" },{\"code\":\"PNK\", \"latitude\":\"-00.09\", \"longitude\":\"109.24\" },{\"code\":\"SGN\", \"latitude\":\"10.49\", \"longitude\":\"106.39\" },{\"code\":\"SIN\", \"latitude\":\"01.22\", \"longitude\":\"103.59\" },{\"code\":\"SOC\", \"latitude\":\"-7.30\", \"longitude\":\"110.45\" },{\"code\":\"SRG\", \"latitude\":\"-6.59\", \"longitude\":\"110.23\" },{\"code\":\"SUB\", \"latitude\":\"-7.22\", \"longitude\":\"112.46\" },{\"code\":\"UPG\", \"latitude\":\"-5.04\", \"longitude\":\"119.33\" }]";
+            /**"[{"code":"AMI", "latitude":"-8.34", "longitude":"116.06" },{"code":"AMQ", "latitude":"-3.42", "longitude":"128.05" },{"code":"BDJ", "latitude":"-3.27", "longitude":"114.45" },{"code":"BKS", "latitude":"-3.52", "longitude":"102.20" },{"code":"BPN", "latitude":"-1.16", "longitude":"116.54" },{"code":"BTH", "latitude":"1.04", "longitude":"104.08" },{"code":"BTJ", "latitude":"5.31", "longitude":"95.25" },{"code":"CGK", "latitude":"-6.08", "longitude":"106.39" },{"code":"DJB", "latitude":"-1.38", "longitude":"103.38" },{"code":"DJJ", "latitude":"-2.35", "longitude":"140.31" },{"code":"DPS", "latitude":"-8.45", "longitude":"115.10" },{"code":"GTO", "latitude":"0.39", "longitude":"122.55" },{"code":"JOG", "latitude":"-7.47", "longitude":"110.26" },{"code":"KDI", "latitude":"-4.05", "longitude":"122.25" },{"code":"KOE", "latitude":"-10.10", "longitude":"123.40" },{"code":"KUL", "latitude":"2.44", "longitude":"101.41" },{"code":"KUL", "latitude":"3.08", "longitude":"101.42" },{"code":"MDC", "latitude":"1.32", "longitude":"124.55" },{"code":"MES", "latitude":"3.34", "longitude":"98.41" },{"code":"PDG", "latitude":"-00.53", "longitude":"100.21" },{"code":"PGK", "latitude":"-2.10", "longitude":"106.08" },{"code":"PKU", "latitude":"00.28", "longitude":"101.27" },{"code":"PLM", "latitude":"-2.54", "longitude":"104.42" },{"code":"PLW", "latitude":"-0.55", "longitude":"119.55" },{"code":"PNK", "latitude":"-00.09", "longitude":"109.24" },{"code":"SGN", "latitude":"10.49", "longitude":"106.39" },{"code":"SIN", "latitude":"01.22", "longitude":"103.59" },{"code":"SOC", "latitude":"-7.30", "longitude":"110.45" },{"code":"SRG", "latitude":"-6.59", "longitude":"110.23" },{"code":"SUB", "latitude":"-7.22", "longitude":"112.46" },{"code":"UPG", "latitude":"-5.04", "longitude":"119.33" }]" ;
+             **/
+            /** 
+        String locationsJson="[{\"code\":\"NYC\", \"latitude\":\"40.75\", \"longitude\":\"-73.90\"}, {\"code\":\"SIN\", \"latitude\":\"1.21\", \"longitude\":\"103.59\"}, {\"code\":\"KUL\",\"latitude\":\"3.08\", \"longitude\":\"101.42\"}];";
+            **/
+            
+        JsArray<LocationJson> locations = this.getLocationFromJson(locationsJson);
+        return locations;
+    }
+
+
+    private JsArray<RoutesJson> getRoutes(String provider){
+      
+        String routesJson="[{\"code\":\"PLW\", \"dest\":[\"CGK\",\"UPG\"]},{\"code\":\"KUL\", \"dest\":[\"DPS\",\"AMI\",\"SUB\",\"MDC\",\"JOG\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"DJB\", \"dest\":[\"DPS\",\"AMI\",\"SUB\",\"MDC\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"CGK\", \"dest\":[\"BTH\",\"KOE\",\"SRG\",\"DJJ\",\"BTJ\",\"BPN\",\"DPS\",\"PNK\",\"SUB\",\"MDC\",\"PKU\",\"UPG\",\"BDJ\",\"PGK\",\"MES\",\"PDG\",\"SOC\",\"SIN\",\"BKS\",\"AMI\",\"PLM\",\"JOG\",\"DJB\",\"KUL\",\"PLW\"]},{\"code\":\"JOG\", \"dest\":[\"BTH\",\"MES\",\"PDG\",\"SIN\",\"BKS\",\"BPN\",\"DPS\",\"PNK\",\"PLM\",\"CGK\",\"PKU\",\"KUL\",\"UPG\"]},{\"code\":\"PLM\", \"dest\":[\"MES\",\"DPS\",\"AMI\",\"SUB\",\"MDC\",\"SOC\",\"JOG\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"AMI\", \"dest\":[\"MES\",\"PNK\",\"PLM\",\"SIN\",\"CGK\",\"DJB\"]},{\"code\":\"BKS\", \"dest\":[\"DPS\",\"SUB\",\"PNK\",\"SOC\",\"JOG\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"SGN\", \"dest\":[\"SIN\"]},{\"code\":\"GTO\", \"dest\":[\"CGK\",\"UPG\"]},{\"code\":\"SIN\", \"dest\":[\"DPS\",\"AMI\",\"SUB\",\"MDC\",\"JOG\",\"SGN\",\"CGK\",\"BDJ\",\"BPN\"]},{\"code\":\"KDI\", \"dest\":[\"DPS\",\"SUB\",\"CGK\",\"UPG\"]},{\"code\":\"SOC\", \"dest\":[\"MES\",\"PLM\",\"PDG\",\"CGK\",\"UPG\"]},{\"code\":\"PDG\", \"dest\":[\"DPS\",\"SRG\",\"SUB\",\"PNK\",\"JOG\",\"CGK\",\"UPG\",\"BPN\"]},{\"code\":\"MES\", \"dest\":[\"SRG\",\"SOC\",\"BPN\",\"BTJ\",\"AMI\",\"DPS\",\"PNK\",\"SUB\",\"PLM\",\"JOG\",\"CGK\",\"UPG\",\"BDJ\",\"PGK\"]},{\"code\":\"PGK\", \"dest\":[\"MES\",\"DPS\",\"SUB\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"BDJ\", \"dest\":[\"MES\",\"BTH\",\"PLM\",\"PDG\",\"SIN\",\"PKU\",\"CGK\",\"KUL\",\"BKS\",\"PGK\"]},{\"code\":\"UPG\", \"dest\":[\"BTH\",\"MES\",\"SRG\",\"PDG\",\"KDI\",\"SIN\",\"GTO\",\"BKS\",\"DJJ\",\"DPS\",\"SUB\",\"PNK\",\"MDC\",\"PLM\",\"JOG\",\"PKU\",\"CGK\",\"DJB\",\"KUL\",\"PLW\",\"PGK\"]},{\"code\":\"PKU\", \"dest\":[\"DPS\",\"BTH\",\"SRG\",\"SUB\",\"PNK\",\"MDC\",\"JOG\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]},{\"code\":\"MDC\", \"dest\":[\"BTH\",\"MES\",\"SRG\",\"PDG\",\"SIN\",\"BKS\",\"DPS\",\"SUB\",\"PNK\",\"PLM\",\"CGK\",\"PKU\",\"DJB\",\"UPG\",\"BDJ\",\"PGK\"]},{\"code\":\"PNK\", \"dest\":[\"MES\",\"DPS\",\"SUB\",\"PDG\",\"JOG\",\"CGK\",\"UPG\"]},{\"code\":\"SUB\", \"dest\":[\"BTH\",\"MES\",\"KOE\",\"PDG\",\"SIN\",\"AMQ\",\"BKS\",\"BPN\",\"DPS\",\"PNK\",\"PLM\",\"CGK\",\"PKU\",\"DJB\",\"UPG\",\"PGK\"]},{\"code\":\"DPS\", \"dest\":[\"BTH\",\"MES\",\"PDG\",\"KDI\",\"SIN\",\"AMQ\",\"BKS\",\"BPN\",\"SUB\",\"PNK\",\"PLM\",\"JOG\",\"CGK\",\"DJB\",\"UPG\",\"KUL\",\"PGK\"]},{\"code\":\"BPN\", \"dest\":[\"BTH\",\"MES\",\"PDG\",\"SOC\",\"BKS\",\"DPS\",\"PNK\",\"SUB\",\"PLM\",\"CGK\",\"PKU\",\"DJB\",\"KUL\"]},{\"code\":\"BTJ\", \"dest\":[\"MES\",\"SUB\",\"PLM\",\"SOC\",\"JOG\",\"UPG\",\"BKS\",\"PGK\"]},{\"code\":\"DJJ\", \"dest\":[\"CGK\",\"UPG\"]},{\"code\":\"AMQ\", \"dest\":[\"CGK\"]},{\"code\":\"KOE\", \"dest\":[\"SUB\",\"BPN\"]},{\"code\":\"SRG\", \"dest\":[\"PDG\",\"PKU\",\"CGK\",\"UPG\"]},{\"code\":\"BTH\", \"dest\":[\"DPS\",\"AMI\",\"SRG\",\"SUB\",\"MDC\",\"SOC\",\"JOG\",\"PKU\",\"CGK\",\"UPG\",\"BDJ\",\"BPN\"]}]";
+            /**"[{"code":"PLW", "dest":["CGK","UPG"]},{"code":"KUL", "dest":["DPS","AMI","SUB","MDC","JOG","CGK","UPG","BDJ","BPN"]},{"code":"DJB", "dest":["DPS","AMI","SUB","MDC","CGK","UPG","BDJ","BPN"]},{"code":"CGK", "dest":["BTH","KOE","SRG","DJJ","BTJ","BPN","DPS","PNK","SUB","MDC","PKU","UPG","BDJ","PGK","MES","PDG","SOC","SIN","BKS","AMI","PLM","JOG","DJB","KUL","PLW"]},{"code":"JOG", "dest":["BTH","MES","PDG","SIN","BKS","BPN","DPS","PNK","PLM","CGK","PKU","KUL","UPG"]},{"code":"PLM", "dest":["MES","DPS","AMI","SUB","MDC","SOC","JOG","CGK","UPG","BDJ","BPN"]},{"code":"AMI", "dest":["MES","PNK","PLM","SIN","CGK","DJB"]},{"code":"BKS", "dest":["DPS","SUB","PNK","SOC","JOG","CGK","UPG","BDJ","BPN"]},{"code":"SGN", "dest":["SIN"]},{"code":"GTO", "dest":["CGK","UPG"]},{"code":"SIN", "dest":["DPS","AMI","SUB","MDC","JOG","SGN","CGK","BDJ","BPN"]},{"code":"KDI", "dest":["DPS","SUB","CGK","UPG"]},{"code":"SOC", "dest":["MES","PLM","PDG","CGK","UPG"]},{"code":"PDG", "dest":["DPS","SRG","SUB","PNK","JOG","CGK","UPG","BPN"]},{"code":"MES", "dest":["SRG","SOC","BPN","BTJ","AMI","DPS","PNK","SUB","PLM","JOG","CGK","UPG","BDJ","PGK"]},{"code":"PGK", "dest":["MES","DPS","SUB","CGK","UPG","BDJ","BPN"]},{"code":"BDJ", "dest":["MES","BTH","PLM","PDG","SIN","PKU","CGK","KUL","BKS","PGK"]},{"code":"UPG", "dest":["BTH","MES","SRG","PDG","KDI","SIN","GTO","BKS","DJJ","DPS","SUB","PNK","MDC","PLM","JOG","PKU","CGK","DJB","KUL","PLW","PGK"]},{"code":"PKU", "dest":["DPS","BTH","SRG","SUB","PNK","MDC","JOG","CGK","UPG","BDJ","BPN"]},{"code":"MDC", "dest":["BTH","MES","SRG","PDG","SIN","BKS","DPS","SUB","PNK","PLM","CGK","PKU","DJB","UPG","BDJ","PGK"]},{"code":"PNK", "dest":["MES","DPS","SUB","PDG","JOG","CGK","UPG"]},{"code":"SUB", "dest":["BTH","MES","KOE","PDG","SIN","AMQ","BKS","BPN","DPS","PNK","PLM","CGK","PKU","DJB","UPG","PGK"]},{"code":"DPS", "dest":["BTH","MES","PDG","KDI","SIN","AMQ","BKS","BPN","SUB","PNK","PLM","JOG","CGK","DJB","UPG","KUL","PGK"]},{"code":"BPN", "dest":["BTH","MES","PDG","SOC","BKS","DPS","PNK","SUB","PLM","CGK","PKU","DJB","KUL"]},{"code":"BTJ", "dest":["MES","SUB","PLM","SOC","JOG","UPG","BKS","PGK"]},{"code":"DJJ", "dest":["CGK","UPG"]},{"code":"AMQ", "dest":["CGK"]},{"code":"KOE", "dest":["SUB","BPN"]},{"code":"SRG", "dest":["PDG","PKU","CGK","UPG"]},{"code":"BTH", "dest":["DPS","AMI","SRG","SUB","MDC","SOC","JOG","PKU","CGK","UPG","BDJ","BPN"]}]";**/
+      
+               /**
+        String routesJson="[{\"code\":\"NYC\", \"dest\":[\"SIN\", \"KUL\"]}, {\"code\":\"SIN\", \"dest\":[\"KUL\", \"NYC\"]}]";
+               **/
+        return getRoutesFromJson(routesJson);
+            
+    }
+
+    private final native JsArray<LocationJson> getLocationFromJson(String json)/*-{
+        return eval(json);
+    }-*/; 
+
+    private final native JsArray<RoutesJson> getRoutesFromJson(String json)/*-{
+        return eval(json);
+    }-*/;
+}

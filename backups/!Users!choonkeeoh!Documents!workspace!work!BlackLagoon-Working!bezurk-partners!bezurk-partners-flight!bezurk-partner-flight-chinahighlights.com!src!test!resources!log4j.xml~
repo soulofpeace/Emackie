@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern"
+				value="%d{ABSOLUTE} [${project.build.finalName}] %p [%t] %c{3}.%M(%L) | %m%n" />
+			<!--%d{ABSOLUTE} %-5p [%c{10}] %m%n"/>-->
+		</layout>
+	</appender>
+	<appender name="MAIN" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="Partner.log" />
+		<param name="MaxFileSize" value="1MB" />
+		<param name="MaxBackupIndex" value="9" />
+		<param name="Threshold" value="WARN" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %p [%t] %c{3}.%M(%L) | %m%n" />
+			<!--%d{ABSOLUTE} %-5p [%c{1}.%M(%L)] %m%n"/>-->
+		</layout>
+	</appender>
+	<appender name="BEST_PRICES_CSV" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${project.build.finalName}_bestprices.csv" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+	</appender>
+	<appender name="stats" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="stats.csv" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+	</appender>
+	<!-- Bezurk packages -->
+	<category name="com.bezurk.provider.flight.statistics">
+		<priority value="INFO" />
+		<appender-ref ref="stats"/>
+	</category>
+	<category name="com.bezurk.provider.flight.jms">
+		<priority value="INFO" />
+	</category>
+	<category name="com.bezurk.provider.flight">
+		<priority value="DEBUG" />
+	</category>
+	<category name="com.bezurk">
+		<priority value="DEBUG" />
+	</category>
+	<category name="com.bezurk.webapp.filter">
+		<priority value="ERROR" />
+	</category>
+	<category name="com.bezurk.webapp.listener.UserCounterListener">
+		<priority value="WARN" />
+	</category>
+	<category name="com.bezurk.util">
+		<priority value="WARN" />
+	</category>
+	<category name="com.bezurk.manager.flight.FlightResultsStatisticsManager">
+		<priority value="DEBUG" />
+		<appender-ref ref="BEST_PRICES_CSV" />
+	</category>
+	<!-- Others -->
+	<category name="com.ibatis.db">
+		<priority value="WARN" />
+	</category>
+	<category name="com.opensymphony.oscache">
+		<priority value="WARN" />
+	</category>
+	<category name="net.sf.navigator">
+		<priority value="ERROR" />
+	</category>
+	<category name="org.acegisecurity">
+		<priority value="WARN" />
+	</category>
+	<category name="org.apache.commons">
+		<priority value="ERROR" />
+	</category>
+	<category name="org.apache.struts">
+		<priority value="WARN" />
+	</category>
+	<category name="org.displaytag">
+		<priority value="ERROR" />
+	</category>
+	<category name="org.apache.velocity">
+		<priority value="WARN" />
+	</category>
+	<category name="org.tuckey.web.filters">
+		<priority value="WARN" />
+	</category>
+	<category name="httpclient.wire.header">
+		<priority value="INFO" />
+	</category>
+	<category name="httpclient.wire.content">
+		<priority value="INFO" />
+	</category>
+	<category name="org.springframework">
+		<priority value="WARN" />
+	</category>
+	<category name="org.apache.activemq">
+		<priority value="WARN" />
+	</category>
+	<category name="org.apache.hadoop">
+		<priority value="WARN" />
+	</category>
+	<category name="com.opensymphony.oscache">
+		<priority value="WARN" />
+	</category>
+	<category name="com.canoo.webtest">
+		<priority value="WARN" />
+	</category>
+	<category name="com.gargoylesoftware.htmlunit">
+		<priority value="WARN" />
+	</category>
+	<category name="org.logicblaze">
+		<priority value="WARN" />
+	</category>
+	<category name="com.danga">
+		<priority value="WARN" />
+	</category>
+	<!-- ======================= -->
+	<!-- Setup the Root category -->
+	<!-- ======================= -->
+	<root>
+		<appender-ref ref="MAIN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</log4j:configuration>

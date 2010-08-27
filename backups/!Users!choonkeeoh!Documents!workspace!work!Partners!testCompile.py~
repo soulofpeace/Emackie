@@ -1,0 +1,18 @@
+import sys
+import os
+import subprocess
+
+def checkCompile(dirname):
+     dirs = [f for f in os.listdir(dirname)
+             if os.path.isdir(os.path.join(dirname, f)) and f.startswith('bezurk-partner')]
+     for dir in dirs:
+         process = subprocess.Popen(['./assemble.sh', '-p', dir], shell=False)
+         process.poll()
+         if(process.returncode!=0):
+             print 'error compiling %s' %(dir)
+         
+
+
+if __name__=='__main__':
+
+    checkCompile(sys.argv[1])

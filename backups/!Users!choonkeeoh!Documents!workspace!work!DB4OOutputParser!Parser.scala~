@@ -1,0 +1,17 @@
+import scala.io.Source
+
+class Parser(val inputFile:String){
+  val input = Source.fromFile(args).getLines.toList.map(arg=>arg.split(" "))
+  
+  def printRoutes(){
+    
+
+}
+
+object Parser{
+  
+  def main(args:Array[String]){
+    val parser:Parser = new Parser(args(0))
+    parser.printRoutes()
+  }
+}

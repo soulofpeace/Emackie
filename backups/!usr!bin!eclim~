@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/Users/choonkeeoh/Apps/eclipse3.6/eclipse/plugins/org.eclim_1.4.5/bin/eclim $*

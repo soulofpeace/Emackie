@@ -1,0 +1,6 @@
+package notificator
+
+trait Notificator{
+  def sendNotification(message:String, recipient:String):Unit throw NotificationError
+  def sendNotification(message:String. recipients:Array[String]):Unit throw NotificationError
+}

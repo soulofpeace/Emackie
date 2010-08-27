@@ -1,0 +1,48 @@
+package com.bezurk.dbUpdater.oagLocation.client
+
+import java.io.File
+
+import scala.io.Source
+import com.bezurk.dbUpdater.data._
+import com.bezurk.dbUpdater.output._
+import com.bezurk.dbUpdater.client._
+import com.bezurk.dbUpdater.writer._
+
+import com.bezurk.dbUpdater.oagLocation.input._
+import com.bezurk.dbUpdater.oagLocation.db._
+import com.bezurk.dbUpdater.oagLocation.data._
+import com.bezurk.dbUpdater.oagLocation.mapper._
+
+
+
+class IataLocationClientComponent extends DbUpdaterClientComponent with IataLocationMapperComponent with LocationFactoryComponent with IataLocationDBComponent with FileWriterComponent{
+  val inputFactory = new LocationFactory()
+  val dbUpdaterClient:DbUpdaterClient = new IataLocationClient()
+
+  class IataLocationClient extends DbUpdaterClient{
+    
+    def map(source:String){
+      val results:Seq[Result]=mapper.map(source)
+      results.foreach{result=>
+                      val writerName = source+"_"+result.resultType
+                      val writer:Writer = writerFactory.getWriter(writerName)
+                      writer.write(result.msg)
+                    }
+      writerFactory.closeAll()
+    }
+    
+    def run(source:String){
+      val sqlFile = new File(source+"_"+Result.SQLResult)
+      if (sqlFile.exists){
+      }
+      else{
+        map(source:String)
+        val statements:Seq[String]= Source.fromFile(source+"_"+Result.SQLResult).getLines.toList
+        mapper.run(statements)
+      }
+        
+    }
+
+  }
+
+}

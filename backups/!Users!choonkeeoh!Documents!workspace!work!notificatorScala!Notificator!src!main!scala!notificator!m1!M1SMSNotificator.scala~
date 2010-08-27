@@ -1,0 +1,53 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.lang.StringUtils;
+
+
+class M1SMSNotificator with Notificator{
+  val sendUrl:String = "http://msgctr.m1.com.sg/MessageCentre/jsp/guest/processMessage.jsp"
+  
+  def sendNotification(message:String, recipients:Array[String]):Unit throws NotificationError{
+    recipients.foreach(arg=>sendNotification(message, arg))
+  }
+  
+  def sendNotification(message:String, recipient:String):Unit throws NotificationError{
+    val params:HttpClientParams = new HttpClientParams()
+    params.setConnectionManagerTimeout(10000)
+    val client:HttpClient = new HttpClient(params)
+    val post:PostMethod = new PostMethod(sendUrl)
+    try{
+      recipientNumber = recipient.toInt
+      post.setQueryString(new NameValuePair[]{
+        new NameValuePair("msisdn", receipient),
+        new NameValuePair("counter", String.valueOf(message.length)),
+        new NameValuePair("msg", message)
+      });
+      client.executeMethod(post);
+      val response:String = post.getResponseBodyAsString()
+      if(response.index("thankyou")==-1){
+        println("Failed to send message")
+        throw new NotificationError("Failed to Send Message")
+      }
+    }
+    catch{
+      case NumberFormatException ex=>{
+          throw new NotificationError(receipient+" is not a valid number", ex);
+      }
+      case Exception ex=>{
+        throw new NotificationError(ex);
+      }
+      finally{
+        post.releaseConnection()
+      }
+      
+    }
+  }
+}

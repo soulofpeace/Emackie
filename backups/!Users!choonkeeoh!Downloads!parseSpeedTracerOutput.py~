@@ -1,0 +1,17 @@
+import os
+import sys
+import json
+import re
+
+def 
+
+def main():
+    speedTracerFile = open(sys.argv[1])
+    data = f.read()
+    p = re.compile(r'<.*?>')
+    print p
+
+
+
+if __name__=='__main__':
+    main()

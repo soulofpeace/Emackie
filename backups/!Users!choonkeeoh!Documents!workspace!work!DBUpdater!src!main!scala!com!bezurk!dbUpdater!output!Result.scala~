@@ -1,0 +1,9 @@
+package com.bezurk.dbUpdater.output
+
+case class Result(val resultType:String, val msg:String)
+
+object Result{
+  val SQLResult:String ="SQL"
+  val DifferenceResult:String ="Difference"
+  val ErrorResult:String ="Error"
+}

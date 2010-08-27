@@ -1,0 +1,12 @@
+package com.bezurk.dbUpdater
+import org.junit._
+import Assert._
+
+@Test
+class AppTest {
+
+    @Test
+    def testOK() {
+      DBUpdater.update("/Users/choonkeeoh/Downloads/location.csv")
+    }
+}

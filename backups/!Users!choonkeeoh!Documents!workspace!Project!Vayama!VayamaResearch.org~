@@ -1,0 +1,98 @@
+
+* XML
+  <OTA_AirLowFareSearchRS xmlns:tns="http://logic.vayamaservice.businessservice.vayama.com" xmlns="http://www.opentravel.org/OTA/2003/05" PrimaryLangID="en" version="2.001" TimeStamp="2007-01-18T16:26:43.414-05:00" EchoToken="CJJJTM3101834">
+  <Success />
+  <PricedItineraries>
+  <PricedItinerary SequenceNumber="1">
+  <AirItinerary DirectionInd="OneWay">
+  <OriginDestinationOptions>
+  <OriginDestinationOption>
+  <FlightSegment FlightNumber="9067" StopQuantity="0" RPH="1" DepartureDateTime="2010-10-25T16:00:00" ArrivalDateTime="2010-10-25T19:10:00">
+  <DepartureAirport LocationCode="BKK" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="KUL" />
+  <Equipment AirEquipType="777" />
+  <MarketingAirline Code="MH" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  <OperatingAirline CodeContext="IATA" Code="TG" />
+  </FlightSegment>
+  <FlightSegment FlightNumber="609" StopQuantity="0" RPH="2" DepartureDateTime="2010-10-25T22:45:00" ArrivalDateTime="2010-10-25T23:40:00">
+  <DepartureAirport LocationCode="KUL" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="SIN" />
+  <Equipment AirEquipType="734" />
+  <MarketingAirline Code="MH" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  </FlightSegment>
+  </OriginDestinationOption>
+  </OriginDestinationOptions>
+  </AirItinerary>
+  <AirItineraryPricingInfo>
+  <ItinTotalFare>
+  <BaseFare />
+  <TotalFare />
+  <TPA_Extensions>
+  <FlightSegmentCabines>
+  <FlightSegmentCabin FlightSegmentRPH="1" Cabin="Economy" />
+  <FlightSegmentCabin FlightSegmentRPH="2" Cabin="Economy" />
+  </FlightSegmentCabines>
+  </TPA_Extensions>
+  </ItinTotalFare>
+  </AirItineraryPricingInfo>
+  </PricedItinerary>
+  </PricedItineraries>
+  </OTA_AirLowFareSearchRS>
+
+
+  <OTA_AirLowFareSearchRS xmlns:tns="http://logic.vayamaservice.businessservice.vayama.com" xmlns="http://www.opentravel.org/OTA/2003/05" PrimaryLangID="en" version="2.001" TimeStamp="2007-01-18T16:26:43.414-05:00" EchoToken="RGNQIM3101934MFVBMU3101834">
+  <Success />
+  <PricedItineraries>
+  <PricedItinerary SequenceNumber="1">
+  <AirItinerary DirectionInd="RoundTrip">
+  <OriginDestinationOptions>
+  <OriginDestinationOption>
+  <FlightSegment FlightNumber="6090" StopQuantity="0" RPH="1" DepartureDateTime="2010-09-25T09:28:00" ArrivalDateTime="2010-09-25T18:00:00">
+  <DepartureAirport LocationCode="SFO" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="PHL" />
+  <Equipment AirEquipType="320" />
+  <MarketingAirline Code="US" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  <OperatingAirline CodeContext="IATA" Code="UA" />
+  </FlightSegment>
+  <FlightSegment FlightNumber="728" StopQuantity="0" RPH="2" DepartureDateTime="2010-09-25T21:55:00" ArrivalDateTime="2010-09-26T10:05:00">
+  <DepartureAirport LocationCode="PHL" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="LHR" />
+  <Equipment AirEquipType="332" />
+  <MarketingAirline Code="US" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  </FlightSegment>
+  </OriginDestinationOption>
+  <OriginDestinationOption>
+  <FlightSegment FlightNumber="733" StopQuantity="0" RPH="3" DepartureDateTime="2010-10-25T09:40:00" ArrivalDateTime="2010-10-25T13:35:00">
+  <DepartureAirport LocationCode="LGW" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="CLT" />
+  <Equipment AirEquipType="333" />
+  <MarketingAirline Code="US" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  </FlightSegment>
+  <FlightSegment FlightNumber="1437" StopQuantity="0" RPH="4" DepartureDateTime="2010-10-25T16:40:00" ArrivalDateTime="2010-10-25T19:12:00">
+  <DepartureAirport LocationCode="CLT" CodeContext="IATA" />
+  <ArrivalAirport CodeContext="IATA" LocationCode="SFO" />
+  <Equipment AirEquipType="321" />
+  <MarketingAirline Code="US" CodeContext="IATA" SingleVendorInd="SingleVndr" />
+  </FlightSegment>
+  </OriginDestinationOption>
+  </OriginDestinationOptions>
+  </AirItinerary>
+  <AirItineraryPricingInfo>
+  <ItinTotalFare>
+  <BaseFare />
+  <TotalFare />
+  <TPA_Extensions>
+  <FlightSegmentCabines>
+  <FlightSegmentCabin FlightSegmentRPH="1" Cabin="Economy" />
+  <FlightSegmentCabin FlightSegmentRPH="2" Cabin="Economy" />
+  </FlightSegmentCabines>
+  </TPA_Extensions>
+  </ItinTotalFare>
+  </AirItineraryPricingInfo>
+  </PricedItinerary>
+  </PricedItineraries>
+  </OTA_AirLowFareSearchRS>
+
+
+* ToDo
+  move url and and id out as injectable field

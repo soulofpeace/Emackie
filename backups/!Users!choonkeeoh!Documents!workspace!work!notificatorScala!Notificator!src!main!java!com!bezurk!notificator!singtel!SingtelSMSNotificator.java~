@@ -1,0 +1,176 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * Send SMS via Singtel's free sms service website
+ * @author Weitat
+ *
+ */
+public class SingtelSMSNotificator {
+
+    private static final String loginUrl = "http://sms.singtel.com/internetsms/loginAction.do";
+    private static final String logOutUrl = "http://sms.singtel.com/internetsms/loginAction.do";
+    private static final String startChatUrl = "http://sms.singtel.com/internetsms/startChatAction.do";
+    private static final String sendMessageUrl = "http://sms.singtel.com/internetsms/sendMessageAction.do";
+
+    // Sends SMS actually
+    public void sendNotification(String message, String[] recipients) throws NotificationError{
+        HttpClient client = new HttpClient();
+        try{
+            // Login
+            login(client);
+			
+            for(String number:recipients ){
+                // Send a chat-start SMS
+                String callerId = sendChatStart(client, number);
+				
+                // Send message
+                sendChatMassage(client, number, callerId, toAsciiCode(message));
+            }
+			
+            // Sign out
+            // signOut(client);	
+        }
+        catch(Exception e){
+            throw new NotificationError("Error occurred while sending notification",e);
+        }
+		
+    }
+	
+    private String toAsciiCode(String text){
+        char[] arr = text.toCharArray();
+        StringBuffer buf = new StringBuffer();
+        for(int i=0;i<arr.length;i++){
+            buf.append((int)arr[i]);
+            if(i<arr.length-1){
+                buf.append(",");
+            }
+        }
+        System.out.println(buf.toString());
+        return buf.toString();
+    }
+	
+    private void sendChatMassage(HttpClient client, String mobileNum, String callerId, String message) throws Exception{
+        PostMethod post = new PostMethod(sendMessageUrl);
+        try{
+            // recipient=94592459&sender=88888844568&message=116,101,115,116
+            post.setQueryString(new NameValuePair[]{
+                    new NameValuePair("recipient",mobileNum),
+                    new NameValuePair("sender",callerId),
+                    new NameValuePair("message",message),
+								
+                });
+            client.executeMethod(post);
+			
+        }
+        finally{
+            post.releaseConnection();
+        }
+    }
+	
+    private String sendChatStart(HttpClient client, String mobileNum) throws Exception{
+        PostMethod post = new PostMethod(startChatUrl);
+        try{
+            post.setQueryString(new NameValuePair[]{
+                    new NameValuePair("mobile",mobileNum)
+                });
+            client.executeMethod(post);
+            String page = getPageFromStream(post.getResponseBodyAsStream());
+            return StringUtils.substringBetween(page, "<sender>", "</sender>");
+            // writeToFile("C://singtel-startchat.xml", page);
+			
+        }
+        finally{
+            post.releaseConnection();
+        }
+		
+    }
+	
+    // TODO: DO SIGNOUT
+    private void signOut(HttpClient client) throws Exception{
+        PostMethod post = new PostMethod(startChatUrl);
+        try{
+			
+        }
+        finally{
+			
+        }
+    }
+	
+    private String login(HttpClient client) throws Exception{
+        PostMethod post = new PostMethod(loginUrl);
+        post.setQueryString(getLoginParams());
+        GetMethod get = null;
+        try{
+            client.executeMethod(post);
+			
+            StringBuffer buf = new StringBuffer();
+            if(post.getStatusCode() == 302){
+				
+                get = new GetMethod(post.getResponseHeader("Location").getValue());
+                client.executeMethod(get);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(get.getResponseBodyAsStream()));
+                String line=null;
+				
+                while((line = reader.readLine()) != null){
+                    buf.append(line);
+                }
+                return buf.toString();
+            }
+            else{
+                throw new Exception("Cannot get redirect");
+            }
+        }
+        finally{
+            if(post!=null)post.releaseConnection();
+            if(get!=null)get.releaseConnection();
+        }
+		
+    }
+	
+    private NameValuePair[] getLoginParams() {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        //email=weitat_wee@yahoo.com
+        // password=aOBaWIyG&submit.x=68&submit.y=8
+        params.add(new NameValuePair("email","skyfish81@gmail.com"));
+        params.add(new NameValuePair("password","ks4JcpMD"));
+        params.add(new NameValuePair("submit.x","68"));
+        params.add(new NameValuePair("submit.y","8"));
+		
+        return params.toArray(new NameValuePair[0]);
+    }
+	
+    private String getPageFromStream(InputStream stream) throws Exception{
+        StringBuffer buffer = new StringBuffer();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        String line=null;
+		
+        while((line = reader.readLine()) != null){
+            buffer.append(line).append(System.getProperty("line.separator"));
+        }
+		
+        return buffer.toString();
+    }
+	
+    protected void writeToFile(String fileName, String page){
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+            out.write(page);
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Can't write to file. Error Message: " + e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,329 @@
+package com.bezurk.provider.flight.chinatraveldepot;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.bezurk.provider.flight.FlightSearchProviderException;
+import com.bezurk.provider.flight.HttpFlightSearchProvider;
+import com.bezurk.search.flight.FlightSearchReport;
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.flight.model.FlightClass;
+import com.bezurk.search.flight.model.FlightItinerary;
+import com.bezurk.search.flight.model.FlightLeg;
+import com.bezurk.search.flight.model.FlightPrice;
+import com.bezurk.search.flight.model.FlightSegment;
+import com.bezurk.search.flight.model.FullFlightNumber;
+
+
+public class ChinaTravelDepotSearchProvider extends HttpFlightSearchProvider {
+
+	private static Logger log = Logger.getLogger(ChinaTravelDepotSearchProvider.class);
+
+	private final int MAX_LIMIT = 100;
+	
+	private static final String CURRENCYCODE ="CNY";
+
+	@Override
+	protected FlightSearchReport performSearch(FlightSearchRequest request)
+			throws FlightSearchProviderException {
+
+		log.debug("Starting search...");
+
+		HttpClient client = new HttpClient();
+
+		String outBoundXmlResponse = ChinaTravelDepotFactory.searchOutboundFlights(client, request);
+//		String outBoundXmlResponse="<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Body><GetFlightCabin3Response xmlns=\"http://tempuri.org/\"><GetFlightCabin3Result><xs:schema id=\"NewDataSet\" xmlns=\"\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:msdata=\"urn:schemas-microsoft-com:xml-msdata\"><xs:element name=\"NewDataSet\" msdata:IsDataSet=\"true\" msdata:UseCurrentLocale=\"true\"><xs:complexType><xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\"><xs:element name=\"FlightInfo\"><xs:complexType><xs:sequence><xs:element name=\"FlightCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"AirLineCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"AirLineName\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"AirLineShortName\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"DepPortCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"DepPortName\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"ArrPortCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"ArrPortName\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"DepDate\" type=\"xs:dateTime\" minOccurs=\"0\" /><xs:element name=\"ArrDate\" type=\"xs:dateTime\" minOccurs=\"0\" /><xs:element name=\"DepTime\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"ArrTime\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"HasETkt\" type=\"xs:boolean\" minOccurs=\"0\" /><xs:element name=\"HasMeal\" type=\"xs:boolean\" minOccurs=\"0\" /><xs:element name=\"PlaneType\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"StopNumber\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"IsCodeShare\" type=\"xs:boolean\" minOccurs=\"0\" /><xs:element name=\"Carrier\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"BasePrice\" type=\"xs:decimal\" minOccurs=\"0\" /><xs:element name=\"CheapestPrice\" type=\"xs:decimal\" minOccurs=\"0\" /><xs:element name=\"AirportFee\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"FuelFee\" type=\"xs:int\" minOccurs=\"0\" /></xs:sequence></xs:complexType></xs:element><xs:element name=\"CabinInfo\"><xs:complexType><xs:sequence><xs:element name=\"FlightCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"CabinCode\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"CabinNum\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"DiscountRate\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"BasicCabinType\" type=\"xs:string\" minOccurs=\"0\" /><xs:element name=\"SinglePrice\" type=\"xs:decimal\" minOccurs=\"0\" /><xs:element name=\"ChildPrice\" type=\"xs:decimal\" minOccurs=\"0\" /><xs:element name=\"InfantPrice\" type=\"xs:decimal\" minOccurs=\"0\" /><xs:element name=\"BaseReward\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"ExtraReward\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"StartDate\" type=\"xs:dateTime\" minOccurs=\"0\" /><xs:element name=\"EndDate\" type=\"xs:dateTime\" minOccurs=\"0\" /><xs:element name=\"LadderReward\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"LadderRewardPolicy\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"RewardPolicy\" type=\"xs:int\" minOccurs=\"0\" /><xs:element name=\"SpecialOffer\" type=\"xs:int\" minOccurs=\"0\" /></xs:sequence></xs:complexType></xs:element></xs:choice></xs:complexType></xs:element></xs:schema><diffgr:diffgram xmlns:msdata=\"urn:schemas-microsoft-com:xml-msdata\" xmlns:diffgr=\"urn:schemas-microsoft-com:xml-diffgram-v1\"><NewDataSet xmlns=\"\"><FlightInfo diffgr:id=\"FlightInfo1\" msdata:rowOrder=\"0\"><FlightCode>CA1883</FlightCode><AirLineCode>CA</AirLineCode><AirLineName>Air China</AirLineName><AirLineShortName>Air China</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>0800</DepTime><ArrTime>1005</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>321</PlaneType><StopNumber>0</StopNumber><IsCodeShare>false</IsCodeShare><Carrier /><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo2\" msdata:rowOrder=\"1\"><FlightCode>FM5183</FlightCode><AirLineCode>FM</AirLineCode><AirLineName>Shanghai Airlines</AirLineName><AirLineShortName>Shanghai</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>0810</DepTime><ArrTime>1015</ArrTime><HasETkt>true</HasETkt><HasMeal>false</HasMeal><PlaneType>320</PlaneType><StopNumber>0</StopNumber><IsCodeShare>true</IsCodeShare><Carrier>MU5183</Carrier><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo3\" msdata:rowOrder=\"2\"><FlightCode>MU5183</FlightCode><AirLineCode>MU</AirLineCode><AirLineName>China Eastern Airlines</AirLineName><AirLineShortName>China Eastern</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>0810</DepTime><ArrTime>1015</ArrTime><HasETkt>true</HasETkt><HasMeal>false</HasMeal><PlaneType>320</PlaneType><StopNumber>0</StopNumber><IsCodeShare>false</IsCodeShare><Carrier /><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo4\" msdata:rowOrder=\"3\"><FlightCode>QF4010</FlightCode><AirLineCode>QF</AirLineCode><AirLineName>Qantas Airways</AirLineName><AirLineShortName>Qantas</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1350</DepTime><ArrTime>1600</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>333</PlaneType><StopNumber>0</StopNumber><IsCodeShare>true</IsCodeShare><Carrier>MU271</Carrier><BasePrice>0</BasePrice><CheapestPrice>0</CheapestPrice><AirportFee>50</AirportFee><FuelFee>0</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo5\" msdata:rowOrder=\"4\"><FlightCode>MU271</FlightCode><AirLineCode>MU</AirLineCode><AirLineName>China Eastern Airlines</AirLineName><AirLineShortName>China Eastern</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1350</DepTime><ArrTime>1600</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>333</PlaneType><StopNumber>0</StopNumber><IsCodeShare>false</IsCodeShare><Carrier /><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo6\" msdata:rowOrder=\"5\"><FlightCode>CA175</FlightCode><AirLineCode>CA</AirLineCode><AirLineName>Air China</AirLineName><AirLineShortName>Air China</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1535</DepTime><ArrTime>1745</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>330</PlaneType><StopNumber>0</StopNumber><IsCodeShare>false</IsCodeShare><Carrier /><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo7\" msdata:rowOrder=\"6\"><FlightCode>CZ5130</FlightCode><AirLineCode>CZ</AirLineCode><AirLineName>China Southern Airlines</AirLineName><AirLineShortName>China Southern</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1905</DepTime><ArrTime>2115</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>300</PlaneType><StopNumber>0</StopNumber><IsCodeShare>true</IsCodeShare><Carrier>MU5130</Carrier><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo8\" msdata:rowOrder=\"7\"><FlightCode>MU5130</FlightCode><AirLineCode>MU</AirLineCode><AirLineName>China Eastern Airlines</AirLineName><AirLineShortName>China Eastern</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1905</DepTime><ArrTime>2115</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>300</PlaneType><StopNumber>0</StopNumber><IsCodeShare>false</IsCodeShare><Carrier /><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><FlightInfo diffgr:id=\"FlightInfo9\" msdata:rowOrder=\"8\"><FlightCode>FM5130</FlightCode><AirLineCode>FM</AirLineCode><AirLineName>Shanghai Airlines</AirLineName><AirLineShortName>Shanghai</AirLineShortName><DepPortCode>PEK</DepPortCode><DepPortName>Capital</DepPortName><ArrPortCode>PVG</ArrPortCode><ArrPortName>Pu Dong</ArrPortName><DepDate>2010-04-01T00:00:00+08:00</DepDate><ArrDate>2010-04-01T00:00:00+08:00</ArrDate><DepTime>1905</DepTime><ArrTime>2115</ArrTime><HasETkt>true</HasETkt><HasMeal>true</HasMeal><PlaneType>300</PlaneType><StopNumber>0</StopNumber><IsCodeShare>true</IsCodeShare><Carrier>MU5130</Carrier><BasePrice>1130.00</BasePrice><CheapestPrice>1130.00</CheapestPrice><AirportFee>50</AirportFee><FuelFee>50</FuelFee></FlightInfo><CabinInfo diffgr:id=\"CabinInfo1\" msdata:rowOrder=\"0\"><FlightCode>CA1883</FlightCode><CabinCode>F</CabinCode><CabinNum>A</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-07-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo2\" msdata:rowOrder=\"1\"><FlightCode>CA1883</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-07-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo3\" msdata:rowOrder=\"2\"><FlightCode>FM5183</FlightCode><CabinCode>F</CabinCode><CabinNum>7</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2015-11-09T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo4\" msdata:rowOrder=\"3\"><FlightCode>FM5183</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2015-11-09T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo5\" msdata:rowOrder=\"4\"><FlightCode>MU5183</FlightCode><CabinCode>F</CabinCode><CabinNum>7</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo6\" msdata:rowOrder=\"5\"><FlightCode>MU5183</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo7\" msdata:rowOrder=\"6\"><FlightCode>MU271</FlightCode><CabinCode>C</CabinCode><CabinNum>A</CabinNum><DiscountRate>130</DiscountRate><BasicCabinType>C</BasicCabinType><SinglePrice>1470.00</SinglePrice><ChildPrice>740</ChildPrice><InfantPrice>150</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo8\" msdata:rowOrder=\"7\"><FlightCode>MU271</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo9\" msdata:rowOrder=\"8\"><FlightCode>CA175</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-07-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo10\" msdata:rowOrder=\"9\"><FlightCode>CZ5130</FlightCode><CabinCode>F</CabinCode><CabinNum>A</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2002-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo11\" msdata:rowOrder=\"10\"><FlightCode>CZ5130</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2002-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo12\" msdata:rowOrder=\"11\"><FlightCode>MU5130</FlightCode><CabinCode>F</CabinCode><CabinNum>A</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo13\" msdata:rowOrder=\"12\"><FlightCode>MU5130</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2001-11-07T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo14\" msdata:rowOrder=\"13\"><FlightCode>FM5130</FlightCode><CabinCode>F</CabinCode><CabinNum>A</CabinNum><DiscountRate>150</DiscountRate><BasicCabinType>F</BasicCabinType><SinglePrice>1700.00</SinglePrice><ChildPrice>850</ChildPrice><InfantPrice>170</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2015-11-09T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo><CabinInfo diffgr:id=\"CabinInfo15\" msdata:rowOrder=\"14\"><FlightCode>FM5130</FlightCode><CabinCode>Y</CabinCode><CabinNum>A</CabinNum><DiscountRate>100</DiscountRate><BasicCabinType>Y</BasicCabinType><SinglePrice>1130.00</SinglePrice><ChildPrice>570</ChildPrice><InfantPrice>110</InfantPrice><BaseReward>3</BaseReward><ExtraReward>0</ExtraReward><StartDate>2015-11-09T00:00:00+08:00</StartDate><EndDate>1949-12-31T00:00:00+08:00</EndDate><LadderReward>0</LadderReward><LadderRewardPolicy>-1</LadderRewardPolicy><RewardPolicy>-1</RewardPolicy><SpecialOffer>0</SpecialOffer></CabinInfo></NewDataSet></diffgr:diffgram></GetFlightCabin3Result></GetFlightCabin3Response></soap:Body></soap:Envelope>";
+		log.debug("outbound:\n"+outBoundXmlResponse);
+		if(request.isRoundTrip()){
+			String inBoundXmlResponse = ChinaTravelDepotFactory.searchInBoundFlight(client, request);
+			log.debug("inbound:\n"+inBoundXmlResponse);
+			if(this.isSOAPFault(outBoundXmlResponse)||this.isSOAPFault(inBoundXmlResponse)){
+				throw new FlightSearchProviderException("SOAP ERROR: "+inBoundXmlResponse+"\t"+outBoundXmlResponse);
+			}
+			else{
+				this.parseAndPost(request, outBoundXmlResponse, inBoundXmlResponse);
+			}
+		}
+		else{
+			if(this.isSOAPFault(outBoundXmlResponse)){
+				throw new FlightSearchProviderException("SOAP ERROR: "+outBoundXmlResponse);
+			}
+			else{
+				this.parseAndPost(request, outBoundXmlResponse, null);
+			}
+		}
+		// writeToFile("/tmp/wegolo_rs.xml", xmlResponse.replace(">", ">\n"));
+
+		// String xmlResponse = readFromFile("/tmp/wegolo_rs.xml");
+		/**
+		if (xmlResponse.indexOf("<outErrorCode>0</outErrorCode>") == -1) {
+			log.debug("Error Code return! skip!");
+		} else {
+			//parseAndPost(request, xmlResponse);
+		}
+		**/
+		return null;
+	}
+	
+	private boolean isSOAPFault(String xml){
+		return xml.toUpperCase().indexOf("<soap:Fault>".toUpperCase())!=-1;
+	}
+
+	private void parseAndPost(FlightSearchRequest request, String outBoundXmlResponse, String inBoundXmlResponse)
+			throws FlightSearchProviderException {
+		List<FlightLeg> outBoundLegs = this.getFlightLegs(request, outBoundXmlResponse);
+		List<FlightLeg> inBoundLegs = request.isRoundTrip()?this.getFlightLegs(request, inBoundXmlResponse):null;
+		List<FlightItinerary> flightItineraries = new ArrayList<FlightItinerary>();
+		
+		int count=0;
+		for(FlightLeg outboundLeg: outBoundLegs){
+			if(request.isRoundTrip()){
+				for(FlightLeg inboundLeg: inBoundLegs){
+					FlightItinerary itinerary = new FlightItinerary();
+					itinerary.addOutboundLeg(outboundLeg);
+					itinerary.addInboundLeg(inboundLeg);
+					
+					flightItineraries.add(itinerary);
+					count++;
+				}
+			}
+			else{
+
+				FlightItinerary itinerary = new FlightItinerary();
+				itinerary.addOutboundLeg(outboundLeg);
+				
+				flightItineraries.add(itinerary);
+				count++;
+
+			}
+		}
+		
+		log.info("Total Permutation: "+ count);
+		Collections.sort(flightItineraries, new Comparator<FlightItinerary>(){
+
+			public int compare(FlightItinerary o1, FlightItinerary o2) {
+				double outBoundPrice1 = Double.parseDouble(o1.getOutboundLegs().get(0).getPrices().get(0).getTotalAmount());
+				double inBoundPrice1 =0.0;
+				if(o1.getInboundLegs()!=null && o1.getInboundLegs().size()>0){
+					inBoundPrice1 = Double.parseDouble(o1.getInboundLegs().get(0).getPrices().get(0).getTotalAmount());
+				}
+				double totalPrice1 =outBoundPrice1+inBoundPrice1;
+				
+				double outBoundPrice2 = Double.parseDouble(o2.getOutboundLegs().get(0).getPrices().get(0).getTotalAmount());
+				double inBoundPrice2=0.0;
+				if(o2.getInboundLegs()!=null && o2.getInboundLegs().size()>0){
+					inBoundPrice2 = Double.parseDouble(o2.getInboundLegs().get(0).getPrices().get(0).getTotalAmount());
+				}
+				double totalPrice2 = outBoundPrice2+ inBoundPrice2;
+				return new Double(totalPrice1).compareTo(new Double(totalPrice2));
+			}
+			
+		});
+		int totalPosted =0;
+		for (int i = 0; i < flightItineraries.size() && i < MAX_LIMIT; i++) {
+			this.postItinerary(request, flightItineraries.get(i));
+			totalPosted = i;
+		}
+
+		log.info("total posted: " + totalPosted);
+		
+	}
+	
+	private void postItinerary(FlightSearchRequest request, FlightItinerary itinerary)
+	throws FlightSearchProviderException {
+		log.debug(itinerary); 
+		//checkItinerary(itinerary, request);
+		List<FlightItinerary> itineraries = new ArrayList<FlightItinerary>();
+		itineraries.add(itinerary);
+		postItineries(itineraries, request);
+	}
+	
+	
+	private List<FlightLeg> getFlightLegs(FlightSearchRequest request, String xmlResponse) throws FlightSearchProviderException{
+		List<FlightLeg> flightLegs = new ArrayList<FlightLeg>();
+		try{
+			 DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+			 domFactory.setNamespaceAware(true); 
+			 DocumentBuilder builder = domFactory.newDocumentBuilder();
+			 Document doc =  builder.parse(new InputSource(new StringReader(xmlResponse)));
+			 XPathFactory factory = XPathFactory.newInstance();
+			 XPath xpath = factory.newXPath();
+			 XPathExpression flightInfoExpr = xpath.compile("//FlightInfo");
+			 Object result = flightInfoExpr.evaluate(doc, XPathConstants.NODESET);
+			 NodeList nodes = (NodeList) result;
+			 log.debug("FlightInfo Length: "+nodes.getLength());
+			 for(int i=0; i<nodes.getLength();i++){
+				NodeList flightInfoChildren = nodes.item(i).getChildNodes();
+				String flightNo = flightInfoChildren.item(0).getTextContent();
+				log.debug(flightNo);
+				String airlineCode = flightInfoChildren.item(1).getTextContent();
+				log.debug(airlineCode);
+				double taxes = Double.parseDouble(flightInfoChildren.item(20).getTextContent())+Double.parseDouble(flightInfoChildren.item(21).getTextContent());
+				log.debug(taxes);
+				String xQuery ="//CabinInfo[FlightCode='"+flightNo+"'";
+				if (request.getCabinClass().equals(CABIN_CLASS.Economy)){
+					xQuery= xQuery+" and ( CabinCode='Y' or CabinCode='W' or CabinCode='S' or CabinCode='B' or CabinCode='H' or CabinCode='K' or CabinCode='L' or CabinCode='M' or CabinCode='N' or CabinCode='Q' or CabinCode='T' or CabinCode='V' or CabinCode='X') ]";
+				}
+				else if(request.getCabinClass().equals(CABIN_CLASS.Business)){
+					xQuery= xQuery+" and ( CabinCode='C' or CabinCode='D' or CabinCode='I' or CabinCode='Z' or CabinCode='J')]";
+				}
+				else{
+					xQuery= xQuery+" and ( CabinCode='F' or CabinCode='P' or CabinCode='A')]";
+				}
+				
+				XPathExpression flightCabinExpr = xpath.compile(xQuery);
+				NodeList flightCabinNodes = (NodeList) flightCabinExpr.evaluate(doc, XPathConstants.NODESET);
+				log.debug("CabinInfo Length: "+flightCabinNodes.getLength());
+				for(int j=0; j<flightCabinNodes.getLength();j++){
+					FlightLeg leg = new FlightLeg();
+					NodeList cabinInfoChildren = flightCabinNodes.item(j).getChildNodes();
+					String cabinCode = cabinInfoChildren.item(1).getTextContent();
+					log.debug("Cabin Code: "+cabinCode);
+					String discountRate = cabinInfoChildren.item(3).getTextContent();
+					log.debug("Discount Rate:"+discountRate);
+					String adultPrice = cabinInfoChildren.item(5).getTextContent();
+					log.debug("Adult Price:" +adultPrice);
+					String childPrice = cabinInfoChildren.item(6).getTextContent();
+					log.debug("Child Price:" +childPrice);
+					FlightSegment segment = new FlightSegment();
+					FullFlightNumber flightNumber = new FullFlightNumber(airlineCode, flightNo.substring(airlineCode.length()));
+					segment.setFlightNumber(flightNumber);
+					segment.setFlightClass(this.determineFlightClass(request.getCabinClass()));
+					leg.addSegment(segment);
+					FlightPrice flightPrice = new FlightPrice();
+					flightPrice.setPricePerChild(childPrice);
+					flightPrice.setPricePerAdult(adultPrice);
+					flightPrice.setTotalPricePerAdult(String.valueOf(Double.parseDouble(adultPrice)+taxes));
+					flightPrice.setTotalPricePerChild(String.valueOf(Double.parseDouble(childPrice)+taxes));
+					flightPrice.setAmount(String.valueOf(Double.parseDouble(adultPrice)*request.getNumAdults()+Double.parseDouble(childPrice)*request.getNumChildren()));
+					flightPrice.setPricePerPassenger(String.valueOf(Double.parseDouble(flightPrice.getAmount())/(request.getNumAdults()+request.getNumChildren())));
+					flightPrice.setTotalAmount(String.valueOf(Double.parseDouble(flightPrice.getTotalPricePerAdult())*request.getNumAdults()+Double.parseDouble(flightPrice.getTotalPricePerChild())*request.getNumChildren()));
+					flightPrice.setTotalPricePerPassenger(String.valueOf(Double.parseDouble(flightPrice.getTotalAmount())/(request.getNumAdults()+request.getNumChildren())));
+					flightPrice.setCurrencyCode(ChinaTravelDepotSearchProvider.CURRENCYCODE);
+					flightPrice.setIncludesTax(true);
+					StringBuffer flightName = new StringBuffer();
+					flightName.append(request.getCabinClass().toString()).append(" Class").append("(").append(request.getCabinClass().equals(CABIN_CLASS.Economy)?"Y":(request.getCabinClass().equals(CABIN_CLASS.First)?"F":"C")).append(")");
+					if(request.getCabinClass().equals(CABIN_CLASS.Economy)){
+						double discount = 100- Double.parseDouble(discountRate);
+						if(discount>0){
+							flightName.append("Save").append(String.valueOf(discount)).append("%");
+						}
+					}
+					log.debug("FlightName:"+flightName.toString());
+					flightPrice.setName(flightName.toString());
+					leg.addPrice(flightPrice);
+					flightLegs.add(leg);
+				}
+			 }
+			 return flightLegs;
+			 
+
+		}
+		catch(ParserConfigurationException ex){
+			throw new FlightSearchProviderException(ex.getMessage());
+			
+		} catch (SAXException ex) {
+			// TODO Auto-generated catch block
+			throw new FlightSearchProviderException(ex.getMessage());
+//			e.printStackTrace();
+		} catch (IOException ex) {
+			// TODO Auto-generated catch block
+			throw new FlightSearchProviderException(ex.getMessage());
+//			e.printStackTrace();
+		} catch (XPathExpressionException ex) {
+			// TODO Auto-generated catch block
+			throw new FlightSearchProviderException(ex.getMessage());
+//			e.printStackTrace();
+		}
+	
+		
+	}
+	
+	private FlightClass determineFlightClass(CABIN_CLASS cabinClass)
+	throws FlightSearchProviderException {
+		FlightClass flightClass = new FlightClass();
+
+		if (cabinClass == CABIN_CLASS.Economy) {
+			flightClass.setEconomyClass();
+			flightClass.setName("Economy");
+		}
+
+		else if (cabinClass == CABIN_CLASS.Business) {
+			flightClass.setBusinessClass();
+			flightClass.setName("Business");
+		}
+		else if (cabinClass == CABIN_CLASS.First){
+			flightClass.setFirstClass();
+			flightClass.setName("First");
+		}
+		else {
+			throw new FlightSearchProviderException("Cannot parse flight class");
+		}
+
+		return flightClass;
+	}
+	
+
+	
+
+	@Override
+	protected boolean isSearchRelevant(FlightSearchRequest request)
+			throws FlightSearchProviderException {
+		return true;
+	}
+
+	@Override
+	protected boolean servicesRoute(String from, String to) {
+		return false;
+	}
+
+	// test method
+	private String readFromFile(String pathToFile) {
+		StringBuffer strBuff = new StringBuffer();
+
+		try {
+			FileReader input = new FileReader(pathToFile);
+			BufferedReader bufRead = new BufferedReader(input);
+
+			String line;
+
+			// Read first line
+			line = bufRead.readLine();
+
+			// Read through file one line at time. Print line # and line
+			while (line != null) {
+
+				strBuff.append(line);
+				line = bufRead.readLine();
+			}
+
+		} catch (Exception e) {
+			System.err.println("File input error");
+		}
+
+		return strBuff.toString();
+	}
+}

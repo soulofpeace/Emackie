@@ -1,0 +1,60 @@
+class UserDao:
+    def __init__(self, connection):
+        self._connection = connection
+        connection.setnx("user:next_id", 1)
+
+    def __validate(self, user):
+        if not hasattr(user, "screenname"):
+            return False
+        if not hasattr(user, "twitter_id"):
+            return False
+        return True
+
+    def save(self, user):
+        if __validate(user):
+            if not user.id:
+                user.id = connection.get("user:next_id")
+            connection.set("user:%s:id" %(user.screenname), user.id) 
+            connection.set("user:%s:twitter_id" %(user.id), user.twitter_id)
+            connection.set("user:%s:oauth_token" %(user.id), user.oauth_token)
+            connection.set("user:%s:ouath_token_secret" %(user.id), user.oauth_token_secret)
+            connection.set("user:%s:longitude" %(user.id), user.location[1])
+            connection.set("user:%s:latitude" %(user.id), user.location[0])
+            connection.sadd("user:members", user.id)
+            connection.incr("user:next_id")
+            return user.id
+        else:
+            return None
+    
+    def delete(self, user_id):
+        connection.srem("user:members", user_id)
+        user_keys = connection.keys("user:%s:*" %(user_id)).split()
+        if(len(user_keys)!=0):
+            for key in user_keys:
+                connection.delete(key)
+            return True
+        else:
+            return False
+        
+        
+    def get_user(id):
+        screenname = connection.get("user:%s:screenname" %(id))
+        twitter_id = connection.get("user:%s:twitter_id" %(id))
+        oauth_token_secret = connection.get("user:%s:oauth_token_secret" %(id))
+        oauth_token = connection.get("user:%s:oauth_token" %(id))
+        location = (connection.get("user:%s:latitude" %(id)), connection.get("user:%s:longitude" %(id)))
+        user = User(id=id, screenname=screenname, twitter_id=twitter_id, oauth_token_secret = oauth_token_secret, oauth_token=oauth_token, location=location)
+        
+    def get_user_id(screenname):
+        if connection.exists("user:%s:id" %(screenname)):
+            return connection.get("user:%s:id" %(screenname))
+        else:
+            return None
+
+
+            
+
+
+
+                    
+        

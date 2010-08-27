@@ -1,0 +1,79 @@
+package com.bezurk.provider.flight.chinahighlights;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.bezurk.search.flight.FlightSearchRequest;
+import com.bezurk.search.flight.FlightSearchRequest.CABIN_CLASS;
+import com.bezurk.search.model.Country;
+import com.bezurk.search.model.OagLocation;
+
+
+public class TestChinaHighlightsSearchProvider extends TestCase {
+    private static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("dd/MM/yyyy");
+    private List<String> airportCodes = new ArrayList<String>();
+    ChinaHighlightsSearchProvider provider = new ChinaHighlightsSearchProvider();
+
+
+	
+    public void setUp(){
+	ChinaHighlightsWSClient client = new ChinaHighlightsWSClient();
+	client.setAccount("jasmine@wego.com");
+	client.setPassword("wego1234");
+	client.setDomain("http://www.wego.com");
+	client.setSite("http://202.157.130.10/p/flights/chinahighlights/");
+	this.provider.setChinaHighlightsWSClient(client);
+    }
+	
+	
+	
+    public void testCustomSearch() throws Exception{
+	OagLocation fromLocation = new OagLocation();
+	Country fromCountry = new Country();
+	fromCountry.setCode("CN");
+	fromLocation.setCountry(fromCountry);
+	fromLocation.setCode("PEK");
+	/**
+	   OagLocation child1 = new OagLocation();
+	   child1.setCode("MDW");
+	   OagLocation child2 = new OagLocation();
+	   child2.setCode("ORD");
+	   OagLocation child3 = new OagLocation();
+	   child3.setCode("PWK");
+	   OagLocation child4 = new OagLocation();
+	   child4.setCode("RFD");
+	   fromLocation.addAirport(child1);
+	   fromLocation.addAirport(child2);
+	   fromLocation.addAirport(child3);
+	   fromLocation.addAirport(child4);
+	**/
+	OagLocation toLocation = new OagLocation();
+	Country toCountry = new Country();
+	toCountry.setCode("CN");
+	toLocation.setCountry(toCountry);
+	toLocation.setCode("KWL");
+		
+	FlightSearchRequest request = new FlightSearchRequest();
+
+	// From
+	request.setFromLocation(fromLocation);
+
+	// To
+	request.setToLocation(toLocation);
+
+	request.setOutboundDate(FORMAT_DATE.parse("23/09/2010"));
+	request.setInboundDate(FORMAT_DATE.parse("02/10/2010"));
+	request.setNumAdults(5);
+	request.setNumChildren(0);
+	request.setRoundTrip(false);
+	request.setCabinClass(CABIN_CLASS.Economy);
+	provider.performSearch(request);
+
+    }
+
+
+}

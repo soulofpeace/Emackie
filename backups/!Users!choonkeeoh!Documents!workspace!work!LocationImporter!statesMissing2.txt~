@@ -1,0 +1,812 @@
+AR	BA	Bahia Blanca
+AR	BA	Buenos Aires Aeroparque J. Newbery
+AR	BA	Buenos Aires Ministro Pistarini
+AR	BA	Carmen De Patagones
+AR	BA	Coronel Suarez
+AR	BA	El Palomar
+AR	BA	General Villegas
+AR	BA	Junin
+AR	BA	La Plata
+AR	BA	Mar del Plata
+AR	BA	Miramar
+AR	BA	Necochea
+AR	BA	Olavarria
+AR	BA	Pehuajo
+AR	BA	Saenz Pena
+AR	BA	Santa Teresita
+AR	BA	Tandil
+AR	BA	Tres Arroyos
+AR	BA	Villa Gesell
+AR	CB	Alto Rio Senguerr
+AR	CB	Colonia Sarmiento
+AR	CB	Comodoro Rivadavia
+AR	CB	El Maiten
+AR	CB	Esquel
+AR	CB	Jose de San Martin
+AR	CB	Puerto Madryn
+AR	CB	Rio Mayo
+AR	CB	Trelew
+AR	CD	Cordoba
+AR	CD	La Cumbre
+AR	CD	Rio Cuarto
+AR	CD	Villa Dolores
+AR	CH	Charata
+AR	CH	President Roque Saenz Pena
+AR	CH	Resistencia
+AR	CR	Corrientes
+AR	CR	Curuzu Cuatia
+AR	CR	Goya
+AR	CR	Mercedes
+AR	CR	Monte Caseros
+AR	CR	Paso De Los Libres
+AR	ER	Concordia
+AR	ER	Gualeguaychu
+AR	ER	Parana
+AR	FO	Clorinda
+AR	FO	Formosa
+AR	FO	Las Lomitas
+AR	LP	General Pico
+AR	LP	Santa Rosa
+AR	LR	La Rioja
+AR	PJ	Jujuy
+AR	RN	Colonia Catriel
+AR	RN	El Bolson
+AR	RN	General Roca
+AR	RN	Ingeniero Jacobacci
+AR	RN	Los Menucos
+AR	RN	Maquinchao
+AR	RN	San Antonio Oeste
+AR	RN	San Carlos de Bariloche
+AR	RN	Sierra Grande
+AR	RN	Valcheta
+AR	RN	Viedma
+AR	SE	Rio Hondo
+AR	SE	Santiago Del Estero
+AR	SF	Ceres
+AR	SF	Rafaela
+AR	SF	Reconquista
+AR	SF	Rosario
+AR	SF	Santa Fe
+AR	SJ	San Juan
+AR	SL	Merlo
+AR	SL	San Luis
+AR	SL	Villa Mercedes
+AR	TF	Rio Grande
+AR	TF	Ushuaia
+AR	TU	Tucuman
+AU	TS	Burnie
+AU	TS	Cape Barren Island
+AU	TS	Devonport
+AU	TS	Flinders Island
+AU	TS	George Town
+AU	TS	Hobart
+AU	TS	King Island
+AU	TS	Latrobe
+AU	TS	Launceston
+AU	TS	Queenstown
+AU	TS	Smithton
+AU	TS	St Helens
+AU	TS	Strahan
+BR	AC	Cruzeiro Do Sul
+BR	AC	Feijo
+BR	AC	Rio Branco
+BR	AC	Sena Madureira
+BR	AC	Tarauaca
+BR	AM	Barcelos
+BR	AM	Boca Do Acre
+BR	AM	Borba
+BR	AM	Carauari
+BR	AM	Coari
+BR	AM	Eirunepe
+BR	AM	Ipiranga
+BR	AM	Itacoatiara
+BR	AM	Labrea
+BR	AM	Manaus
+BR	AM	Manicore
+BR	AM	Maues
+BR	AM	Novo Aripuana
+BR	AM	Parintins
+BR	AM	Pitinga
+BR	AM	Ponta Pelada
+BR	AM	Sao Gabriel
+BR	AM	Tabatinga
+BR	AM	Tefe
+BR	AP	Macapa
+BR	AP	Oiapoque
+BR	BA	Barra
+BR	BA	Barreiras
+BR	BA	Belmonte
+BR	BA	Bom Jesus da Lapa
+BR	BA	Brumado
+BR	BA	Cachoeira
+BR	BA	Canavieiras
+BR	BA	Caravelas
+BR	BA	Feira de Santana
+BR	BA	Guanambi
+BR	BA	Ilheus
+BR	BA	Ipiau
+BR	BA	Irece
+BR	BA	Itabuna
+BR	BA	Itubera
+BR	BA	Jacobina
+BR	BA	Jequie
+BR	BA	Lencois
+BR	BA	Mucuri
+BR	BA	Paulo Afonso
+BR	BA	Porto Seguro
+BR	BA	Prado
+BR	BA	Salvador
+BR	BA	Senhor do Bonfim
+BR	BA	Teixeira de Freitas
+BR	BA	Una
+BR	BA	Valenca
+BR	BA	Vitoria da Conquista
+BR	CE	Camocim
+BR	CE	Fortaleza
+BR	CE	Juazeiro Do Norte
+BR	DF	Brasilia
+BR	ES	Cachoeiro de Itapemirim
+BR	ES	Guarapari
+BR	ES	Sao Mateus
+BR	ES	Vitoria
+BR	FN	Fernando De Noronha
+BR	GO	Anapolis
+BR	GO	Aragarcas
+BR	GO	Caldas Novas
+BR	GO	Catalao
+BR	GO	Goiania
+BR	GO	Itumbiara
+BR	GO	Jatai
+BR	GO	Minacu
+BR	GO	Niquelandia
+BR	GO	Rio Verde
+BR	GO	Sao Miguel do Araguaia
+BR	MG	Almenara
+BR	MG	Araxa
+BR	MG	Belo Horizonte Pampulha Apt
+BR	MG	Belo Horizonte Tancredo Neves Int Apt
+BR	MG	Cana Brava
+BR	MG	Divinopolis
+BR	MG	Espinosa
+BR	MG	Governador Valadares
+BR	MG	Ipatinga
+BR	MG	Itambacuri
+BR	MG	Januaria
+BR	MG	Juiz De Fora
+BR	MG	Leopoldina
+BR	MG	Montes Claros
+BR	MG	Nanuque
+BR	MG	Passos
+BR	MG	Patos De Minas
+BR	MG	Pirapora
+BR	MG	Pocos De Caldas
+BR	MG	Pouso Alegre
+BR	MG	Santa Vitoria
+BR	MG	Sao Joao Del Rei
+BR	MG	Sao Lourenco
+BR	MG	Teofilo Otoni
+BR	MG	Uberaba
+BR	MG	Uberlandia
+BR	MG	Varginha
+BR	PB	Campina Grande
+BR	PB	Joao Pessoa
+BR	PE	Caruaru
+BR	PE	Petrolina
+BR	PE	Recife
+BR	PI	Floriano
+BR	PI	Guadalupe
+BR	PI	Parnaiba
+BR	PI	Picos
+BR	PI	Teresina
+BR	PR	Apucarana
+BR	PR	Arapongas
+BR	PR	Arapoti
+BR	PR	Campo Mourao
+BR	PR	Cascavel
+BR	PR	Cornelio Procopio
+BR	PR	Curitiba Afonso Pena
+BR	PR	Curitiba Bacacheri
+BR	PR	Francisco Beltrao
+BR	PR	Guarapuava
+BR	PR	Iguassu Falls
+BR	PR	Londrina
+BR	PR	Maringa
+BR	PR	Paranagua
+BR	PR	Paranavai
+BR	PR	Pato Branco
+BR	PR	Ponta Grossa
+BR	PR	Telemaco Borba
+BR	PR	Toledo
+BR	PR	Umuarama
+BR	RJ	Buzios
+BR	RJ	Cabo Frio
+BR	RJ	Campos
+BR	RJ	Itaperuna
+BR	RJ	Macae
+BR	RJ	Resende
+BR	RJ	Rio de Janeiro International Apt
+BR	RJ	Rio de Janeiro Santos Dumont Apt
+BR	RN	Mossoro
+BR	RN	Natal
+BR	RN	Santa Cruz
+BR	RO	Ariquemes
+BR	RO	Cacoal
+BR	RO	Colorado do Oeste
+BR	RO	Costa Marques
+BR	RO	Guajara-Mirim
+BR	RO	Ji-Parana
+BR	RO	Pimenta Bueno
+BR	RO	Porto Velho
+BR	RO	Vilhena
+BR	RR	Boa Vista
+BR	RS	Alegrete
+BR	RS	Bage
+BR	RS	Bento Goncalves
+BR	RS	Caxias Do Sul
+BR	RS	Cruz Alta
+BR	RS	Erechim
+BR	RS	Gravatai
+BR	RS	Horizontina
+BR	RS	Ijui
+BR	RS	Itaqui
+BR	RS	Livramento
+BR	RS	Passo Fundo
+BR	RS	Pelotas
+BR	RS	Porto Alegre
+BR	RS	Rio Grande
+BR	RS	Santa Cruz Do Sul
+BR	RS	Santa Maria
+BR	RS	Santa Rosa
+BR	RS	Santo Angelo
+BR	RS	Sao Lourenco Do Sul
+BR	RS	Torres
+BR	RS	Uruguaiana
+BR	SE	Aracaju
+BR	SP	Aracatuba
+BR	SP	Araraquara
+BR	SP	Assis
+BR	SP	Barretos
+BR	SP	Bauru
+BR	SP	Braganca Paulista
+BR	SP	Campinas
+BR	SP	Franca
+BR	SP	Guaratingueta
+BR	SP	Jales
+BR	SP	Lins
+BR	SP	Marilia
+BR	SP	Ourinhos
+BR	SP	President Prudente
+BR	SP	Ribeirao Preto
+BR	SP	Santa Fe do Sul
+BR	SP	Santos
+BR	SP	Sao Jose Do Rio Preto
+BR	SP	Sao Jose Dos Campos
+BR	SP	Sao Paulo Congonhas Apt
+BR	SP	Sao Paulo Guarulhos Intl Apt
+BR	SP	Sao Paulo Viracopos Apt
+BR	SP	Sorocaba
+BR	SP	Sumare
+BR	SP	Ubatuba
+BR	SP	Urubupunga
+BR	SP	Votuporanga
+BR	TO	Araguaina
+BR	TO	Arraias
+BR	TO	Dianopolis
+BR	TO	Gurupi
+BR	TO	Miracema do Norte
+BR	TO	Palmas
+BR	TO	Porto Nacional
+BR	TO	Santa Isabel do Morro
+CA	AB	Banff
+CA	AB	Bonnyville
+CA	AB	Calgary
+CA	AB	Cold Lake
+CA	AB	Coronation
+CA	AB	Cowley
+CA	AB	Drayton Valley
+CA	AB	Edmonton International Apt
+CA	AB	Edmonton Municipal Apt
+CA	AB	Edmonton Namao Field
+CA	AB	Edson
+CA	AB	Fairview
+CA	AB	Falher
+CA	AB	Fort Chipewyan
+CA	AB	Fort Mackay
+CA	AB	Fort McMurray
+CA	AB	Grande Cache
+CA	AB	Grande Prairie
+CA	AB	High Level
+CA	AB	High Prairie
+CA	AB	Inverlake
+CA	AB	Jasper Hinton Airport
+CA	AB	Jasper-Hinton
+CA	AB	Lac Biche
+CA	AB	Lethbridge
+CA	AB	Lloydminster
+CA	AB	Medicine Hat
+CA	AB	Mildred Lake
+CA	AB	Peace River
+CA	AB	Pincher Creek
+CA	AB	Rainbow Lake
+CA	AB	Red Deer
+CA	AB	Rocky Mountain House
+CA	AB	Slave Lake
+CA	AB	Suffield
+CA	AB	Vermillion
+CA	AB	Whitecourt
+CA	BC	Abbotsford
+CA	BC	Alert Bay
+CA	BC	Alice Arm
+CA	BC	Alta Lake
+CA	BC	Anahim Lake
+CA	BC	Ashcroft
+CA	BC	Bamfield
+CA	BC	Beatton River
+CA	BC	Bedwell Harbor
+CA	BC	Bella Bella
+CA	BC	Bella Coola
+CA	BC	Big Bay Marina
+CA	BC	Big Bay Yacht Club
+CA	BC	Blubber Bay
+CA	BC	Bobquinn Lake
+CA	BC	Bronson Creek
+CA	BC	Bull Harbour
+CA	BC	Burns Lake
+CA	BC	Campbell River Municipal Apt
+CA	BC	Cape St James
+CA	BC	Castlegar
+CA	BC	Chetwynd
+CA	BC	Chilko Lake
+CA	BC	Chilliwack
+CA	BC	Comox
+CA	BC	Cortes Bay
+CA	BC	Courtenay
+CA	BC	Cranbrook
+CA	BC	Creston
+CA	BC	Dawson Creek
+CA	BC	Dean River
+CA	BC	Dease Lake
+CA	BC	Desolation Sound
+CA	BC	Doc Creek
+CA	BC	Douglas Lake
+CA	BC	Duncan
+CA	BC	Esquimalt
+CA	BC	Estevan Point
+CA	BC	Fairmount Springs
+CA	BC	Fort Nelson
+CA	BC	Fort St John
+CA	BC	Ganges Harbor
+CA	BC	Germansen
+CA	BC	Gillies Bay
+CA	BC	Gorge Harbor
+CA	BC	Grand Forks
+CA	BC	Greenway Sound
+CA	BC	Hakai Pass
+CA	BC	Hartley Bay
+CA	BC	Hope
+CA	BC	Hudson Hope
+CA	BC	Johnny Mountain
+CA	BC	Kamloops
+CA	BC	Kelowna
+CA	BC	Kemano
+CA	BC	Kimberley
+CA	BC	Kimsquit
+CA	BC	Kitkatla
+CA	BC	Klemtu
+CA	BC	Knights Inlet
+CA	BC	Langara
+CA	BC	Langley
+CA	BC	Lyall Harbour
+CA	BC	Maple Bay
+CA	BC	Masset
+CA	BC	Merritt
+CA	BC	Merry Island
+CA	BC	Miner\'s Bay
+CA	BC	Montagne Harbor
+CA	BC	Namu
+CA	BC	Nanaimo Cassidy Apt
+CA	BC	New Westminster
+CA	BC	Nootka Sound
+CA	BC	Ocean Falls
+CA	BC	One Hundred Eight Mile Ranch
+CA	BC	Pender Harbor
+CA	BC	Penticton
+CA	BC	Port Alberni
+CA	BC	Port Hardy
+CA	BC	Port McNeil
+CA	BC	Port Simpson
+CA	BC	Powell Lake
+CA	BC	Powell River
+CA	BC	Prince George
+CA	BC	Prince Rupert Digby Island Apt
+CA	BC	Prince Rupert Seal Cove Apt
+CA	BC	Qualicum
+CA	BC	Queen Charlotte Is
+CA	BC	Quesnel
+CA	BC	Revelstoke
+CA	BC	River\'s Inlet
+CA	BC	Salmon Arm
+CA	BC	Sandspit
+CA	BC	Sechelt
+CA	BC	Shearwater
+CA	BC	Silva Bay
+CA	BC	Smithers
+CA	BC	Spring Island
+CA	BC	Squamish
+CA	BC	Squirrel Cove
+CA	BC	Stewart
+CA	BC	Stuart Island
+CA	BC	Sturdee
+CA	BC	Sullivan Bay
+CA	BC	Summit Lake
+CA	BC	Tahsis
+CA	BC	Tasu
+CA	BC	Telegraph Creek
+CA	BC	Telegraph Harbour
+CA	BC	Terrace
+CA	BC	Tofino
+CA	BC	Trail
+CA	BC	Triple Island
+CA	BC	Tumbler Ridge
+CA	BC	Vancouver Boundary Bay Apt
+CA	BC	Vancouver International Apt
+CA	BC	Vernon
+CA	BC	Victoria Inner Harbour Apt
+CA	BC	Victoria International Apt
+CA	BC	Whistler
+CA	BC	Williams Lake
+CA	MB	Arnes
+CA	MB	Berens River
+CA	MB	Bloodvein
+CA	MB	Brandon
+CA	MB	Brochet
+CA	MB	Churchill
+CA	MB	Co-Op Point
+CA	MB	Cross Lake
+CA	MB	Dauphin
+CA	MB	Flin Flon
+CA	MB	Gillam
+CA	MB	Gimli
+CA	MB	Gods Narrows
+CA	MB	Gods River
+CA	MB	Granville Lake
+CA	MB	Ilford
+CA	MB	Island Lake/Garden Hill
+CA	MB	Jenpeg
+CA	MB	Kelsey
+CA	MB	Kennosao Lake
+CA	MB	Knee Lake
+CA	MB	Lac Brochet
+CA	MB	Laurie River
+CA	MB	Leaf Rapids
+CA	MB	Little Grand Rapids
+CA	MB	Lynn Lake
+CA	MB	Moose Lake
+CA	MB	Negginan
+CA	MB	Norway House
+CA	MB	Oxford House
+CA	MB	Pikwitonei
+CA	MB	Poplar River
+CA	MB	Portage la Prairie
+CA	MB	Pukatawagan
+CA	MB	Red Sucker Lake
+CA	MB	Rivers
+CA	MB	Shamattawa
+CA	MB	Shilo
+CA	MB	South Indian Lake
+CA	MB	Ste Therese Point
+CA	MB	Swan River
+CA	MB	Tadoule Lake
+CA	MB	The Pas
+CA	MB	Thicket Portage
+CA	MB	Thompson
+CA	MB	Winnipeg J.A. Richardson Intl Apt
+CA	MB	York Landing
+CA	NB	Bathurst
+CA	NB	Charlo
+CA	NB	Fredericton
+CA	NB	Gagetown
+CA	NB	Greater Moncton International Airport
+CA	NB	Miramichi
+CA	NB	St John
+CA	NB	St Leonard
+CA	NL	Argentia
+CA	NL	Black Tickle
+CA	NL	Buchans
+CA	NL	Cartwright
+CA	NL	Charlottetown
+CA	NL	Churchill Falls
+CA	NL	Corner Brook
+CA	NL	Daniels Harbour
+CA	NL	Davis Inlet
+CA	NL	Deer Lake
+CA	NL	Fox Harbour
+CA	NL	Gander
+CA	NL	Goose Bay
+CA	NL	Hopedale
+CA	NL	Makkovik
+CA	NL	Mary\'s Harbour
+CA	NL	Nain
+CA	NL	Natuashish
+CA	NL	Paradise River
+CA	NL	Port Hope Simpson
+CA	NL	Postville
+CA	NL	Rigolet
+CA	NL	Saglek
+CA	NL	St Anthony
+CA	NL	St Johns
+CA	NL	Stephenville
+CA	NL	Wabush
+CA	NL	Williams Harbour
+CA	NS	Digby
+CA	NS	Greenwood
+CA	NS	Halifax Downtown Waterfront H/P
+CA	NS	Halifax Shearwater Apt
+CA	NS	Halifax Stanfield International Apt
+CA	NS	Port Hawkesbury
+CA	NS	Sable Island
+CA	NS	Sydney
+CA	NS	Yarmouth
+CA	NU	Alert
+CA	NU	Arctic Bay
+CA	NU	Arviat
+CA	NU	Baker Lake
+CA	NU	Cambridge Bay
+CA	NU	Cape Dorset
+CA	NU	Cape Dyer
+CA	NU	Chesterfield Inlet
+CA	NU	Clyde River
+CA	NU	Coral Harbour
+CA	NU	Eureka
+CA	NU	Gjoa Haven
+CA	NU	Grise Fiord
+CA	NU	Hall Beach
+CA	NU	Hope Bay
+CA	NU	Igloolik
+CA	NU	Iqaluit
+CA	NU	Kimmirut/Lake Harbour
+CA	NU	Kugluktuk Coppermine
+CA	NU	Mary River
+CA	NU	Mould Bay
+CA	NU	Nanisivik
+CA	NU	Pangnirtung
+CA	NU	Pelly Bay
+CA	NU	Pond Inlet
+CA	NU	Qikiqtarjuaq
+CA	NU	Rankin Inlet
+CA	NU	Repulse Bay
+CA	NU	Resolute
+CA	NU	Resolution Island
+CA	NU	Sanikiluaq
+CA	NU	Taloyoak
+CA	NU	Whale Cove
+CA	ON	Angling Lake
+CA	ON	Armstrong
+CA	ON	Atikokan
+CA	ON	Attawapiskat
+CA	ON	Bar River
+CA	ON	Bearskin Lake
+CA	ON	Big Trout Lake
+CA	ON	Borden
+CA	ON	Brockville
+CA	ON	Caribou Island
+CA	ON	Cat Lake
+CA	ON	Centralia
+CA	ON	Chapleau
+CA	ON	Chatham
+CA	ON	Cochrane
+CA	ON	Cornwall
+CA	ON	Deer Lake
+CA	ON	Dryden
+CA	ON	Earlton
+CA	ON	Elliot Lake
+CA	ON	Fort Albany
+CA	ON	Fort Frances
+CA	ON	Fort Hope
+CA	ON	Fort Severn
+CA	ON	Geraldton
+CA	ON	Gore Bay
+CA	ON	Hearst
+CA	ON	Hornepayne
+CA	ON	Ignace
+CA	ON	Kapuskasing
+CA	ON	Kasabonika
+CA	ON	Kaschechewan
+CA	ON	Keewaywin
+CA	ON	Kenora
+CA	ON	Killaloe
+CA	ON	Kincardine
+CA	ON	Kingfisher Lake
+CA	ON	Kingston Norman Rogers Apt
+CA	ON	Kirkland Lake
+CA	ON	Kitchener/Waterloo
+CA	ON	Lansdowne House
+CA	ON	London Municipal Apt
+CA	ON	Long Point
+CA	ON	Main Duck Island
+CA	ON	Manitouwadge
+CA	ON	Manitowaning
+CA	ON	Marathon
+CA	ON	Minaki
+CA	ON	Moosonee
+CA	ON	Muskoka
+CA	ON	Muskrat Dam
+CA	ON	Nakina
+CA	ON	North Bay
+CA	ON	North Spirit Lake
+CA	ON	Ogoki
+CA	ON	Opapamiska Lake
+CA	ON	Oro Station
+CA	ON	Oshawa
+CA	ON	Ottawa McDonald Cartier Intl Apt
+CA	ON	Ottawa Rockcliffe Stolport
+CA	ON	Owen Sound
+CA	ON	Parry Sound
+CA	ON	Peawanuck
+CA	ON	Pembroke
+CA	ON	Petawawa
+CA	ON	Peterborough
+CA	ON	Pickle Lake
+CA	ON	Pikangikum
+CA	ON	Poplar Hill
+CA	ON	Red Lake
+CA	ON	Round Lake
+CA	ON	Sachigo Lake
+CA	ON	San Souci
+CA	ON	Sandy Lake
+CA	ON	Sarnia
+CA	ON	Sault Ste Marie
+CA	ON	Sioux Lookout
+CA	ON	Slate Island
+CA	ON	Smith Falls
+CA	ON	South Trout
+CA	ON	St Catharines
+CA	ON	St Thomas
+CA	ON	Sudbury Airport
+CA	ON	Summer Beaver
+CA	ON	Terrace Bay
+CA	ON	Thunder Bay
+CA	ON	Timmins
+CA	ON	Toronto Buttonville Apt
+CA	ON	Toronto City Centre Apt
+CA	ON	Toronto John C Munro Hamilton
+CA	ON	Toronto Lester B Pearson Intl Apt
+CA	ON	Trenton
+CA	ON	Wawa
+CA	ON	Webequie
+CA	ON	White River
+CA	ON	Wiarton
+CA	ON	Windsor
+CA	ON	Winisk
+CA	ON	Wunnummin Lake
+CA	PE	Charlottetown
+CA	PE	Summerside
+CA	QC	Akulivik
+CA	QC	Alma
+CA	QC	Amos
+CA	QC	Asbestos Hill
+CA	QC	Aupaluk
+CA	QC	Bagotville
+CA	QC	Baie Comeau
+CA	QC	Baie Johan Beetz
+CA	QC	Blanc Sablon
+CA	QC	Bonaventure
+CA	QC	Bromont
+CA	QC	Cartierville
+CA	QC	Chevery
+CA	QC	Chibougamau
+CA	QC	Chisasibi
+CA	QC	Chute des Passes
+CA	QC	Deception
+CA	QC	Dolbeau
+CA	QC	East Main
+CA	QC	Fontanges
+CA	QC	Forestville
+CA	QC	Gagnon
+CA	QC	Gaspe
+CA	QC	Gethsemani
+CA	QC	Havre St Pierre
+CA	QC	Iles de la Madeleine
+CA	QC	Inukjuak
+CA	QC	Ivujivik
+CA	QC	Kangiqsualujjuaq
+CA	QC	Kangiqsujuaq
+CA	QC	Kangirsuk
+CA	QC	Kattiniq/Donaldson Lake
+CA	QC	Kegaska
+CA	QC	Killineq
+CA	QC	Kuujjuaq
+CA	QC	Kuujjuarapik
+CA	QC	La Grande
+CA	QC	La Sarre
+CA	QC	La Tabatiere
+CA	QC	La Tuque
+CA	QC	Laforges
+CA	QC	Lagrande
+CA	QC	Lagrande 4
+CA	QC	Leaf Bay
+CA	QC	Lebel-Sur-Quevillon
+CA	QC	Maniwaki
+CA	QC	Maricourt Airstrip
+CA	QC	Matagami
+CA	QC	Matane
+CA	QC	Mingan
+CA	QC	Mont Joli
+CA	QC	Mont Tremblant
+CA	QC	Montreal Mirabel Intl Apt
+CA	QC	Montreal Pierre Elliott Trudeau Int Apt
+CA	QC	Montreal St Hubert Apt
+CA	QC	Murray Bay
+CA	QC	Natashquan
+CA	QC	Nemiscau
+CA	QC	Nitchequon
+CA	QC	Old Fort Bay
+CA	QC	Opinaca
+CA	QC	Ottawa Gatineau Airport
+CA	QC	Pakuashipi
+CA	QC	Port Menier
+CA	QC	Puvirnituq
+CA	QC	Quaqtaq
+CA	QC	Quebec International Airport
+CA	QC	Rimouski
+CA	QC	Riviere du Loup
+CA	QC	Riviere-au-Tonnerre
+CA	QC	Roberval
+CA	QC	Rouyn
+CA	QC	Salluit
+CA	QC	Schefferville
+CA	QC	Sept-Iles
+CA	QC	Sherbrooke
+CA	QC	St Jean
+CA	QC	St Paul
+CA	QC	Tasiujuaq
+CA	QC	Tete-a-La Baleine
+CA	QC	Trois-Rivieres
+CA	QC	Tulugak
+CA	QC	Umiujaq
+CA	QC	Val D\'Or
+CA	QC	Valcartier
+CA	QC	Waskaganish
+CA	QC	Wemindji
+CA	SK	Broadview
+CA	SK	Buffalo Narrows
+CA	SK	Cluff Lake
+CA	SK	Collins Bay
+CA	SK	Estevan
+CA	SK	Fond du Lac
+CA	SK	Hatchett Lake
+CA	SK	Hudson Bay
+CA	SK	Key Lake
+CA	SK	Kindersley
+CA	SK	Kinoosao
+CA	SK	La Ronge
+CA	SK	Meadow Lake
+CA	SK	Moose Jaw
+CA	SK	North Battleford
+CA	SK	Pine House
+CA	SK	Points North Landing
+CA	SK	Prince Albert
+CA	SK	Regina
+CA	SK	Saskatoon
+CA	SK	Stony Rapids
+CA	SK	Swift Current
+CA	SK	Tisdale
+CA	SK	Uranium City
+CA	SK	Wollaston Lake
+CA	SK	Yorkton
+CA	YT	Beaver Creek
+CA	YT	Burwash Landings
+CA	YT	Clinton Creek
+CA	YT	Dawson City
+CA	YT	Faro
+CA	YT	Haines Junction
+CA	YT	Macmillan Pass
+CA	YT	Mayo
+CA	YT	Old Crow
+CA	YT	Ross River
+CA	YT	Snake River
+CA	YT	Teslin
+CA	YT	Watson Lake
+CA	YT	Whitehorse
+GD	null	Carriacou
+GD	null	Grenada

@@ -1,0 +1,10 @@
+package com.bezurk.dbUpdater.input
+
+import com.bezurk.dbUpdater.data._
+
+trait InputFactoryComponent{
+  val inputFactory:InputFactory
+  trait InputFactory{
+    def getInputSeq(source:Any):Seq[Data]
+  }
+}
